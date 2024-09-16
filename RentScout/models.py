@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-
+from django.core.validators import MinValueValidator
 # Create your models here.  
 class User(models.Model):
     userid = models.AutoField(primary_key=True)
@@ -13,13 +13,14 @@ class User(models.Model):
 
 class Building(models.Model):
     buildingid = models.AutoField(primary_key=True)
+    building_name = models.CharField(max_length = 250, default="")
     zip_code = models.PositiveIntegerField(default=0, null=True, blank=True)
     street = models.CharField(max_length=75, blank=True, null=True)
     city = models.CharField(max_length=75, default="None")
     province = models.CharField(max_length=75, default="None")
     country = models.CharField(max_length=75, default="None")
     details = models.TextField(blank=True, null=True)
-    rooms_vacant = models.IntegerChoices(default=1)
+    rooms_vacant = models.IntegerField(validators = [MinValueValidator(0)])
 
 class Policies(models.Model):
     policy_id = models.AutoField(primary_key=True)
@@ -39,10 +40,10 @@ class Facilities(models.Model):
     food = models.BooleanField(default=False)
 
 class Room(models.Model):
-    buildingid = models.AutoField(primary_key=True)
+    roomid = models.AutoField(primary_key=True)
     building_id = models.ForeignKey(Building, on_delete=models.CASCADE, default="", blank=False, null=False)
     room_name = models.CharField(max_length=250)
-    person_free = models.IntegerChoices(default=1)
+    person_free = models.IntegerField(validators = [ MinValueValidator(1)])
     current_male = models.IntegerField(default=0)
     current_female = models.IntegerField(default=0)
     price = models.PositiveIntegerField(default=100)
@@ -54,8 +55,8 @@ class Room(models.Model):
     AC = models.BooleanField(default=False) # aircon
     wardrobe = models.BooleanField(default = False)
     kitchen = models.BooleanField(default = False)
-    bedroom = models.IntegerChoices(default=0)
-    double_deck = models.IntegerChoices(default=0)
+    bedroom = models.IntegerField(validators = [ MinValueValidator(1)])
+    double_deck = models.IntegerField(validators = [ MinValueValidator(1)])
     free_wifi = models.BooleanField(default = False)
 
 class Feedback(models.Model):
@@ -77,8 +78,8 @@ class Feedback(models.Model):
         (FIVE, '5'), (ZERO, '0')
     ]
     feedbackid = models.AutoField(primary_key = True)
-    baordingid = models.ForeignKey(Building, on_delete = models.CASCADE)
-    rating = models.IntegerChoices(choices = RATING_CHOICES, default = ZERO)
+    boardingid = models.ForeignKey(Building, on_delete = models.CASCADE)
+    rating = models.CharField(max_length = 10, choices = RATING_CHOICES, default = ZERO)
     message = models.TextField(default="")
 
 
