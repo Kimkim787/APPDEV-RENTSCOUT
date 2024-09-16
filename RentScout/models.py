@@ -1,15 +1,67 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import Permission, Group
+
+from .managers import CustomUserManager
+
 # Create your models here.  
-class User(models.Model):
+
+# class User(models.Model):
+#     userid = models.AutoField(primary_key=True)
+#     user_acc = models.ForeignKey(User, on_delete=models.CASCADE)
+#     firstname = models.CharField(max_length = 20)
+#     lastname = models.CharField(max_length = 20)
+#     middlename = models.CharField(max_length = 20)
+#     birthdate = models.DateField(default = timezone.now)
+
+class ScoutUser(AbstractBaseUser, PermissionsMixin):
+    MALE = 'Male'
+    FEMALE = 'Female'
+    GENDERS = [
+        (MALE, 'Male'),
+        (FEMALE, 'Female')
+    ]
+
     userid = models.AutoField(primary_key=True)
-    user_acc = models.ForeignKey(User, on_delete=models.CASCADE)
+    email = models.EmailField(_("email address"), unique=True)
     firstname = models.CharField(max_length = 20)
     lastname = models.CharField(max_length = 20)
     middlename = models.CharField(max_length = 20)
     birthdate = models.DateField(default = timezone.now)
+    gender = models.CharField(max_length = 8, choices = GENDERS, default = MALE)
+
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
+        #define reverse accessor for GROUP
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name=_("groups"),
+        blank=True,
+        related_name="scout_user_groups"  # Specify a related_name to resolve the clash
+    )
+        #define reverse accessor for Permission
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_("user permissions"),
+        blank=True,
+        related_name="scout_user_permissions"  # Specify a related_name to resolve the clash
+    )
+
+
+    def __str__(self):
+        return self.email
 
 class Building(models.Model):
     buildingid = models.AutoField(primary_key=True)

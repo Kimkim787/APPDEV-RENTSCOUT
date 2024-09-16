@@ -1,12 +1,15 @@
 from django.contrib import admin
-from .models import (User, Building, Policies, Facilities, Room,
+from .models import (ScoutUser, Building, Policies, Facilities, Room,
                      Feedback)
 # Register your models here.
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['userid', 'user_acc', 'firstname', 'lastname',
-                    'middlename', 'birthdate']
+class ScoutUserAdmin(admin.ModelAdmin):
+    list_display = ['userid', 'firstname', 'lastname',
+                    'middlename', 'gender', 'birthdate']
 
+# Use 'password' as a read-only field to avoid exposing it directly
+    readonly_fields = ('password',)
+    
 class BuildingAdmin(admin.ModelAdmin):
     list_display = [ 'buildingid', 'building_name', 'zip_code', 'street', 'city',
                     'province', 'country', 'details', 'rooms_vacant']
@@ -28,7 +31,7 @@ class RoomAdmin(admin.ModelAdmin):
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = ['feedbackid', 'boardingid', 'rating', 'message']
 
-admin.site.register(User, UserAdmin)
+admin.site.register(ScoutUser, ScoutUserAdmin)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(Policies, PoliciesAdmin)
 admin.site.register(Facilities, FacilitiesAdmin)
