@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" href="{% static "css/signin.css" %}">
     <title>RENTSCOUT</title>
 </head>
-<<<<<<< HEAD
 <style>
     *{
         margin: 0;
@@ -16,10 +15,14 @@
     }
 </style>
 <body >
-=======
 <body>
-    <h2>Tinood</h2>
->>>>>>> 07002d43d97657f5939dc01f8d32d43ad58c24a4
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'logout' %}">Logout</a>
+        <h1>{{ request.user.email }}</h1>
+    {% else %}
+        <a href="{% url 'signin' %}">Signin</a>
+    {% endif %}
+    <hr>
     {% block bodycontent %}
     <h3>fake</h3>
     {% endblock %}

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import ScoutUser, Building
-from .forms import EmailAuthenticationForm, BuildingForm
+from .forms import EmailAuthenticationForm, BuildingForm, UserLoginForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 
@@ -32,6 +32,7 @@ def scoutuser_login(request):
     form = EmailAuthenticationForm()
     
     if request.method == 'POST':
+        print('post request')
         form = EmailAuthenticationForm(request, data = request.POST)
         if form.is_valid():
             email = form.cleaned_data.get('username')
@@ -39,13 +40,21 @@ def scoutuser_login(request):
             user = authenticate(request, username = email, password = password)
             if user is not None and isinstance(user, ScoutUser):
                 login(request, user)
-                return redirect('')
+                print('login success')
+                return redirect('home')
             else:
-                messages.error(request, 'User does not exist')
-    else:
-        messages.error(request, 'Invalid email or password')
+                print('Invalid email or password')
+                messages.error(request, 'Invalid email or password')
+        else:
+            print('User does not exist')
+            messages.error(request, 'User does not exist')
 
-    return render(request, '')
+    context = {'form': form}
+    return render(request, 'RentScout/signin.html', context)
+
+def scoutuser_logout(request):
+    logout(request)
+    return redirect('home')
 
 # HANDLES BUILDING CREATION
 def create_building(request, ownerid):
@@ -78,5 +87,5 @@ def update_building(request, pk):
 def home(request):
     return render(request, 'RentScout/home.html', {})
 
-def signinpage(request):
-    return render(request, 'RentScout/signin.html', {})
+# def signinpage(request):
+#     return render(request, 'RentScout/signin.html', {})
