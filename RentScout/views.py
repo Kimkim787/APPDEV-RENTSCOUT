@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+
+# Create your views here.
+
+@login_required
+=======
 from django.shortcuts import render, redirect
 from .models import ScoutUser, Building
 from .forms import EmailAuthenticationForm, BuildingForm
@@ -77,5 +86,9 @@ def update_building(request, pk):
     context = {'form', form}
     return render(request, '', context)
 
+>>>>>>> 07002d43d97657f5939dc01f8d32d43ad58c24a4
 def home(request):
     return render(request, 'RentScout/home.html', {})
+
+def signinpage(request):
+    return render(request, 'RentScout/signin.html', {})
