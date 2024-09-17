@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
-
-# Create your views here.
-
-@login_required
-=======
 from django.shortcuts import render, redirect
 from .models import ScoutUser, Building
 from .forms import EmailAuthenticationForm, BuildingForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-
-# Create your views here.
 
 def get_user_backend(user):
     if isinstance(user, ScoutUser):
@@ -86,7 +75,6 @@ def update_building(request, pk):
     context = {'form', form}
     return render(request, '', context)
 
->>>>>>> 07002d43d97657f5939dc01f8d32d43ad58c24a4
 def home(request):
     return render(request, 'RentScout/home.html', {})
 
