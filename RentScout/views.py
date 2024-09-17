@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import ScoutUser
-from .forms import EmailAuthenticationForm
+from .models import ScoutUser, Building
+from .forms import EmailAuthenticationForm, BuildingForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 
@@ -49,6 +49,33 @@ def scoutuser_login(request):
 
     return render(request, '')
 
+# HANDLES BUILDING CREATION
+def create_building(request, ownerid):
+    form = BuildingForm()
+    scoutuser = ScoutUser.objects.get(userid = ownerid)
+    if request.method == 'POST':
+        form = BuildingForm(request.POST, request.FILES)
+        if form.is_valid():
+            newbuilding = form.save(commit = False)
+            newbuilding.building_owner = scoutuser
+            newbuilding.save()
+            return redirect('')
+    
+    context = {'form': form, }
+    return render(request, '', context)
+
+def update_building(request, pk):
+    building = Building.objects.get(buildingid = pk)
+    form = BuildingForm(instance = pk)
+    if request.method == 'POST':
+        form = BuildingForm(request.POST)
+        if form.is_valid():
+            updated = form.save(commit = False)
+            updated.save()
+            return redirect('')
+        
+    context = {'form', form}
+    return render(request, '', context)
 
 def home(request):
     return render(request, 'RentScout/home.html', {})
