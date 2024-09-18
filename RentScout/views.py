@@ -78,24 +78,27 @@ def create_building(request):
 def update_building(request, pk):
     page = "update"
     building = Building.objects.get(buildingid = pk)
-    form = BuildingForm(instance = pk)
+    form = BuildingForm(instance = building)
     if request.method == 'POST':
-        form = BuildingForm(request.POST)
+        form = BuildingForm(request.POST, instance=building)
         if form.is_valid():
             updated = form.save(commit = False)
             updated.save()
-            return redirect('home')
+            return redirect('building_info', pk)
         
     context = {'form': form, 'page':page, }
-    return render(request, '', context)
-
-
+    return render(request, 'RentScout/create_building.html', context)
 
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
 
     context = {'building':building, }
     return render(request, 'RentScout/building.html', context)
+
+def building_del(request, pk):
+    building = Building.objects.get(buildingid = pk)
+    building.delete()
+    return redirect('home')
 
 @login_required( login_url = 'signin' )
 def home(request):
