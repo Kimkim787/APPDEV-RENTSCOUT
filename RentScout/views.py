@@ -89,11 +89,8 @@ def update_building(request, pk):
     context = {'form': form, 'page':page, }
     return render(request, '', context)
 
-<<<<<<< HEAD
 
 @login_required
-=======
->>>>>>> 505bfcdecefbb5a369d71095b060ea25a67a6176
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
 
