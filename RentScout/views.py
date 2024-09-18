@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .models import ScoutUser, Building
 from .forms import EmailAuthenticationForm, BuildingForm, UserLoginForm, ScoutUserCreationForm
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+
 from django.contrib import messages
 
 def get_user_backend(user):
@@ -87,6 +89,11 @@ def update_building(request, pk):
     context = {'form': form, 'page':page, }
     return render(request, '', context)
 
+<<<<<<< HEAD
+
+@login_required
+=======
+>>>>>>> 505bfcdecefbb5a369d71095b060ea25a67a6176
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
 
