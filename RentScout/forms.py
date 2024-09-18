@@ -29,13 +29,13 @@ class EmailAuthenticationForm(AuthenticationForm):
 
         return self.cleaned_data
 
-class UserCreationForm(UserCreationForm):
+class ScoutUserCreationForm(UserCreationForm):
     class Meta:
         model = ScoutUser
         fields = ('email', 'firstname', 'lastname',
-                  'middlename', 'birthdate', 'gender')
+                  'middlename', 'birthdate', 'gender', 'password1', 'password2' ) # 
 
-class UserChangeForm(UserChangeForm):
+class ScoutUserChangeForm(UserChangeForm):
     class Meta:
         model = ScoutUser
         fields = ('firstname', 'lastname', 'middlename',

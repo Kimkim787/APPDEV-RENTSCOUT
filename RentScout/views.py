@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import ScoutUser, Building
-from .forms import EmailAuthenticationForm, BuildingForm, UserLoginForm
+from .forms import EmailAuthenticationForm, BuildingForm, UserLoginForm, ScoutUserCreationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 
@@ -12,21 +12,23 @@ def get_user_backend(user):
 
 def scoutuser_signup(request):
     page = 'signup'
-    form = EmailAuthenticationForm()
+    form = ScoutUserCreationForm()
     
     if request.method == "POST":
-        form = EmailAuthenticationForm()
+        print('tried to signup')
+        form = ScoutUserCreationForm(request.POST)
+        print(form)
         if form.is_valid():
-            email = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username = email, password = password)
-            if user is not None and isinstance(user, ScoutUser):
-                login(request, user)
-                return redirect('home')
-            else:
-                messages.error(request, 'Please complete the form')
-    
-    return render(request, '', {})
+            print('form is valid')
+            user = form.save()
+            backend = get_user_backend(user)
+            login(request, user, backend)
+            return redirect('home')
+        else:
+            messages.error(request, 'Please enter a valid email or password')
+            
+    context = {'form': form, }
+    return render(request, 'RentScout/signup.html', context)
 
 def scoutuser_login(request):
     form = EmailAuthenticationForm()
