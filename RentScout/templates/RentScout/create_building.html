@@ -1,5 +1,40 @@
-{% extends index.html %}
+{% extends 'index.html' %}
 
 {% block bodycontent %}
-    
+    {% if page == 'newbuilding' %}
+        <form action="" method="POST">
+            {% csrf_token %}
+            <label for="building_name">Building Name:</label>
+            <input type="text" name="{{ form.building_name.name }}" required>
+
+            <label for="vacant">Vacant Rooms</label>
+            <input type="number" name = "{{ form.rooms_vacant.name }}" required>
+
+            <label for="zip_code">Zip Code:</label>
+            <input type="number" name="{{ form.zip_code.name }}" required>
+
+            <label for="street">Street</label>
+            <input type="text" name = "{{ form.street.name }}" required>
+
+            <label for="city">City</label>
+            <input type="text" name = "{{ form.city.name }}" required>
+
+            <label for="province">Province</label>
+            <input type="text" name = "{{ form.province.name }}" required>
+
+            <label for="country">Country</label>
+            <input type="text" name = "{{ form.country.name }}" required>
+
+            <label for="details">Details</label>
+            <textarea name="{{ form.details.name }}" id="" cols="30" rows="10"></textarea>
+
+            <input type="submit" value="Submit">
+        </form>
+    {% elif page == 'update' %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Save">
+    </form>
+    {% endif %}
 {% endblock bodycontent %}

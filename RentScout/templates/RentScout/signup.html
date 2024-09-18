@@ -4,21 +4,21 @@
     <form action="" method = 'POST'>
         {% csrf_token %}
         <label for="firstname">Firstname:</label>
-        <input type="text" name="{{ form.firstname.name }}">
+        <input type="text" name="{{ form.firstname.name }}" required>
         <label for="lastname">Lastname:</label>
-        <input type="text" name="{{ form.lastname.name }}">
+        <input type="text" name="{{ form.lastname.name }}" required>
         <label for="middlename">Middlename:</label>
-        <input type="text" name="{{ form.middlename.name }}">
+        <input type="text" name="{{ form.middlename.name }}" required>
         <label for="gender">Gender:</label>
         {{ form.gender }}
         <label for="birthdate">Birthdate:</label>
         {{ form.birthdate }}
         <label for="email">Email:</label>
-        {{ form.email }}
+        <input type="email" name="{{ form.email.name }}" required>
         <label for="password1">Enter password:</label>
-        <input type="password" name="{{ form.password1.name }}">
+        <input type="password" name="{{ form.password1.name }}" required>
         <label for="password2">Confirm password:</label>
-        <input type="password" name="{{ form.password2.name }}">
+        <input type="password" name="{{ form.password2.name }}" required>
         <input type="submit" value="Create Account">
     </form>
 

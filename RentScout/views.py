@@ -59,21 +59,22 @@ def scoutuser_logout(request):
     return redirect('home')
 
 # HANDLES BUILDING CREATION
-def create_building(request, ownerid):
+def create_building(request):
+    page = "newbuilding"
     form = BuildingForm()
-    scoutuser = ScoutUser.objects.get(userid = ownerid)
     if request.method == 'POST':
         form = BuildingForm(request.POST, request.FILES)
         if form.is_valid():
             newbuilding = form.save(commit = False)
-            newbuilding.building_owner = scoutuser
+            newbuilding.building_owner = request.user
             newbuilding.save()
-            return redirect('')
+            return redirect('home')
     
-    context = {'form': form, }
-    return render(request, '', context)
+    context = {'form': form, 'page':page, }
+    return render(request, 'RentScout/create_building.html', context)
 
 def update_building(request, pk):
+    page = "update"
     building = Building.objects.get(buildingid = pk)
     form = BuildingForm(instance = pk)
     if request.method == 'POST':
@@ -81,10 +82,16 @@ def update_building(request, pk):
         if form.is_valid():
             updated = form.save(commit = False)
             updated.save()
-            return redirect('')
+            return redirect('home')
         
-    context = {'form', form}
+    context = {'form': form, 'page':page, }
     return render(request, '', context)
+
+def building_info(request, pk):
+    building = Building.objects.get(buildingid = pk)
+
+    context = {'building':building, }
+    return render(request, 'RentScout/building.html', context)
 
 def home(request):
     return render(request, 'RentScout/home.html', {})
