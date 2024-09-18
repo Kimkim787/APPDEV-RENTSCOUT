@@ -90,13 +90,14 @@ def update_building(request, pk):
     return render(request, '', context)
 
 
-@login_required
+
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
 
     context = {'building':building, }
     return render(request, 'RentScout/building.html', context)
 
+@login_required( login_url = 'signin' )
 def home(request):
     return render(request, 'RentScout/home.html', {})
 

@@ -1,24 +1,17 @@
-{% extends 'index.html' %}
-
-{% block bodycontent%}
-{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in</title>
+</head>
+<body>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href='{% static "css/signin.css" %}'>
     <!-- <section class="signinbody" style="background-image: url('{% static 'imgs/signin/bg.png' %}');"> -->
         <div class="greetbox">
             <h1>Welcome to <br> <span class="renttxt">Rent</span><span class="scouttxt">Scout.</span></h1>
         </div>
-<<<<<<< HEAD
-        <form class="inputbox" autocomplete="off">
-            <h1>Sign in</h1>
-            <div>
-                <label for="username">Username:</label>
-                <input type="text" placeholder="Enter your username" >
-            </div>
-            <div class="flex flex-col">
-                <label for="password">Password:</label>
-                <input type="password" placeholder="Enter your password" autocomplete="new-password">
-            </div>
-            <button type="submit">Log in</button>
-=======
+
         <form class="inputbox" action="{% url 'signin' %}" method = 'POST'>
             {% csrf_token %}
             <h1>Sign in</h1>
@@ -31,8 +24,9 @@
                 <input type="password" name='password' placeholder="Enter your password" required>
             </div>
             <input type="submit" >Sign in </input>
->>>>>>> 505bfcdecefbb5a369d71095b060ea25a67a6176
+            
             <p>Create account</p>
         </form>
-    </section>
-{% endblock %}
+
+</body>
+</html>

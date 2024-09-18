@@ -1,6 +1,14 @@
-{% extends 'index.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-up Page</title>
+</head>
+<body>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href='{% static "css/style.css" %}'>
 
-{% block bodycontent %}
+
     <form action="" method = 'POST'>
         {% csrf_token %}
         <label for="firstname">Firstname:</label>
@@ -10,7 +18,11 @@
         <label for="middlename">Middlename:</label>
         <input type="text" name="{{ form.middlename.name }}" required>
         <label for="gender">Gender:</label>
-        {{ form.gender }}
+        <select name="{{ form.gender.name }}" id="gender">
+            <option value="Male" selected>Male</option>
+            <option value="Female">Female</option>
+            <option value="Others">Others</option>
+        </select>
         <label for="birthdate">Birthdate:</label>
         {{ form.birthdate }}
         <label for="email">Email:</label>
@@ -23,4 +35,6 @@
     </form>
 
     <p>Kailangan pani input validation</p>
-{% endblock bodycontent %}
+
+</body>
+</html>
