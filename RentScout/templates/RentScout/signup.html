@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+
+{% block bodycontent %}
+    <form action="" method = 'POST'>
+        {% csrf_token %}
+        <label for="firstname">Firstname:</label>
+        <input type="text" name="{{ form.firstname.name }}">
+        <label for="lastname">Lastname:</label>
+        <input type="text" name="{{ form.lastname.name }}">
+        <label for="middlename">Middlename:</label>
+        <input type="text" name="{{ form.middlename.name }}">
+        <label for="gender">Gender:</label>
+        {{ form.gender }}
+        <label for="birthdate">Birthdate:</label>
+        {{ form.birthdate }}
+        <label for="email">Email:</label>
+        {{ form.email }}
+        <label for="password1">Enter password:</label>
+        <input type="password" name="{{ form.password1.name }}">
+        <label for="password2">Confirm password:</label>
+        <input type="password" name="{{ form.password2.name }}">
+        <input type="submit" value="Create Account">
+    </form>
+
+    <p>Kailangan pani input validation</p>
+{% endblock bodycontent %}

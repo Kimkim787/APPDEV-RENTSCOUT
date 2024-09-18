@@ -1,11 +1,13 @@
 from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Facilities, Room,
                      Feedback)
+from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm)
 # Register your models here.
 
 class ScoutUserAdmin(admin.ModelAdmin):
     list_display = ['userid', 'firstname', 'lastname',
                     'middlename', 'gender', 'birthdate']
+    form = ScoutUserCreationForm
 
 # Use 'password' as a read-only field to avoid exposing it directly
     readonly_fields = ('password',)
