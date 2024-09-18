@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
-
-# Create your views here.
-
-@login_required
-=======
 from django.shortcuts import render, redirect
 from .models import ScoutUser
 from .forms import EmailAuthenticationForm
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+
 from django.contrib import messages
 
 # Create your views here.
@@ -59,7 +52,8 @@ def scoutuser_login(request):
     return render(request, '')
 
 
->>>>>>> 07002d43d97657f5939dc01f8d32d43ad58c24a4
+
+@login_required
 def home(request):
     return render(request, 'RentScout/home.html', {})
 

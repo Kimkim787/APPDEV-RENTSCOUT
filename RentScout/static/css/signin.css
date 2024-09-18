@@ -1,46 +1,86 @@
 .signinbody{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     height: 100vh;
     width: 100%;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    padding: 0px 100px;
 }
 .greetbox{
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 337px;
-    width: 300px;
-    border: 1px solid black;
-    background-color: rgba(255, 255, 255, 0.35);
+}
+.greetbox h1{
+    font-size: 70px;
+    color: white;
+    text-shadow: 2px 2px 10px #000000;
+}
+.renttxt,
+.scouttxt{
+    font-size: 55px;
+    text-align: center;
+}
+.renttxt{
+    text-shadow: 2px 2px 10px black;
+    color: rgb(255,215,0, 0.8);
 }
 .inputbox{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40px;
-    border: 1px solid black;
+    padding: 30px 60px;
     gap: 20px;
-    background-color: rgba(0, 0, 0, 0.35);
+    color: white;
+    text-shadow: 2px 2px 10px black;
+    border: 1px solid rgb(255,215,0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.5s ease;
+    background-color: rgba(128, 128, 128, 0.3);
+}
+.inputbox:hover{
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    transform: scale(1.003);
+    backdrop-filter: blur(2px);
+}
+.inputbox h1{
+    font-size: 40px;
+    color: rgba(255, 255, 255, 0.8);
 }
 .inputbox div{
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 .inputbox button{
     width: 100%;
     border-radius: 20px;
     border: none;
     padding: 10px 0px;
+    font-weight: bold;
+    font-size: 15px;
+    color: white;
+    background-color: black;
 }
 .inputbox div input{
+    height: 35px;
     padding: 5px 10px;
-    width: 230px;
+    width: 250px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+}
+.inputbox div input:focus{
+    border: 2px solid rgb(255,215,0, 0.3);
+    box-shadow: 0 0 40px rgb(255,215,0, 0.3);
 }
 .inputbox button:hover{
+    cursor: pointer;
+}
+.signinbody p:hover,
+.signinbody button:hover{
     cursor: pointer;
 }
