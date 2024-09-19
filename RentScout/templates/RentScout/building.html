@@ -3,10 +3,118 @@
 {% block bodycontent %}
     <h1>{{ building.building_name }}</h1>
     <h4>{{ building.building_owner }}</h4>
+    <h3>{{ building.complete_address }}</h3>
+    <h3>{{ rooms_vacant }}</h3>
+    <a href="{% url 'update_building' building.buildingid %}">Update</a>
     <hr>
     <textarea name="" id="" cols="30" rows="10">{{ building.details }}</textarea>
 
     <hr>
+    <h1>Highlights</h1>
+    <ul>
+        {% if highlights.free_wifi %}
+        <li>Free_wifi</li>
+        {% endif %}
 
-    <a href="{% url 'update_building' building.buildingid %}">Update</a>
+        {% if highlights.shared_kitchen %}
+        <li>Shared Kitchen</li>
+        {% endif %}
+
+        {% if highlights.smoke_free %}
+        <li>Smoke Free</li>
+        {% endif %}
+
+        {% if highlights.janitor %}
+        <li>Janitor</li>
+        {% endif %}
+
+        {% if highlights.guard %}
+        <li>Guard</li>
+        {% endif %}
+
+        {% if highlights.waterbill %}
+        <li>Water Bill</li>
+        {% endif %}
+
+        {% if highlights.electricbill%}
+        <li>Electric Bill</li>
+        {% endif %}
+
+        {% if highlights.food %}
+        <li>Canteen</li>
+        {% endif %}
+    </ul>
+    
+<h1>Select Rooms</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Room</th>
+            <th>Additional Info</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for room in rooms %}
+        <tr>
+            <td>
+                <p>{{ room.room_name }}</p>
+                <img src="{{ room.image }}" alt="{{room.room_name}} image">
+                <p>See Photos</p>
+                <p>{{ room.price }}</p>
+            </td>
+            <td>
+                <p>Room size: {{room.room_size}}</p>
+                {% if room.bedroom > 0 %}
+                    <p>Single bed: {{ room.bed }}</p>
+                {% endif %}
+                {% if room.double_deck > 0 %}
+                    <p>Double deck: {{ room.double_deck }}</p>
+                {% endif %}
+
+                {% if room.shower %}
+                <p>Shower</p>
+                {% endif %}
+
+                {% if room.priv_bathrooom %}
+                <p>Private bathroom</p>
+                {% endif %}
+
+                {% if room.public_bathroom %}
+                <p>Public bathroom</p>
+                {% endif %}
+
+                {% if room.AC %}
+                <p>Air Conditioned</p>
+                {% endif %}
+                
+                {% if room.wardrobe %}
+                <p>Wardrobe</p>
+                {% endif %}
+
+                {% if room.kitchen %}
+                <p>Kitchen</p>
+                {% endif %}
+
+                {% if room.free_wifi %}
+                <p>Free Wifi</p>
+                {% endif %}
+            </td>
+            <td>
+                <p>Roomates</p>
+                <p>{{ room.current_male }} - Male</p>
+                <p>{{ room.current_female }} - Female</p>
+                <p>Available Space: {{ room.person_free }}</p>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h1>POLICIES</h1>
+<ul>
+    {% for policy in policies %}
+    <li>policy.policy</li>
+    {% endfor %}
+</ul>
 {% endblock bodycontent %}

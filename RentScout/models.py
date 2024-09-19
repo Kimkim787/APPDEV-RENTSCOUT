@@ -75,21 +75,24 @@ class Building(models.Model):
     details = models.TextField(blank=True, null=True)
     rooms_vacant = models.IntegerField(validators = [MinValueValidator(0)])
 
+    def complete_address(self):
+        return f"{self.zip_code}, {self.street}, {self.province}, {self.city}, {self.country}"
+
 class Policies(models.Model):
     policy_id = models.AutoField(primary_key=True)
     buildingid = models.ForeignKey(Building, on_delete = models.CASCADE)
     policy = models.TextField(default = "", null=True, blank = True)
 
-class Facilities(models.Model):
-    facil_id = models.AutoField(primary_key=True)
+class Highlights(models.Model):
+    highlights_id = models.AutoField(primary_key=True)
     buildingid = models.ForeignKey(Building, on_delete = models.CASCADE)
     free_wifi = models.BooleanField(default=False)
     shared_kitchen = models.BooleanField(default=False)
     smoke_free = models.BooleanField(default=False)
     janitor = models.BooleanField(default=False)
+    guard = models.BooleanField(default=False)
     waterbill = models.BooleanField(default=False)
     electricbill = models.BooleanField(default=False)
-    comfort_room = models.BooleanField(default = False)
     food = models.BooleanField(default=False)
 
 class Room(models.Model):
@@ -108,7 +111,7 @@ class Room(models.Model):
     AC = models.BooleanField(default=False) # aircon
     wardrobe = models.BooleanField(default = False)
     kitchen = models.BooleanField(default = False)
-    bedroom = models.IntegerField(validators = [ MinValueValidator(1)])
+    bed = models.IntegerField(validators = [ MinValueValidator(1)])
     double_deck = models.IntegerField(validators = [ MinValueValidator(1)])
     free_wifi = models.BooleanField(default = False)
 

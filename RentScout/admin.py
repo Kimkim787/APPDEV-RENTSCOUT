@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (ScoutUser, Building, Policies, Facilities, Room,
+from .models import (ScoutUser, Building, Policies, Highlights, Room,
                      Feedback)
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm)
 # Register your models here.
@@ -20,10 +20,10 @@ class BuildingAdmin(admin.ModelAdmin):
 class PoliciesAdmin(admin.ModelAdmin):
     list_display = ['policy_id', 'buildingid', 'policy']
 
-class FacilitiesAdmin(admin.ModelAdmin):
-    list_display = ['facil_id', 'buildingid', 'free_wifi', 'shared_kitchen', 
+class HighlightsAdmin(admin.ModelAdmin):
+    list_display = ['highlights_id', 'buildingid', 'free_wifi', 'shared_kitchen', 
                     'smoke_free', 'janitor', 'waterbill', 'electricbill', 
-                    'comfort_room', 'food']
+                    'guard', 'food']
     
 class RoomAdmin(admin.ModelAdmin):
     list_diplay = ['roomid', 'buildingid', 'room_name', 'person_free',
@@ -37,6 +37,6 @@ class FeedbackAdmin(admin.ModelAdmin):
 admin.site.register(ScoutUser, ScoutUserAdmin)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(Policies, PoliciesAdmin)
-admin.site.register(Facilities, FacilitiesAdmin)
+admin.site.register(Highlights, HighlightsAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Feedback, FeedbackAdmin)

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import ScoutUser, Building
+from .models import ScoutUser, Building, Highlights, Room, RoomImages, Policies
 from .forms import EmailAuthenticationForm, BuildingForm, UserLoginForm, ScoutUserCreationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -89,13 +89,15 @@ def update_building(request, pk):
     context = {'form': form, 'page':page, }
     return render(request, 'RentScout/create_building.html', context)
 
-<<<<<<< HEAD
-@login_required
-=======
+
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
+    highlights = Highlights.objects.get(buildingid = building)
+    rooms = Room.objects.filter(building_id = building)
+    policies = Policies.objects.filter(buildingid = building)
 
-    context = {'building':building, }
+    context = {'building':building, 'highlights': highlights, 
+               'rooms':rooms, 'policies':policies }
     return render(request, 'RentScout/building.html', context)
 
 def building_del(request, pk):
@@ -103,10 +105,12 @@ def building_del(request, pk):
     building.delete()
     return redirect('home')
 
+
 @login_required( login_url = 'signin' )
->>>>>>> 6779b802dab33515d6b584bd2e31620976df42df
+
 def home(request):
     return render(request, 'RentScout/home.html', {})
 
 # def signinpage(request):
 #     return render(request, 'RentScout/signin.html', {})
+

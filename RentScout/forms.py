@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm
-from .models import ( ScoutUser, Building, Facilities, Policies, Room, Feedback)
+from .models import ( ScoutUser, Building, Highlights, Policies, Room, Feedback)
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -54,15 +54,16 @@ class PoliciesForm(ModelForm):
         model = Policies
         exclude = ('policy_id',)
 
-class FacilitiesForm(ModelForm):
+class HighlightsForm(ModelForm):
     class Meta:
-        model = Facilities
-        exclude = ('facil_id',)
+        model = Highlights
+        exclude = ('highlights_id', 'building_id')
 
 class RoomForm(ModelForm):
     class Meta:
         model = Room
-        exclude = ('roomid',)
+        exclude = ('roomid','building_id')
+
 class FeedBackForm(ModelForm):
     class Meta:
         model = Feedback
