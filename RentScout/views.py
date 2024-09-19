@@ -89,9 +89,7 @@ def update_building(request, pk):
     context = {'form': form, 'page':page, }
     return render(request, 'RentScout/create_building.html', context)
 
-<<<<<<< HEAD
 @login_required
-=======
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
 
@@ -104,7 +102,6 @@ def building_del(request, pk):
     return redirect('home')
 
 @login_required( login_url = 'signin' )
->>>>>>> 6779b802dab33515d6b584bd2e31620976df42df
 def home(request):
     return render(request, 'RentScout/home.html', {})
 

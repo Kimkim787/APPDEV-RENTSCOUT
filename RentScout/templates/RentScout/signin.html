@@ -1,12 +1,8 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
-=======
->>>>>>> 6779b802dab33515d6b584bd2e31620976df42df
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static "css/signin.css" %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,33 +47,3 @@
 </body>
 </html>
     
-=======
-    <title>Sign in</title>
-</head>
-<body>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href='{% static "css/signin.css" %}'>
-    <!-- <section class="signinbody" style="background-image: url('{% static 'imgs/signin/bg.png' %}');"> -->
-        <div class="greetbox">
-            <h1>Welcome to <br> <span class="renttxt">Rent</span><span class="scouttxt">Scout.</span></h1>
-        </div>
-
-        <form class="inputbox" action="{% url 'signin' %}" method = 'POST'>
-            {% csrf_token %}
-            <h1>Sign in</h1>
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" name='username' placeholder="sample@gmail.com" required>
-            </div>
-            <div class="flex flex-col">
-                <label for="password" >Password:</label>
-                <input type="password" name='password' placeholder="Enter your password" required>
-            </div>
-            <input type="submit" >Sign in </input>
-            
-            <p>Create account</p>
-        </form>
-
-</body>
-</html>
->>>>>>> 6779b802dab33515d6b584bd2e31620976df42df

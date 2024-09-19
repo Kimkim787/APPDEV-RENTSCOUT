@@ -1,12 +1,8 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
-=======
->>>>>>> 6779b802dab33515d6b584bd2e31620976df42df
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static "css/signup.css" %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +26,8 @@
 <body>
     <section class="signinbody" style="background-image: url('{% static 'imgs/signin/bg.png' %}');">
         <div class="greetbox">
-            <h1>Welcome to <br> <span class="renttxt">Rent</span><span class="scouttxt">Scout.</span></h1>
+            <h1>Welcome to <br> <span class="renttxt">Rent</span><span class="scouttxt">Scout!</span></h1>
+            <h2>Sign up <span class="signupmsg">now to see some affordable and <br> comfortable rooms.</span></h2>
         </div>
         <form class="inputbox" action="" method = 'POST'>
             {% csrf_token %}
@@ -42,8 +39,13 @@
                 <label for="middlename">Middlename:</label>
             <input type="text" name="{{ form.middlename.name }}">
                 <label for="gender">Gender:</label>
-                {{ form.gender }}
-                <a style="color: white; text-align: center;" href="{% url 'signin' %}"><p>Already have account?</p></a>
+                <select name="{{ form.gender.name }}" id="gender">
+                    <option value="Male" selected>Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Others">Others</option>
+                </select>
+                <script src="{% static "scripts/genderCssToggle.js" %}"></script>
+                <a style="color: white; text-align: center; padding: 7px 0px;" href="{% url 'signin' %}"><p>Already have account?</p></a>
             </div>
             <div>
                 <label for="birthdate">Birthdate:</label>
@@ -54,45 +56,9 @@
                 <input type="password" name="{{ form.password1.name }}">
                 <label for="password2">Confirm password:</label>
                 <input type="password" name="{{ form.password2.name }}">
-                <input type="submit" value="Create Account">
+                <input type="submit" value="Create Account" class="button">
             </div>
         </form>
     </section>
-=======
-    <title>Sign-up Page</title>
-</head>
-<body>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href='{% static "css/style.css" %}'>
-
-
-    <form action="" method = 'POST'>
-        {% csrf_token %}
-        <label for="firstname">Firstname:</label>
-        <input type="text" name="{{ form.firstname.name }}" required>
-        <label for="lastname">Lastname:</label>
-        <input type="text" name="{{ form.lastname.name }}" required>
-        <label for="middlename">Middlename:</label>
-        <input type="text" name="{{ form.middlename.name }}" required>
-        <label for="gender">Gender:</label>
-        <select name="{{ form.gender.name }}" id="gender">
-            <option value="Male" selected>Male</option>
-            <option value="Female">Female</option>
-            <option value="Others">Others</option>
-        </select>
-        <label for="birthdate">Birthdate:</label>
-        {{ form.birthdate }}
-        <label for="email">Email:</label>
-        <input type="email" name="{{ form.email.name }}" required>
-        <label for="password1">Enter password:</label>
-        <input type="password" name="{{ form.password1.name }}" required>
-        <label for="password2">Confirm password:</label>
-        <input type="password" name="{{ form.password2.name }}" required>
-        <input type="submit" value="Create Account">
-    </form>
-
-    <p>Kailangan pani input validation</p>
-
->>>>>>> 6779b802dab33515d6b584bd2e31620976df42df
 </body>
 </html>
