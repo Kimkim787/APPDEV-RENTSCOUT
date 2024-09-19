@@ -47,7 +47,7 @@ class UserLoginForm(AuthenticationForm):
 class BuildingForm(ModelForm):
     class Meta:
         model = Building
-        exclude = ('buildingid',)
+        exclude = ('buildingid', 'building_owner')
 
 class PoliciesForm(ModelForm):
     class Meta:

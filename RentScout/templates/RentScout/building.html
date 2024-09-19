@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+
+{% block bodycontent %}
+    <h1>{{ building.building_name }}</h1>
+    <h4>{{ building.building_owner }}</h4>
+    <hr>
+    <textarea name="" id="" cols="30" rows="10">{{ building.details }}</textarea>
+
+    <hr>
+
+    <a href="{% url 'update_building' building.buildingid %}">Update</a>
+{% endblock bodycontent %}

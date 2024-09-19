@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
+=======
+>>>>>>> 6779b802dab33515d6b584bd2e31620976df42df
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static "css/signup.css" %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,5 +58,41 @@
             </div>
         </form>
     </section>
+=======
+    <title>Sign-up Page</title>
+</head>
+<body>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href='{% static "css/style.css" %}'>
+
+
+    <form action="" method = 'POST'>
+        {% csrf_token %}
+        <label for="firstname">Firstname:</label>
+        <input type="text" name="{{ form.firstname.name }}" required>
+        <label for="lastname">Lastname:</label>
+        <input type="text" name="{{ form.lastname.name }}" required>
+        <label for="middlename">Middlename:</label>
+        <input type="text" name="{{ form.middlename.name }}" required>
+        <label for="gender">Gender:</label>
+        <select name="{{ form.gender.name }}" id="gender">
+            <option value="Male" selected>Male</option>
+            <option value="Female">Female</option>
+            <option value="Others">Others</option>
+        </select>
+        <label for="birthdate">Birthdate:</label>
+        {{ form.birthdate }}
+        <label for="email">Email:</label>
+        <input type="email" name="{{ form.email.name }}" required>
+        <label for="password1">Enter password:</label>
+        <input type="password" name="{{ form.password1.name }}" required>
+        <label for="password2">Confirm password:</label>
+        <input type="password" name="{{ form.password2.name }}" required>
+        <input type="submit" value="Create Account">
+    </form>
+
+    <p>Kailangan pani input validation</p>
+
+>>>>>>> 6779b802dab33515d6b584bd2e31620976df42df
 </body>
 </html>
