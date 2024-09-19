@@ -88,11 +88,7 @@ def update_building(request, pk):
     context = {'form', form}
     return render(request, '', context)
 
-<<<<<<< HEAD
-
 @login_required
-=======
->>>>>>> 505bfcdecefbb5a369d71095b060ea25a67a6176
 def home(request):
     return render(request, 'RentScout/home.html', {})
 

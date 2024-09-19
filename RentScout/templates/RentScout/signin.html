@@ -1,12 +1,34 @@
-{% extends 'index.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/signin.css" %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap" rel="stylesheet">
 
-{% block bodycontent%}
-{% load static %}
-    <!-- <section class="signinbody" style="background-image: url('{% static 'imgs/signin/bg.png' %}');"> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href= '{% static "css/signin.css" %}'>
+    <title>RENTSCOUT</title>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+</style>
+<body >
+<body>
+    <section class="signinbody" style="background-image: url('{% static 'imgs/signin/bg.png' %}');">
         <div class="greetbox">
             <h1>Welcome to <br> <span class="renttxt">Rent</span><span class="scouttxt">Scout.</span></h1>
         </div>
-<<<<<<< HEAD
         <form class="inputbox" autocomplete="off">
             <h1>Sign in</h1>
             <div>
@@ -18,21 +40,10 @@
                 <input type="password" placeholder="Enter your password" autocomplete="new-password">
             </div>
             <button type="submit">Log in</button>
-=======
-        <form class="inputbox" action="{% url 'signin' %}" method = 'POST'>
-            {% csrf_token %}
-            <h1>Sign in</h1>
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" name='username' placeholder="sample@gmail.com">
-            </div>
-            <div class="flex flex-col">
-                <label for="password" >Password:</label>
-                <input type="password" name='password' placeholder="Enter your password">
-            </div>
-            <input type="submit" >Sign in </input>
->>>>>>> 505bfcdecefbb5a369d71095b060ea25a67a6176
-            <p>Create account</p>
+
+            <a style="color: white;" href="{% url 'signup' %}"><p>Create account</p></a>
         </form>
     </section>
-{% endblock %}
+</body>
+</html>
+    
