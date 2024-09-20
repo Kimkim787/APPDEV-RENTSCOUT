@@ -111,8 +111,8 @@ class Room(models.Model):
     AC = models.BooleanField(default=False) # aircon
     wardrobe = models.BooleanField(default = False)
     kitchen = models.BooleanField(default = False)
-    bed = models.IntegerField(validators = [ MinValueValidator(1)])
-    double_deck = models.IntegerField(validators = [ MinValueValidator(1)])
+    bed = models.IntegerField(validators = [ MinValueValidator(0)])
+    double_deck = models.IntegerField(validators = [ MinValueValidator(0)])
     free_wifi = models.BooleanField(default = False)
 
 class Feedback(models.Model):

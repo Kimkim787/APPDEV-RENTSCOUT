@@ -1,11 +1,77 @@
 {% extends 'index.html' %}
 
+{% block stylecontent %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+
+{% endblock stylecontent %}
 {% block bodycontent %}
+
     <h1>{{ building.building_name }}</h1>
     <h4>{{ building.building_owner }}</h4>
     <h3>{{ building.complete_address }}</h3>
     <h3>{{ rooms_vacant }}</h3>
     <a href="{% url 'update_building' building.buildingid %}">Update</a>
+
+    <!-- {% comment %} MAO NI BUTTON PARA MO GAWAS ANG MODAL {% endcomment %} -->
+    {% if building.building_owner == request.user %}
+        <button onclick="ChangeModalStatus()">Add New Room</button>
+    {% endif %}
+
+    <!-- {% comment %} MAO NI ANG MODAL {% endcomment %} -->
+    <div id="modal" class="hidden">
+        <form action="{% url 'room_create' building.buildingid %}" method="POST">
+            {% csrf_token %}
+            <label for="room_name">Room Name:</label>
+            <input type="text" name="{{ roomform.room_name.name }}" > 
+            <label for="person_free">Person Available:</label>
+            <input type="text" name="{{ roomform.person_free.name }}" >
+            
+            <label for="current_male">Male resident:</label>
+            <input type="text" name="{{ roomform.current_male.name }}" />
+
+            <label for="current_female">Female resident:</label>
+            <input type="text" name="{{ roomform.current_female.name }}" />
+
+            <label for="price">Price:</label>
+            <input type="text" name="{{ roomform.price.name }}" />
+
+            <label for="room_size">Room Size:</label>
+            <input type="text" name="{{ roomform.room_size.name }}" />
+
+
+            <p><b>Highlights:</b></p>
+
+            <label for="bed">Single bed:</label>
+            <input type="text" name="{{ roomform.bed.name }}" />
+
+            <label for="double_deck">Double bed:</label>
+            <input type="text" name="{{ roomform.double_deck.name }}" />
+
+            <input type="checkbox" name="{{ roomform.shower.name }}" />
+            <label for="shower">Shower</label>
+
+            <input type="checkbox" name="{{ roomform.priv_bathrooom.name }}" />
+            <label for="priv_bathrooom">Private Bathroom</label>
+
+            <input type="checkbox" name="{{ roomform.public_bathroom.name }}" />
+            <label for="public_bathroom">Public Bathroom</label>
+
+            <input type="checkbox" name="{{ roomform.AC.name }}"/>
+            <label for="AC">Air Conditioned</label>
+
+            <input type="checkbox" name="{{ roomform.wardrobe.name }}" />
+            <label for="wardrobe">Wardrobe</label>
+
+            <input type="checkbox" name="{{ roomform.kitchen.name }}" />
+            <label for="kitchen">Kitchen</label>
+
+            <input type="checkbox" name="{{ roomform.free_wifi.name }}" />
+            <label for="free_wifi">Free Wifi</label>
+
+            <input type="submit" value="SAVE">
+        </form>
+    </div>
     <hr>
     <textarea name="" id="" cols="30" rows="10">{{ building.details }}</textarea>
 
@@ -45,76 +111,78 @@
         {% endif %}
     </ul>
     
-<h1>Select Rooms</h1>
-<table>
-    <thead>
-        <tr>
-            <th>Room</th>
-            <th>Additional Info</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for room in rooms %}
-        <tr>
-            <td>
-                <p>{{ room.room_name }}</p>
-                <img src="{{ room.image }}" alt="{{room.room_name}} image">
-                <p>See Photos</p>
-                <p>{{ room.price }}</p>
-            </td>
-            <td>
-                <p>Room size: {{room.room_size}}</p>
-                {% if room.bedroom > 0 %}
-                    <p>Single bed: {{ room.bed }}</p>
-                {% endif %}
-                {% if room.double_deck > 0 %}
-                    <p>Double deck: {{ room.double_deck }}</p>
-                {% endif %}
+    <h1>Select Rooms</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Room</th>
+                <th>Additional Info</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for room in rooms %}
+            <tr>
+                <td>
+                    <p>{{ room.room_name }}</p>
+                    <img src="{{ room.image }}" alt="{{room.room_name}} image">
+                    <p>See Photos</p>
+                    <p>{{ room.price }}</p>
+                </td>
+                <td>
+                    <p>Room size: {{room.room_size}}</p>
+                    {% if room.bedroom > 0 %}
+                        <p>Single bed: {{ room.bed }}</p>
+                    {% endif %}
+                    {% if room.double_deck > 0 %}
+                        <p>Double deck: {{ room.double_deck }}</p>
+                    {% endif %}
 
-                {% if room.shower %}
-                <p>Shower</p>
-                {% endif %}
+                    {% if room.shower %}
+                    <p>Shower</p>
+                    {% endif %}
 
-                {% if room.priv_bathrooom %}
-                <p>Private bathroom</p>
-                {% endif %}
+                    {% if room.priv_bathrooom %}
+                    <p>Private bathroom</p>
+                    {% endif %}
 
-                {% if room.public_bathroom %}
-                <p>Public bathroom</p>
-                {% endif %}
+                    {% if room.public_bathroom %}
+                    <p>Public bathroom</p>
+                    {% endif %}
 
-                {% if room.AC %}
-                <p>Air Conditioned</p>
-                {% endif %}
-                
-                {% if room.wardrobe %}
-                <p>Wardrobe</p>
-                {% endif %}
+                    {% if room.AC %}
+                    <p>Air Conditioned</p>
+                    {% endif %}
+                    
+                    {% if room.wardrobe %}
+                    <p>Wardrobe</p>
+                    {% endif %}
 
-                {% if room.kitchen %}
-                <p>Kitchen</p>
-                {% endif %}
+                    {% if room.kitchen %}
+                    <p>Kitchen</p>
+                    {% endif %}
 
-                {% if room.free_wifi %}
-                <p>Free Wifi</p>
-                {% endif %}
-            </td>
-            <td>
-                <p>Roomates</p>
-                <p>{{ room.current_male }} - Male</p>
-                <p>{{ room.current_female }} - Female</p>
-                <p>Available Space: {{ room.person_free }}</p>
-            </td>
-        </tr>
+                    {% if room.free_wifi %}
+                    <p>Free Wifi</p>
+                    {% endif %}
+                </td>
+                <td>
+                    <p>Roomates</p>
+                    <p>{{ room.current_male }} - Male</p>
+                    <p>{{ room.current_female }} - Female</p>
+                    <p>Available Space: {{ room.person_free }}</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>POLICIES</h1>
+    <ul>
+        {% for policy in policies %}
+        <li>policy.policy</li>
         {% endfor %}
-    </tbody>
-</table>
+    </ul>
 
-<h1>POLICIES</h1>
-<ul>
-    {% for policy in policies %}
-    <li>policy.policy</li>
-    {% endfor %}
-</ul>
+    <script src="{% static 'scripts/modal.js' %}"></script>
 {% endblock bodycontent %}

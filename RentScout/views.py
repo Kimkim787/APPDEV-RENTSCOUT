@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import ScoutUser, Building, Highlights, Room, RoomImages, Policies
-from .forms import EmailAuthenticationForm, BuildingForm, UserLoginForm, ScoutUserCreationForm
+from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
+                    ScoutUserCreationForm, RoomForm
+                    )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 
@@ -95,9 +97,11 @@ def building_info(request, pk):
     highlights = Highlights.objects.get(buildingid = building)
     rooms = Room.objects.filter(building_id = building)
     policies = Policies.objects.filter(buildingid = building)
+    roomform = RoomForm()
 
     context = {'building':building, 'highlights': highlights, 
-               'rooms':rooms, 'policies':policies }
+               'rooms':rooms, 'policies':policies, 'roomform':roomform }
+    
     return render(request, 'RentScout/building.html', context)
 
 def building_del(request, pk):
@@ -105,6 +109,21 @@ def building_del(request, pk):
     building.delete()
     return redirect('home')
 
+def room_create(request, buildingID):
+    building = Building.objects.get(buildingid = buildingID)
+
+    if request.method == 'POST':
+        room = RoomForm(request.POST)
+        if room.is_valid():
+            newroom = room.save(commit=False)
+            newroom.building_id = building
+            newroom.save()
+        else:
+            print(room.errors)
+            print("failed to create room")
+            messages.error(request, "Failed to create room")
+    
+    return redirect('building_info', building.buildingid )
 
 @login_required( login_url = 'signin' )
 def home(request):
