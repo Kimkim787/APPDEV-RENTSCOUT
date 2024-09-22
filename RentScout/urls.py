@@ -1,4 +1,5 @@
 from django.urls import path
+from .views import get_room_data
 from . import views
     
 urlpatterns = [
@@ -10,5 +11,8 @@ urlpatterns = [
     path('building_info/<int:pk>/', views.building_info, name = 'building_info'),
     path('building/update/<str:pk>/', views.update_building, name='update_building'),
 
-    path('room_create/<int:buildingID>/', views.room_create, name='room_create'),
+    path('room_create/<int:buildingID>', views.room_create, name='room_create'),
+    path('room_update/', get_room_data.as_view(), name='room_update'),
+    path('room_update/save/', views.room_update, name='room_save'),
+
 ]

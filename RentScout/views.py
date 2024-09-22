@@ -6,6 +6,8 @@ from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm,
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 
+from django.views import View
+from django.http import JsonResponse
 from django.contrib import messages
 
 def get_user_backend(user):
@@ -125,10 +127,62 @@ def room_create(request, buildingID):
     
     return redirect('building_info', building.buildingid )
 
+
+def room_update(request):
+    if request.method =='POST':
+        room_id = request.POST.get('room_id')
+        room = Room.objects.get(roomid = room_id)
+        tryroom = RoomForm(request.POST, instance = room)
+        if tryroom.is_valid():
+           updated_room = tryroom.save(commit=False)
+           updated_room.save()
+           print('Successfully updated room', room.room_name)
+           messages.success(request, 'Successfuly updated room')
+           return redirect('building_info', room.building_id.buildingid)
+        else:
+            print("Failed to update room", tryroom.errors)
+            messages.error(request, 'Failed to update room')
+            return redirect('building_info', room.building_id.buildingid)
+
+
 @login_required( login_url = 'signin' )
 def home(request):
     return render(request, 'RentScout/home.html', {})
 
-# def signinpage(request):
-#     return render(request, 'RentScout/signin.html', {})
+
+class get_room_data(View):
+    print('room_data')
+    def get(self, request):
+        query = request.GET.get('primary_key', '') # query comes from ajax
+        print(query)
+        if query:
+            try:
+                room = Room.objects.get(roomid = query)
+
+                room_data = {
+                    'roomid': room.roomid,
+                    'room_name': room.room_name,
+                    'person_free': room.person_free,
+                    'current_male': room.current_male,
+                    'current_female': room.current_female,
+                    'price': room.price,
+                    'room_size': room.room_size,
+                    'shower': room.shower,
+                    'priv_bathroom': room.priv_bathrooom,
+                    'public_bathroom': room.public_bathroom,
+                    'AC': room.AC,
+                    'wardrobe': room.wardrobe,
+                    'kitchen': room.kitchen,
+                    'bed': room.bed,
+                    'double_deck': room.double_deck,
+                    'free_wifi': room.free_wifi,
+                }
+
+                return JsonResponse(room_data, safe =  False)
+
+            except Room.DoesNotExist:
+                return JsonResponse({'error': 'Room not found'}, status = 404) # Page not found
+        else:
+            return JsonResponse({'error': 'No query provided'}, status = 400) # Bad reqeust
+
 
