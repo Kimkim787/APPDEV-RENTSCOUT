@@ -15,12 +15,27 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 340px;
-    padding: 0px 80px;
+    height: 332px;
+    padding: 0px 60px;
     border-left: none;
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
     background-color: rgba(255, 255, 255, 0.5);
+    transition: transform 0.5s ease, border-radius 0.5s ease, box-shadow 0.5s ease ;
+}
+.inputbox:hover ~ .greetbox{
+    transform: rotate(30deg);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    box-shadow: 12px 12px 10px rgba(0, 0, 0, 0.6);
+}
+.inputbox:hover {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    box-shadow: 12px 12px 10px rgba(0, 0, 0, 0.6);
+}
+.inputbox:hover ~ .greetbox h1{
+    transform: rotate(-30deg);
 }
 .greetbox h1{
     font-size: 33px;
@@ -29,6 +44,7 @@
     text-align: center;
     font-family: "Anton", sans-serif;
     font-weight: 400;
+    transition: transform 0.4s ease;
 }
 .greetbox img{
     height: 33px;
@@ -52,18 +68,14 @@
     gap: 20px;
     color: white;
     text-shadow: 2px 2px 10px black;
-    transition: transform 0.3s ease, box-shadow 0.5s ease;
+    transition: transform 0.3s ease, box-shadow 0.5s ease, border-radius 0.5s ease;
     background-color: rgba(116, 97, 84, 0.5);
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
+    /* box-shadow: 12px 12px 10px rgba(0, 0, 0, 0.6); */
 }
-/* .inputbox:hover{
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-    transform: scale(1.003);
-    backdrop-filter: blur(2px);
-} */
 .inputbox h1{
-    font-size: 27px;
+    font-size: 23px;
     font-weight: 400;
     color: white;
     font-family: "Anton", sans-serif;
@@ -92,8 +104,7 @@
     outline: none;
 }
 .inputbox div input:focus{
-    border: 2px solid rgb(255,215,0, 0.3);
-    box-shadow: 0 0 40px rgb(255,215,0, 0.3);
+    border: 2px solid rgb(0, 0, 0, 0.5);
 }
 .inputbox button:hover{
     cursor: pointer;
