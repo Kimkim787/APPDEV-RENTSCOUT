@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}?100">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     <title>RENTSCOUT</title>
 </head>
 <style>
@@ -24,12 +25,13 @@
 <body >
 <body>
     <section class="signinbody">
-        <div class="greetbox">
+        {% comment %} <div class="greetbox">
             <h1>Welcome to <br> <span class="renttxt">Rent</span><span class="scouttxt">Scout!</span></h1>
             <h2>Sign up <span class="signupmsg">now to see some affordable and <br> comfortable rooms.</span></h2>
-        </div>
+        </div> {% endcomment %}
         <form class="inputbox" action="" method = 'POST'>
             {% csrf_token %}
+            
             <div>
                 <label for="firstname">Firstname:</label>
                 <input type="text" name="{{ form.firstname.name }}">
@@ -55,9 +57,14 @@
                 <input type="password" name="{{ form.password1.name }}">
                 <label for="password2">Confirm password:</label>
                 <input type="password" name="{{ form.password2.name }}">
-                <input type="submit" value="Create Account" class="button">
+                <!-- <input type="submit" value="Create Account" class="button"> -->
+                <button type="submit">Create Account</button>
             </div>
         </form>
+        <div class="signupdiv">
+            <h1>SIGN UP</h1>
+            <img src="{% static "imgs/nav/logo22.png" %}" alt="Website logo" >
+        </div>
     </section>
 </body>
 </html>
