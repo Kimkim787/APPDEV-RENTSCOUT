@@ -1,29 +1,42 @@
 .signinbody{
     display: flex;
-    justify-content: space-between;
+    justify-content: left;
     align-items: center;
     height: 100vh;
     width: 100%;
-    background-image: url('../imgs/bg.png');
+    background-image: url('../imgs/simpleBG.png');
+    /* background: linear-gradient(45deg, #e6e6dd, #2b2b2b); */
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    padding: 0px 100px;
+    padding: 0px 70px;
 }
 .greetbox{
     display: flex;
     justify-content: center;
     align-items: center;
-    
+    height: 340px;
+    padding: 0px 80px;
+    border-left: none;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 .greetbox h1{
-    font-size: 70px;
-    color: white;
-    text-shadow: 2px 2px 10px #000000;
+    font-size: 33px;
+    color: black;
+    text-shadow: 2px 2px 10px white;
+    text-align: center;
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+.greetbox img{
+    height: 33px;
+    width: 95px;
 }
 .renttxt,
 .scouttxt{
-    font-size: 55px;
+    font-size: 28px;
     text-align: center;
 }
 .renttxt{
@@ -35,22 +48,25 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 30px 60px;
+    padding: 20px 30px;
     gap: 20px;
     color: white;
     text-shadow: 2px 2px 10px black;
-    border: 1px solid rgb(255,215,0, 0.4);
     transition: transform 0.3s ease, box-shadow 0.5s ease;
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: rgba(116, 97, 84, 0.5);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
 }
-.inputbox:hover{
+/* .inputbox:hover{
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
     transform: scale(1.003);
     backdrop-filter: blur(2px);
-}
+} */
 .inputbox h1{
-    font-size: 40px;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 27px;
+    font-weight: 400;
+    color: white;
+    font-family: "Anton", sans-serif;
 }
 .inputbox div{
     display: flex;
@@ -61,16 +77,16 @@
     width: 100%;
     border-radius: 20px;
     border: none;
-    padding: 10px 0px;
+    padding: 7px 0px;
     font-weight: bold;
-    font-size: 15px;
+    font-size: 12px;
     color: white;
     background-color: black;
 }
 .inputbox div input{
-    height: 35px;
+    height: 28px;
     padding: 5px 10px;
-    width: 250px;
+    width: 225px;
     border-radius: 20px;
     border: none;
     outline: none;

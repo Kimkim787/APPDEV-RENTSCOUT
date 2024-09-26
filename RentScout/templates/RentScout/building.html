@@ -7,6 +7,7 @@
 {% endblock stylecontent %}
 {% block bodycontent %}
 
+    <a href="{% url "home" %}"><button>home</button></a>
     <h1>{{ building.building_name }}</h1>
     <h4>{{ building.building_owner }}</h4>
     <h3>{{ building.complete_address }}</h3>

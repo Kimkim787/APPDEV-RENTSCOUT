@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href= '{% static "css/signin.css" %}?100'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     <title>RENTSCOUT</title>
 </head>
 <style>
@@ -21,9 +24,6 @@
 <body >
 <body>
     <section class="signinbody">
-        <div class="greetbox">
-            <h1>Welcome to <br> <span class="renttxt">Rent</span><span class="scouttxt">Scout.</span></h1>
-        </div>
         <form class="inputbox" autocomplete="off" method="POST">
             {% csrf_token %}
             <h1>Sign in</h1>
@@ -39,6 +39,9 @@
 
             <a style="color: white;" href="{% url 'signup' %}"><p>Create account</p></a>
         </form>
+        <div class="greetbox">
+            <h1>Welcome to <br> <img src="{% static "imgs/nav/logo22.png" %}" alt="Website logo" ></h1>
+        </div>
     </section>
 </body>
 </html>

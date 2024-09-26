@@ -7,6 +7,7 @@
     <script src="{% static 'scripts\jquery.js' %}"></script>
     {% block stylecontent %}
     {% endblock stylecontent %}
+    <link rel="stylesheet" href="{% static "css/navigation.css" %}">
     <title>RENTSCOUT</title>
 </head>
 <style>
@@ -19,12 +20,25 @@
 </style>
 <body >
 <body>
-    {% if request.user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>
-        <h1>{{ request.user.email }}</h1>
-    {% else %}
-        <a href="{% url 'signin' %}">Signin</a>
-    {% endif %}
+    <nav>
+        <img src="{% static "imgs/nav/logo22.png" %}" alt="Website logo" >
+
+        <ul>
+            <li>temporary</li>
+            <li>temporary</li>
+            <li>temporary</li>
+            <li>temporary</li>
+            <li>temporary</li>
+        </ul>
+        <div>
+            {% if request.user.is_authenticated %}
+                <h4>Hi! {{ request.user.email }}</h4>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'signin' %}">Signin</a>
+            {% endif %}
+        </div>
+    </nav>
 
     {% comment %} TEMPORARY. AYAW E APIL SA DESIGN {% endcomment%}
     <a href="{% url 'building_info' 2 %}">Building 2</a> 
