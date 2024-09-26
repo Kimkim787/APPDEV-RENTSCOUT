@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import ScoutUser, Building, Highlights, Room, RoomImages, Policies
+from .models import ScoutUser, Building, Highlights, Room, RoomImage, Policies
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
                     ScoutUserCreationForm, RoomForm
                     )
@@ -96,12 +96,13 @@ def update_building(request, pk):
 @login_required
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
-    highlights = Highlights.objects.get(buildingid = building)
+    highlights = Highlights.objects.filter(buildingid = building)
     rooms = Room.objects.filter(building_id = building)
+    # room_images = RoomImages.objects.filter(roomid = building)
     policies = Policies.objects.filter(buildingid = building)
     roomform = RoomForm()
 
-    context = {'building':building, 'highlights': highlights, 
+    context = {'building':building, 'highlights': highlights,
                'rooms':rooms, 'policies':policies, 'roomform':roomform }
     
     return render(request, 'RentScout/building.html', context)

@@ -2,6 +2,7 @@
 
 {% block bodycontent %}
     {% if page == 'newbuilding' %}
+        <form action="" method="POST">
             {% csrf_token %}
             <label for="building_name">Building Name:</label>
             <input type="text" name="{{ form.building_name.name }}" required>

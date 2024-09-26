@@ -11,7 +11,6 @@ $(document).ready(function(){
             },
             success: function(data){
                 console.log(data);
-                alert('Update successful');
 
                 let modal_container = $('#update_modal');
                 let room_id = modal_container.find('#room_id');
@@ -49,6 +48,7 @@ $(document).ready(function(){
                 kitchen.prop('checked', data.kitchen);
                 free_wifi.prop('checked', data.free_wifi);
 
+                modal_container.removeClass('hidden');
             },
             error: function(xhr, status, error) {
                 console.log(xhr.responseText);

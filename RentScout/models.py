@@ -65,7 +65,7 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
 
 class Building(models.Model):
     buildingid = models.AutoField(primary_key=True)
-    building_owner = models.ForeignKey(ScoutUser, on_delete = models.CASCADE)
+    building_owner = models.ForeignKey(ScoutUser, on_delete = models.CASCADE, null=False, blank=False)
     building_name = models.CharField(max_length = 250, default="")
     zip_code = models.PositiveIntegerField(default=0, null=True, blank=True)
     street = models.CharField(max_length=75, blank=True, null=True)
@@ -138,12 +138,12 @@ class Feedback(models.Model):
     rating = models.CharField(max_length = 10, choices = RATING_CHOICES, default = ZERO)
     message = models.TextField(default="")
 
-class BuildingImages(models.Model):
+class BuildingImage(models.Model):
     building_imgID = models.AutoField(primary_key = True)
     building_img = models.FileField(upload_to = 'building_imgs', blank = True, null = True)
-    buildingid = models.ForeignKey(Building, on_delete = models.CASCADE, null = False, blank = False)
+    buildingid = models.ForeignKey(Building, related_name = 'building_photo', on_delete = models.CASCADE, null = False, blank = False)
 
-class RoomImages(models.Model):
+class RoomImage(models.Model):
     room_imgID = models.AutoField(primary_key = True)
     room_img = models.FileField(upload_to = 'room_imgs', blank = True, null = True)
-    roomid = models.ForeignKey(Room, on_delete = models.CASCADE, null = False, blank = False)
+    roomid = models.ForeignKey(Room, related_name = 'room_photo', on_delete = models.CASCADE, null = False, blank = False)

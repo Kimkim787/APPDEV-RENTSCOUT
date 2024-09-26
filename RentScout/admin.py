@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
-                     Feedback)
-from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm)
+                     Feedback, RoomImage)
+from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
+                    RoomForm, RoomImageForm)
 # Register your models here.
 
 class ScoutUserAdmin(admin.ModelAdmin):
@@ -26,17 +27,26 @@ class HighlightsAdmin(admin.ModelAdmin):
                     'guard', 'food']
     
 class RoomAdmin(admin.ModelAdmin):
-    list_diplay = ['roomid', 'buildingid', 'room_name', 'person_free',
-                   'current_male', 'current_female', 'price', 'room_size',
-                   'shower', 'priv_bathroom', 'public_bathroom', 'AC', 'wardrobe',
-                   'kitchen', 'bedroom', 'double_deck', 'free_wifi']
+    list_display = ['roomid','room_name'] #'buildingid', , 'person_free',
+                    #'current_male', 'current_female', 'price', 'room_size',
+                   #'shower', 'priv_bathroom', 'public_bathroom', 'AC', 'wardrobe',
+                   #'kitchen', 'bedroom', 'double_deck', 'free_wifi'
+    form = RoomForm
 
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = ['feedbackid', 'boardingid', 'rating', 'message']
 
+class RoomImageAdmin(admin.ModelAdmin):
+    list_display = ['room_imgID', 'get_room_name', 'room_imgID']
+    form = RoomImageForm
+
+    def get_room_name(self, obj):
+            return obj.roomid.room_name
+    
 admin.site.register(ScoutUser, ScoutUserAdmin)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(Policies, PoliciesAdmin)
 admin.site.register(Highlights, HighlightsAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
+admin.site.register(RoomImage, RoomImageAdmin)

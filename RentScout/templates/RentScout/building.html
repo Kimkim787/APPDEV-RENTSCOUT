@@ -13,11 +13,6 @@
     <h3>{{ rooms_vacant }}</h3>
     <a href="{% url 'update_building' building.buildingid %}">Update</a>
 
-    <!-- {% comment %} MAO NI BUTTON PARA MO GAWAS ANG MODAL {% endcomment %} -->
-    {% if building.building_owner == request.user %}
-        <button onclick="ChangeModalStatus()">Add New Room</button>
-    {% endif %}
-
     <!-- {% comment %} MAO NI ANG MODAL {% endcomment %} -->
     <div id="modal" class="hidden">
         <form action="{% url 'room_create' building.buildingid %}" method="POST">
@@ -112,6 +107,11 @@
     </ul>
     
     <h1>Select Rooms</h1>
+    <!-- {% comment %} MAO NI BUTTON PARA MO GAWAS ANG MODAL {% endcomment %} -->
+    {% if building.building_owner == request.user %}
+    <button onclick="ChangeModalStatus()">Add New Room</button>
+    {% endif %}
+
     <table>
         <thead>
             <tr>
@@ -125,7 +125,14 @@
             <tr>
                 <td>
                     <p>{{ room.room_name }}</p>
-                    <img src="{{ room.image }}" alt="{{room.room_name}} image">
+                    <div>
+                        {% for photo in room.photos.all %}
+                        <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ room.room_name }}">
+                        {% empty %}
+                            <p>No photos available for this room.</p>
+                        {% endfor %}
+                    </div>
+                    
                     <p>See Photos</p>
                     <p>{{ room.price }}</p>
 
@@ -190,8 +197,12 @@
         {% endfor %}
     </ul>
 
+    <h1>FEEDBACKS</h1>
+    <ul>
+
+    </ul>
     {% comment %} Room_Update Modal {% endcomment %}
-    <div id="update_modal" class=".room_update_button">
+    <div id="update_modal" class="room_update_button hidden">
 
         <form action="{% url 'room_save' %}" method="POST">
             {% csrf_token %}
@@ -247,6 +258,5 @@
         </form>
     </div>
 
-
-    <script src="{% static 'scripts/modal.js' %}"></script>
+    <script src="{% static 'scripts/modal.js' %}?100"></script>
 {% endblock bodycontent %}
