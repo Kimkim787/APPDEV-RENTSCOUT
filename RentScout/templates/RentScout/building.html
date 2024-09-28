@@ -195,16 +195,22 @@
     </table>
 
     <h1>POLICIES</h1>
+    {% comment  %} palihog kog bullet points sa ul pre. {% endcomment %}
     <ul>
         {% for policy in policies %}
-        <li>policy.policy</li>
+        <li>{{ policy.policy }}</li>
         {% endfor %}
     </ul>
 
     <h1>FEEDBACKS</h1>
-    <ul>
-
-    </ul>
+    <div id="feedbacks_container">
+        {% for feedback in feedbacks %}
+        <div class="feedbacks">
+            <h3>(Ngalan sa ga feedback). nakalimtan nako.</h3><p>(Rating: {{ feedback.rating }}) ilisan pud ni nako ug star puhon.</p>
+            <textarea name="feedback" id="" cols="30" rows="10">{{ feedback.message }}</textarea>
+        </div>
+        {% endfor %}
+    </div>
     {% comment %} Room_Update Modal {% endcomment %}
     <div id="update_modal" class="room_update_button hidden">
 
