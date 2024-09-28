@@ -137,6 +137,7 @@
                     </div>
                     
                     <button class="view_photo_btn" id="{{ room.roomid }}">See Photos</button>
+                    <a href="{% url 'edit_photo' room.roomid %}">Edit photos</a>
                     <p>{{ room.price }}</p>
 
                     {% if building.building_owner == request.user %}

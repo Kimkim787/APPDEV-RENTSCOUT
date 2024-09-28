@@ -103,11 +103,10 @@ def building_info(request, pk):
     room_images = RoomImage.objects.all()
     policies = Policies.objects.filter(buildingid = building)
     roomform = RoomForm()
-    photoform = RoomImageForm()
 
     context = {'building':building, 'highlights': highlights, 'room_images': room_images,
                'rooms':rooms, 'policies':policies, 'roomform':roomform,
-                'photoform':photoform, }
+            }
     
     return render(request, 'RentScout/building.html', context)
 
@@ -161,8 +160,18 @@ def room_photo_upload(request):
             newphoto = photoform.save(commit=False)
             newphoto.save()
 
-    return redirect('building_info', roomid)
+    return redirect('edit_photo', roomid)
 
+def room_edit_photo(request, pk):
+    images = RoomImage.objects.filter(roomid = pk)
+    rooms = Room.objects.filter(building_id__building_owner = request.user)
+    
+    # For image upload
+    photoform = RoomImageForm()
+
+    context = { 'images': images, 'rooms':rooms, 'photoform':photoform, 
+                'room_id': pk, }
+    return render(request, 'RentScout/edit_room_photo.html', context)
 
 @login_required( login_url = 'signin' )
 def home(request):

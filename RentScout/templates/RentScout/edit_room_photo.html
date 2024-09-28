@@ -1,27 +1,58 @@
-<div id="upload_photo_container">
-    <!-- Upload  -->
-    <form action="{% url 'room_photo_upload' %}" method="POST" id="file-upload-form" class="uploader" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" name="{{ photoform.roomid.name }}" value="1">
-        
-        <input id="file-upload" type="file" name="{{ photoform.room_img.name }}" accept="image/*" />
-    
-        <label for="file-upload" id="file-drag">
-        <img id="file-image" src="#" alt="Preview" class="hidden">
-        <div id="start">
-            <i class="fa fa-download" aria-hidden="true"></i>
-            <div>Select a file or drag here</div>
-            <div id="notimage" class="hidden">Please select an image</div>
-            <span id="file-upload-btn" class="btn btn-primary">Select a file</span>
-        </div>
-        <div id="response" class="hidden">
-            <div id="messages"></div>
-            <progress class="progress" id="file-progress" value="0">
-            <span>0</span>%
-            </progress>
-        </div>
-        </label>
-        <input type="submit" value="Submit">
-    </form>
+{% extends 'index.html' %}
 
-</div>
+{% block stylecontent %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/room_edit.css' %}?100">
+{% endblock stylecontent %}
+
+{% block bodycontent %}
+    <div id="room_display">
+        {% for room in rooms %}
+            <a href="{% url 'edit_photo' room.roomid %}">{{ room.room_name }}</a>
+        {% endfor %}
+    </div>
+    <div id="image_container">
+        <ul>
+            {% for image in images %}
+                <div>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ image.room_imgID }}">
+                        <input type="submit" value="X">
+                    </form>
+                    <img class="image" src="{{ image.room_img.url }}" alt="{{ image.room_img.name }}">
+                </div>
+            {% endfor %}
+        </ul>
+        <div id="upload_photo_container">
+            <!-- Upload  -->
+            <form action="{% url 'room_photo_upload' %}" method="POST" id="file-upload-form" class="uploader" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="{{ photoform.roomid.name }}" value="{{ room_id }}">
+                
+                <input id="file-upload" type="file" name="{{ photoform.room_img.name }}" accept="image/*" />
+            
+                <label for="file-upload" id="file-drag">
+                <img id="file-image" src="#" alt="Preview" class="hidden">
+                <div id="start">
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    <div>Select a file or drag here</div>
+                    <div id="notimage" class="hidden">Please select an image</div>
+                    <span id="file-upload-btn" class="btn btn-primary">Select a file</span>
+                </div>
+                <div id="response" class="hidden">
+                    <div id="messages"></div>
+                    <progress class="progress" id="file-progress" value="0">
+                    <span>0</span>%
+                    </progress>
+                </div>
+                </label>
+                <input type="submit" value="Submit">
+            </form>
+    
+        </div>
+    
+    </div>
+
+    <script src = "{% static 'scripts/image_upload.js' %}"></script>
+{% endblock bodycontent %}
