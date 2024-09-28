@@ -1,0 +1,21 @@
+
+.room_image {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.view_room_imgs {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+#view_photo_modal {
+  border: 2px solid red;
+}
+
+
+
+
+
+
+

@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 from .models import ScoutUser, Building, Highlights, Room, RoomImage, Policies
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
-                    ScoutUserCreationForm, RoomForm
+                    ScoutUserCreationForm, RoomForm, RoomImageForm
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 
+
 from django.views import View
+from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib import messages
 
@@ -98,12 +100,14 @@ def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
     highlights = Highlights.objects.filter(buildingid = building)
     rooms = Room.objects.filter(building_id = building)
-    # room_images = RoomImages.objects.filter(roomid = building)
+    room_images = RoomImage.objects.all()
     policies = Policies.objects.filter(buildingid = building)
     roomform = RoomForm()
+    photoform = RoomImageForm()
 
-    context = {'building':building, 'highlights': highlights,
-               'rooms':rooms, 'policies':policies, 'roomform':roomform }
+    context = {'building':building, 'highlights': highlights, 'room_images': room_images,
+               'rooms':rooms, 'policies':policies, 'roomform':roomform,
+                'photoform':photoform, }
     
     return render(request, 'RentScout/building.html', context)
 
@@ -144,6 +148,20 @@ def room_update(request):
             print("Failed to update room", tryroom.errors)
             messages.error(request, 'Failed to update room')
             return redirect('building_info', room.building_id.buildingid)
+
+# ROOM PHOTOS
+def room_photo_upload(request):
+    print('rooom photo upload')
+    if request.method == 'POST':
+        print('request post')
+        photoform = RoomImageForm(request.POST, request.FILES)
+        roomid = request.POST.get('roomid')
+        if photoform.is_valid():
+            print('valid photo form')
+            newphoto = photoform.save(commit=False)
+            newphoto.save()
+
+    return redirect('building_info', roomid)
 
 
 @login_required( login_url = 'signin' )
@@ -186,4 +204,22 @@ class get_room_data(View):
         else:
             return JsonResponse({'error': 'No query provided'}, status = 400) # Bad reqeust
 
-
+class get_room_images(View):
+    def get(self, request):
+        query = request.GET.get('roomid', '')
+        if query:
+            
+            try:
+                photos = list(RoomImage.objects.filter(
+                roomid = query).values_list('room_img'))
+                image_obj = {}
+                for index, photo in enumerate(photos, start=0):
+                    image_obj[index] = photo  
+                
+                print(image_obj)
+                return JsonResponse(image_obj, safe=False)
+            except:
+                return JsonResponse({'error': 'No images found'}, status = 404)
+        else:
+            return JsonResponse({'error': 'Did not receive a query'}, status = 405)
+        

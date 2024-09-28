@@ -1,0 +1,27 @@
+<div id="upload_photo_container">
+    <!-- Upload  -->
+    <form action="{% url 'room_photo_upload' %}" method="POST" id="file-upload-form" class="uploader" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="{{ photoform.roomid.name }}" value="1">
+        
+        <input id="file-upload" type="file" name="{{ photoform.room_img.name }}" accept="image/*" />
+    
+        <label for="file-upload" id="file-drag">
+        <img id="file-image" src="#" alt="Preview" class="hidden">
+        <div id="start">
+            <i class="fa fa-download" aria-hidden="true"></i>
+            <div>Select a file or drag here</div>
+            <div id="notimage" class="hidden">Please select an image</div>
+            <span id="file-upload-btn" class="btn btn-primary">Select a file</span>
+        </div>
+        <div id="response" class="hidden">
+            <div id="messages"></div>
+            <progress class="progress" id="file-progress" value="0">
+            <span>0</span>%
+            </progress>
+        </div>
+        </label>
+        <input type="submit" value="Submit">
+    </form>
+
+</div>

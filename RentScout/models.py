@@ -145,5 +145,5 @@ class BuildingImage(models.Model):
 
 class RoomImage(models.Model):
     room_imgID = models.AutoField(primary_key = True)
-    room_img = models.FileField(upload_to = 'room_imgs', blank = True, null = True)
+    room_img = models.FileField(upload_to = 'upload/room_imgs', blank = True, null = True)
     roomid = models.ForeignKey(Room, related_name = 'room_photo', on_delete = models.CASCADE, null = False, blank = False)

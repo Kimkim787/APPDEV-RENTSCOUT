@@ -2,12 +2,13 @@
 
 {% block stylecontent %}
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/building.css' %}?100">
     <link rel="stylesheet" href="{% static 'css/modal.css' %}">
 
 {% endblock stylecontent %}
 {% block bodycontent %}
 
-    <a href="{% url "home" %}"><button>home</button></a>
+    <a href="{% url 'home' %}"><button>home</button></a>
     <h1>{{ building.building_name }}</h1>
     <h4>{{ building.building_owner }}</h4>
     <h3>{{ building.complete_address }}</h3>
@@ -127,14 +128,15 @@
                 <td>
                     <p>{{ room.room_name }}</p>
                     <div>
-                        {% for photo in room.photos.all %}
-                        <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ room.room_name }}">
+                        {% for photo in room.room_photo.all %}
+                        <!-- <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ photo.room_img.name|slice:'-1' }}"> -->
+                        <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ photo.room_img.name|slice:'-1'|default_if_none:'No image' }}">
                         {% empty %}
                             <p>No photos available for this room.</p>
                         {% endfor %}
                     </div>
                     
-                    <p>See Photos</p>
+                    <button class="view_photo_btn" id="{{ room.roomid }}">See Photos</button>
                     <p>{{ room.price }}</p>
 
                     {% if building.building_owner == request.user %}
@@ -260,4 +262,16 @@
     </div>
 
     <script src="{% static 'scripts/modal.js' %}?100"></script>
-{% endblock bodycontent %}
+
+
+    {% comment %} VIEW ROOM PHOTOS Modal {% endcomment %}
+    <div id="view_photo_modal" class="hidden">
+        <button id="view_photo_close">Close</button>
+        <ul id="photo_container">
+            {% comment %} ANG JAVASCRIPT MO BUTANG ELEMENTS DIRI {% endcomment %}
+        </ul>
+    </div>
+
+
+    <script src="{% static 'scripts/building.js' %}?101"></script>
+    {% endblock bodycontent %}
