@@ -8,8 +8,9 @@ nav{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f4f4f4;
     padding: 30px 40px;
+    background-color: #f3ede5;
+    border-bottom: 1px solid rgba(239, 239, 240);
 }
 nav img{
     height: 27px;

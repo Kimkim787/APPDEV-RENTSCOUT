@@ -58,14 +58,12 @@ $(document).ready(function(){
     })
 });    
 
-const modal_elem = document.getElementById('modal');
+document.getElementById('add_new_room_btn').addEventListener('click', function() {
+    document.querySelector('.modal').classList.remove('hidden');
+});
 
-function ChangeModalStatus(){
-    console.log('ChangeModal executed');
-    if (modal_elem.hasAttribute('class', 'hidden')){
-        modal_elem.removeAttribute('class');
-    } else {
-        modal_elem.setAttribute('class', 'hidden');
-    }
-    
-}
+document.getElementById('addroombackbtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelector('.modal').classList.add('hidden');
+});
+

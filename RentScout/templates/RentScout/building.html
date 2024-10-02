@@ -7,283 +7,292 @@
 
 {% endblock stylecontent %}
 {% block bodycontent %}
-
-    <a href="{% url 'home' %}"><button>home</button></a>
-    <h1>{{ building.building_name }}</h1>
-    <h4>{{ building.building_owner }}</h4>
-    <h3>{{ building.complete_address }}</h3>
-    <h3>{{ rooms_vacant }}</h3>
-    <a href="{% url 'update_building' building.buildingid %}">Update</a>
-
-    <!-- {% comment %} MAO NI ANG MODAL {% endcomment %} -->
-    <div id="modal" class="hidden">
-        <form action="{% url 'room_create' building.buildingid %}" method="POST">
-            {% csrf_token %}
-            <label for="room_name">Room Name:</label>
-            <input type="text" name="{{ roomform.room_name.name }}" > 
-            <label for="person_free">Person Available:</label>
-            <input type="text" name="{{ roomform.person_free.name }}" >
-            
-            <label for="current_male">Male resident:</label>
-            <input type="text" name="{{ roomform.current_male.name }}" />
-
-            <label for="current_female">Female resident:</label>
-            <input type="text" name="{{ roomform.current_female.name }}" />
-
-            <label for="price">Price:</label>
-            <input type="text" name="{{ roomform.price.name }}" />
-
-            <label for="room_size">Room Size:</label>
-            <input type="text" name="{{ roomform.room_size.name }}" />
-
-
-            <p><b>Highlights:</b></p>
-
-            <label for="bed">Single bed:</label>
-            <input type="text" name="{{ roomform.bed.name }}" />
-
-            <label for="double_deck">Double bed:</label>
-            <input type="text" name="{{ roomform.double_deck.name }}" />
-
-            <input type="checkbox" name="{{ roomform.shower.name }}" />
-            <label for="shower">Shower</label>
-
-            <input type="checkbox" name="{{ roomform.priv_bathrooom.name }}" />
-            <label for="priv_bathrooom">Private Bathroom</label>
-
-            <input type="checkbox" name="{{ roomform.public_bathroom.name }}" />
-            <label for="public_bathroom">Public Bathroom</label>
-
-            <input type="checkbox" name="{{ roomform.AC.name }}"/>
-            <label for="AC">Air Conditioned</label>
-
-            <input type="checkbox" name="{{ roomform.wardrobe.name }}" />
-            <label for="wardrobe">Wardrobe</label>
-
-            <input type="checkbox" name="{{ roomform.kitchen.name }}" />
-            <label for="kitchen">Kitchen</label>
-
-            <input type="checkbox" name="{{ roomform.free_wifi.name }}" />
-            <label for="free_wifi">Free Wifi</label>
-
-            <input type="submit" value="SAVE">
-        </form>
-    </div>
-    <hr>
-    <textarea name="" id="" cols="30" rows="10">{{ building.details }}</textarea>
-
-    <hr>
-    <h1>Highlights</h1>
-    <ul>
-        {% if highlights.free_wifi %}
-        <li>Free_wifi</li>
-        {% endif %}
-
-        {% if highlights.shared_kitchen %}
-        <li>Shared Kitchen</li>
-        {% endif %}
-
-        {% if highlights.smoke_free %}
-        <li>Smoke Free</li>
-        {% endif %}
-
-        {% if highlights.janitor %}
-        <li>Janitor</li>
-        {% endif %}
-
-        {% if highlights.guard %}
-        <li>Guard</li>
-        {% endif %}
-
-        {% if highlights.waterbill %}
-        <li>Water Bill</li>
-        {% endif %}
-
-        {% if highlights.electricbill%}
-        <li>Electric Bill</li>
-        {% endif %}
-
-        {% if highlights.food %}
-        <li>Canteen</li>
-        {% endif %}
-        <li>Sound Proof</li>
-        <li>CCTV</li>
-    </ul>
-    
-    <h1>Select Rooms</h1>
-    <!-- {% comment %} MAO NI BUTTON PARA MO GAWAS ANG MODAL {% endcomment %} -->
-    {% if building.building_owner == request.user %}
-    <button onclick="ChangeModalStatus()">Add New Room</button>
-    {% endif %}
-
-    <table>
-        <thead>
-            <tr>
-                <th>Room</th>
-                <th>Additional Info</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for room in rooms %}
-            <tr>
-                <td>
-                    <p>{{ room.room_name }}</p>
-                    <div>
-                        {% if room.room_photo.all %}
-                            {% for photo in room.room_photo.all %}
-                            <!-- <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ photo.room_img.name|slice:'-1' }}"> -->
-                            <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ photo.room_img.name|slice:'-1'|default_if_none:'No image' }}">
-                            {% empty %}
-                                <p>No photos available for this room.</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <button class="view_photo_btn" id="{{ room.roomid }}">See Photos</button>
-                    <a href="{% url 'edit_photo' room.roomid %}">Edit photos</a>
-                    <p>{{ room.price }}</p>
-
-                    {% if building.building_owner == request.user %}
+    <section class="buildingbody">
+        <div class="scrollpage">
+            {% comment %} VIEW ROOM PHOTOS Modal {% endcomment %}
+            <div id="view_photo_modal" >
+                <div class="selectedpicbox">
+                    <!-- ari ang display sa selected picture -->
+                </div>
+                
+                <div class="selectpicbox">
+                    <img id="prev_btn" src="{% static 'imgs/building/previous.png' %}" alt="">
+                    <ul id="photo_container" >
                         
-                        {% comment %} Button para mo show ang room_update modal {% endcomment %}
+                        {% comment %} ANG JAVASCRIPT MO BUTANG ELEMENTS DIRI {% endcomment %}
+                        
+                    </ul>
+                    <img id="next_btn" src="{% static 'imgs/building/next-button.png' %}" alt="">
+                </div>
+            </div>
+            <!-- <button id="view_photo_close">Close</button> -->
+            <div class="deschighlightsBox">
+                <div class="descbox">
+                   
+                    <h2>Description</h2>
+                    <textarea name="" id="" cols="30" rows="10">{{ building.details }}</textarea>
+                </div>
+                <div class="highlightsbox">
+                    <h1>Highlights</h1>
+                    <p>{% if highlights.free_wifi %}Free wifi, {% endif %}
+                       {% if highlights.shared_kitchen %}Shared Kitchen, {% endif %}
+                       {% if highlights.smoke_free %}Smoke Free, {% endif %}
+                       {% if highlights.janitor %}Janitor, {% endif %}
+                       {% if highlights.guard %}Guard, {% endif %}
+                       {% if highlights.waterbill %}Water Bill, {% endif %}
+                       {% if highlights.electricbill %}Electric Bill, {% endif %}
+                       {% if highlights.food %}Canteen, {% endif %}
+                    </p>
+                </div>
+            </div>
+            <p style="display: none;" id="room_id_display">Room ID: {{ rooms.first.roomid }}</p>
+            {% for room in rooms %}
+            <div data-roomid="{{ room.roomid }}" class="additionaldatabox">
+                <div>
+                    <h3>Room</h3>
+                    <article>
+                        <p>{{ room.room_name }}</p>
+                        <p>Price: {{ room.price }}</p>
+                    </article>
+                    {% if building.building_owner == request.user %}
+                    <a href="{% url 'edit_photo' room.roomid %}">Edit photos</a>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3>Status</h3>
+                        <article>
+                        <p>Roommates</p>
+                        <p>{{ room.current_male }} - Male</p>
+                        <p>{{ room.current_female }} - Female</p>
+                        <p>Available Space: {{ room.person_free }}</p>
+                    </article>
+                    {% if building.building_owner == request.user %}
                         <button class="room_update_button" id="{{ room.roomid }}">Update Room</button>
-                    {% endif%}
-                </td> 
-                <td>
-                    <p>Room size: {{room.room_size}}</p>
-                    {% if room.bed > 0 %}
-                        <p>Single bed: {{ room.bed }}</p>
                     {% endif %}
-                    {% if room.double_deck > 0 %}
-                        <p>Double deck: {{ room.double_deck }}</p>
-                    {% endif %}
-
-                    {% if room.shower %}
-                    <p>Shower</p>
-                    {% endif %}
-
-                    {% if room.priv_bathrooom %}
-                    <p>Private bathroom</p>
-                    {% endif %}
-
-                    {% if room.public_bathroom %}
-                    <p>Public bathroom</p>
-                    {% endif %}
-
-                    {% if room.AC %}
-                    <p>Air Conditioned</p>
-                    {% endif %}
+                </div>
+                <div>
+                    <h3>Additional Info</h3>
+                    <article>
+                        <p>Room size: {{ room.room_size }}</p>
+                        {% if room.bed > 0 %}
+                            <p>Single bed: {{ room.bed }}</p>
+                        {% endif %}
+                        {% if room.double_deck > 0 %}
+                            <p>Double deck: {{ room.double_deck }}</p>
+                        {% endif %}
+                            
+                        {% if room.shower %}
+                        <p>Shower</p>
+                        {% endif %}
                     
-                    {% if room.wardrobe %}
-                    <p>Wardrobe</p>
-                    {% endif %}
-
-                    {% if room.kitchen %}
-                    <p>Kitchen</p>
-                    {% endif %}
-
-                    {% if room.free_wifi %}
-                    <p>Free Wifi</p>
-                    {% endif %}
-                </td>
-                <td>
-                    <p>Roomates</p>
-                    <p>{{ room.current_male }} - Male</p>
-                    <p>{{ room.current_female }} - Female</p>
-                    <p>Available Space: {{ room.person_free }}</p>
-                </td>
-            </tr>
+                        {% if room.priv_bathroom %}
+                        <p>Private bathroom</p>
+                        {% endif %}
+                    
+                        {% if room.public_bathroom %}
+                        <p>Public bathroom</p>
+                        {% endif %}
+                
+                        {% if room.AC %}
+                        <p>Air Conditioned</p>
+                        {% endif %}
+                            
+                        {% if room.wardrobe %}
+                        <p>Wardrobe</p>
+                        {% endif %}
+                    
+                        {% if room.kitchen %}
+                        <p>Kitchen</p>
+                        {% endif %}
+                    
+                        {% if room.free_wifi %}
+                        <p>Free Wifi</p>
+                        {% endif %}
+                    </article>
+                </div>
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
-
-    <h1>POLICIES</h1>
-    <button>Add new Policy</button>
-    {% comment  %} palihog kog bullet points sa ul pre. {% endcomment %}
-    <ul>
-        {% for policy in policies %}
-        <li>{{ policy.policy }}</li>
-        {% endfor %}
-    </ul>
-
-    <h1>FEEDBACKS</h1>
-    <div id="feedbacks_container">
-        {% for feedback in feedbacks %}
-        <div class="feedbacks">
-            <h3>(Ngalan sa ga feedback). nakalimtan nako.</h3><p>(Rating: {{ feedback.rating }}) ilisan pud ni nako ug star puhon.</p>
-            <textarea name="feedback" id="" cols="30" rows="10">{{ feedback.message }}</textarea>
-        </div>
-        {% endfor %}
-    </div>
-    {% comment %} Room_Update Modal {% endcomment %}
-    <div id="update_modal" class="room_update_button hidden">
-
-        <form action="{% url 'room_save' %}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="room_id" id="room_id">
-            <label for="room_name">Room Name:</label>
-            <input type="text" name="{{ roomform.room_name.name }}" > 
-            <label for="person_free">Person Available:</label>
-            <input type="text" name="{{ roomform.person_free.name }}" >
+            <div class="policiesbox">
+                <div>
+                    <h3>POLICIES</h3>
+                </div>
+                {% comment  %} palihog kog bullet points sa ul pre. {% endcomment %}
+                <ul>
+                    {% for policy in policies %}
+                    <li>{{ policy.policy }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="feedbacksbox">
+                <div class="title">
+                    <h3>FEEDBACKS</h3>
+                </div>
+                {% for feedback in feedbacks %}
+                    <div class="feedbacks">
+                        <h3>(Ngalan sa ga feedback). nakalimtan nako.</h3><p>(Rating: {{ feedback.rating }}) ilisan pud ni nako ug star puhon.</p>
+                        <p>{{ feedback.message}}</p>
+                        <!-- <textarea name="feedback" id="" cols="30" rows="10">{{ feedback.message }}</textarea> -->
+                    </div>
+                {% endfor %}
+            </div>
             
-            <label for="current_male">Male resident:</label>
-            <input type="text" name="{{ roomform.current_male.name }}" />
+                <div class="modal hidden">
+                    <form action="{% url 'room_create' building.buildingid %}" method="POST">
+                        {% csrf_token %}
+                        <div>
+                            <div>
+                                <h2>Add new room</h2> <button id="addroombackbtn">back</button>
+                            </div>
+                            <div>
+                                <label for="room_name">Room Name:</label>
+                                <input type="text" name="{{ roomform.room_name.name }}" > 
+                            </div>
+                            <div>
+                                <label for="person_free">Person Available:</label>
+                                <input type="text" name="{{ roomform.person_free.name }}" >
+                            </div>
+                            <div>
+                                <label for="current_male">Male resident:</label>
+                                <input type="text" name="{{ roomform.current_male.name }}" />
+                            </div>
+                            <div>
+                                <label for="current_female">Female resident:</label>
+                                <input type="text" name="{{ roomform.current_female.name }}" />
+                            </div>
+                            <div>
+                                <label for="price">Price:</label>
+                                <input type="text" name="{{ roomform.price.name }}" />
+                            </div>
+                            <div>
+                                <label for="room_size">Room Size:</label>
+                                <input type="text" name="{{ roomform.room_size.name }}" />
+                            </div>
+                        </div>
+                        <div>
+                            <p>Highlights</p>
+                            <div>
+                                <label for="bed">Single bed:</label>
+                                <input type="text" name="{{ roomform.bed.name }}" />
+                            </div>
+                            <div>
+                                <label for="double_deck">Double bed:</label>
+                                <input type="text" name="{{ roomform.double_deck.name }}" />
+                            </div>
+                            <div>
+                                <label for="shower">Shower</label>
+                                <input type="checkbox" name="{{ roomform.shower.name }}" />
+                            </div>
+                            <div>
+                                <label for="priv_bathrooom">Private Bathroom</label>
+                                <input type="checkbox" name="{{ roomform.priv_bathrooom.name }}" />
+                            </div>
+                            <div>
+                                <label for="public_bathroom">Public Bathroom</label>
+                                <input type="checkbox" name="{{ roomform.public_bathroom.name }}" />
+                            </div>
+                            <div>
+                                <label for="AC">Air Conditioned</label>
+                                <input type="checkbox" name="{{ roomform.AC.name }}"/>
+                            </div>
+                            <div>
+                                <label for="wardrobe">Wardrobe</label>
+                                <input type="checkbox" name="{{ roomform.wardrobe.name }}" />
+                            </div>
+                            <div>
+                                <label for="kitchen">Kitchen</label>
+                                <input type="checkbox" name="{{ roomform.kitchen.name }}" />
+                            </div>
+                            <div>
+                                <label for="free_wifi">Free Wifi</label>
+                                <input type="checkbox" name="{{ roomform.free_wifi.name }}" />
+                            </div>
+                        </div>
+                        <input id="addroomsave" type="submit" value="SAVE">
+                    </form>
+                </div>
+            <!-- update room modal  -->
+            <div id="update_modal" class="room_update_button hidden">
 
-            <label for="current_female">Female resident:</label>
-            <input type="text" name="{{ roomform.current_female.name }}" />
-
-            <label for="price">Price:</label>
-            <input type="text" name="{{ roomform.price.name }}" />
-
-            <label for="room_size">Room Size:</label>
-            <input type="text" name="{{ roomform.room_size.name }}" />
-
-
-            <p><b>Highlights:</b></p>
-
-            <label for="bed">Single bed:</label>
-            <input type="text" name="{{ roomform.bed.name }}" />
-
-            <label for="double_deck">Double bed:</label>
-            <input type="text" name="{{ roomform.double_deck.name }}" />
-
-            <input type="checkbox" name="{{ roomform.shower.name }}" />
-            <label for="shower">Shower</label>
-
-            <input type="checkbox" name="{{ roomform.priv_bathrooom.name }}" />
-            <label for="priv_bathrooom">Private Bathroom</label>
-
-            <input type="checkbox" name="{{ roomform.public_bathroom.name }}" />
-            <label for="public_bathroom">Public Bathroom</label>
-
-            <input type="checkbox" name="{{ roomform.AC.name }}"/>
-            <label for="AC">Air Conditioned</label>
-
-            <input type="checkbox" name="{{ roomform.wardrobe.name }}" />
-            <label for="wardrobe">Wardrobe</label>
-
-            <input type="checkbox" name="{{ roomform.kitchen.name }}" />
-            <label for="kitchen">Kitchen</label>
-
-            <input type="checkbox" name="{{ roomform.free_wifi.name }}" />
-            <label for="free_wifi">Free Wifi</label>
-
-            <input type="submit" value="SAVE">
-        </form>
-    </div>
-
-    <script src="{% static 'scripts/modal.js' %}?100"></script>
-
-
-    {% comment %} VIEW ROOM PHOTOS Modal {% endcomment %}
-    <div id="view_photo_modal" class="hidden">
-        <button id="view_photo_close">Close</button>
-        <ul id="photo_container">
-            {% comment %} ANG JAVASCRIPT MO BUTANG ELEMENTS DIRI {% endcomment %}
-        </ul>
-    </div>
-
-
+                <form action="{% url 'room_save' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="room_id" id="room_id">
+                    <label for="room_name">Room Name:</label>
+                    <input type="text" name="{{ roomform.room_name.name }}" > 
+                    <label for="person_free">Person Available:</label>
+                    <input type="text" name="{{ roomform.person_free.name }}" >
+                    
+                    <label for="current_male">Male resident:</label>
+                    <input type="text" name="{{ roomform.current_male.name }}" />
+        
+                    <label for="current_female">Female resident:</label>
+                    <input type="text" name="{{ roomform.current_female.name }}" />
+        
+                    <label for="price">Price:</label>
+                    <input type="text" name="{{ roomform.price.name }}" />
+        
+                    <label for="room_size">Room Size:</label>
+                    <input type="text" name="{{ roomform.room_size.name }}" />
+        
+        
+                    <p><b>Highlights:</b></p>
+        
+                    <label for="bed">Single bed:</label>
+                    <input type="text" name="{{ roomform.bed.name }}" />
+        
+                    <label for="double_deck">Double bed:</label>
+                    <input type="text" name="{{ roomform.double_deck.name }}" />
+        
+                    <input type="checkbox" name="{{ roomform.shower.name }}" />
+                    <label for="shower">Shower</label>
+        
+                    <input type="checkbox" name="{{ roomform.priv_bathrooom.name }}" />
+                    <label for="priv_bathrooom">Private Bathroom</label>
+        
+                    <input type="checkbox" name="{{ roomform.public_bathroom.name }}" />
+                    <label for="public_bathroom">Public Bathroom</label>
+        
+                    <input type="checkbox" name="{{ roomform.AC.name }}"/>
+                    <label for="AC">Air Conditioned</label>
+        
+                    <input type="checkbox" name="{{ roomform.wardrobe.name }}" />
+                    <label for="wardrobe">Wardrobe</label>
+        
+                    <input type="checkbox" name="{{ roomform.kitchen.name }}" />
+                    <label for="kitchen">Kitchen</label>
+        
+                    <input type="checkbox" name="{{ roomform.free_wifi.name }}" />
+                    <label for="free_wifi">Free Wifi</label>
+        
+                    <input type="submit" value="SAVE">
+                </form>
+            </div>
+        </div>
+        
+        <div class="fixedpage">
+            <div class="bhousenamebox">
+                <h2>{{ building.building_name }}</h2>
+                <a href="{% url 'home' %}"><img src="{% static 'imgs/building/back-button.png' %}" alt="back" ></a>
+            </div>
+            <div class="infobox">
+                <p>{{ building.complete_address }}</p>
+                <p class="owner"><span>{{ building.building_owner }}</span> (Owner's email)</p>
+                <p><span>vacant room: </span>{{ building.rooms_vacant }}</p>
+                
+                {% if building.building_owner == request.user %}
+                    <button id="add_new_room_btn">Add New Room</button>
+                    <a href="{% url 'update_building' building.buildingid %}">Update</a>
+                {% endif %}
+            </div>
+            <div class="roomsbox">
+                <h3>ROOMS</h3>
+                <div>
+                    {% for room in rooms %}
+                    <p class="view_photo_btn" id="{{ room.roomid }}">{{ room.room_name }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <script src="{% static 'scripts/modal.js' %}?100"></script>
+    </section>
     <script src="{% static 'scripts/building.js' %}?101"></script>
     {% endblock bodycontent %}
