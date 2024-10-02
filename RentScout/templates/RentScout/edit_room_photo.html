@@ -13,25 +13,26 @@
     </div>
     <div id="image_container">
         <ul>
-            {% for image in images %}
-                <div>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" value="{{ image.room_imgID }}">
-                        <input type="submit" value="X">
-                    </form>
-                    <img class="image" src="{{ image.room_img.url }}" alt="{{ image.room_img.name }}">
-                </div>
-            {% endfor %}
+            {% if images %}
+                {% for image in images %}
+                    <div>
+                        <form action="{% url 'del_room_photo' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="img_id" value="{{ image.room_imgID }}">
+                            <input type="submit" value="X">
+                        </form>
+                        <img class="image" src="{{ image.room_img.url }}" alt="{{ image.room_img.name }}">
+                    </div>
+                {% endfor %}
+            {% endif %}
         </ul>
         <div id="upload_photo_container">
             <!-- Upload  -->
             <form action="{% url 'room_photo_upload' %}" method="POST" id="file-upload-form" class="uploader" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="hidden" name="{{ photoform.roomid.name }}" value="{{ room_id }}">
-                
-                <input id="file-upload" type="file" name="{{ photoform.room_img.name }}" accept="image/*" />
-            
+                <label for="room_id">Upload a File</label>
+            <input id="file-upload" type="file" name="{{ photoform.room_img.name }}" accept="image/*" value=""/>
                 <label for="file-upload" id="file-drag">
                 <img id="file-image" src="#" alt="Preview" class="hidden">
                 <div id="start">

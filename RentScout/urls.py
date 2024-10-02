@@ -22,6 +22,7 @@ urlpatterns = [
     path('room_photo/upload/', views.room_photo_upload, name='room_photo_upload'),
     path('room_photo/request/', get_room_images.as_view(), name='get_room_images'),
     path('room_photo/edit/<int:pk>/', views.room_edit_photo, name='edit_photo'),
+    path('room_photo/delete/', views.room_delete_photo, name='del_room_photo'),
 ]
 
 if settings.DEBUG:

@@ -74,6 +74,7 @@ class Building(models.Model):
     country = models.CharField(max_length=75, default="None")
     details = models.TextField(blank=True, null=True)
     rooms_vacant = models.IntegerField(validators = [MinValueValidator(0)])
+    coordinates = models.CharField(max_length = 255, blank = False, null = False, default = "")
 
     def complete_address(self):
         return f"{self.zip_code}, {self.street}, {self.province}, {self.city}, {self.country}"

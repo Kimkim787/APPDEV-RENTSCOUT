@@ -106,6 +106,8 @@
         {% if highlights.food %}
         <li>Canteen</li>
         {% endif %}
+        <li>Sound Proof</li>
+        <li>CCTV</li>
     </ul>
     
     <h1>Select Rooms</h1>
@@ -128,12 +130,14 @@
                 <td>
                     <p>{{ room.room_name }}</p>
                     <div>
-                        {% for photo in room.room_photo.all %}
-                        <!-- <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ photo.room_img.name|slice:'-1' }}"> -->
-                        <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ photo.room_img.name|slice:'-1'|default_if_none:'No image' }}">
-                        {% empty %}
-                            <p>No photos available for this room.</p>
-                        {% endfor %}
+                        {% if room.room_photo.all %}
+                            {% for photo in room.room_photo.all %}
+                            <!-- <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ photo.room_img.name|slice:'-1' }}"> -->
+                            <img src="{{ photo.room_img.url }}" class="room_image" alt="Photo of {{ photo.room_img.name|slice:'-1'|default_if_none:'No image' }}">
+                            {% empty %}
+                                <p>No photos available for this room.</p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     
                     <button class="view_photo_btn" id="{{ room.roomid }}">See Photos</button>
@@ -195,6 +199,7 @@
     </table>
 
     <h1>POLICIES</h1>
+    <button>Add new Policy</button>
     {% comment  %} palihog kog bullet points sa ul pre. {% endcomment %}
     <ul>
         {% for policy in policies %}

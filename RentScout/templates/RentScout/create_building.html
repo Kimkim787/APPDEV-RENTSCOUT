@@ -28,12 +28,41 @@
             <label for="details">Details</label>
             <textarea name="{{ form.details.name }}" id="" cols="30" rows="10"></textarea>
 
+            <label for="coordinates">Coordinates</label>
+            <input type="text" name="{{ form.coordinates.name }}" required>
+    
             <input type="submit" value="Submit">
         </form>
     {% elif page == 'update' %}
-    <form action="" method="POST">
+    <form action="{% url 'update_building' buildingid %}" method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
+        <label for="building_name">Building Name:</label>
+        <input type="text" name="{{ form.building_name.name }}" value="{{ form.building_name.value }}" required>
+
+        <label for="vacant">Vacant Rooms</label>
+        <input type="number" name = "{{ form.rooms_vacant.name }}" value="{{ form.rooms_vacant.value }}" required>
+
+        <label for="zip_code">Zip Code:</label>
+        <input type="number" name="{{ form.zip_code.name }}" value="{{ form.zip_code.value }}" required>
+
+        <label for="street">Street</label>
+        <input type="text" name = "{{ form.street.name }}" value="{{ form.street.value }}" required>
+
+        <label for="city">City</label>
+        <input type="text" name = "{{ form.city.name }}" value="{{ form.city.value }}" required>
+
+        <label for="province">Province</label>
+        <input type="text" name = "{{ form.province.name }}" value="{{ form.province.value }}" required>
+
+        <label for="country">Country</label>
+        <input type="text" name = "{{ form.country.name }}" value="{{ form.country.value }}" required>
+
+        <label for="details">Details</label>
+        <textarea name="{{ form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
+        
+        <label for="coordinates">Coordinates</label>
+        <input type="text" name="{{ form.coordinates.name }}" value="{{ form.coordinates.value }}" required>
+
         <input type="submit" value="Save">
     </form>
     {% endif %}

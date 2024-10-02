@@ -87,14 +87,16 @@ def update_building(request, pk):
     page = "update"
     building = Building.objects.get(buildingid = pk)
     form = BuildingForm(instance = building)
+    building_id = building.buildingid
     if request.method == 'POST':
         form = BuildingForm(request.POST, instance=building)
         if form.is_valid():
             updated = form.save(commit = False)
             updated.save()
             return redirect('building_info', pk)
-        
-    context = {'form': form, 'page':page, }
+        else:
+            print(form.errors)
+    context = {'form': form, 'page':page, 'buildingid': building_id}
     return render(request, 'RentScout/create_building.html', context)
 
 @login_required
@@ -176,6 +178,15 @@ def room_edit_photo(request, pk):
     context = { 'images': images, 'rooms':rooms, 'photoform':photoform, 
                 'room_id': pk, }
     return render(request, 'RentScout/edit_room_photo.html', context)
+
+def room_delete_photo(request):
+    if request.method == 'POST':
+        img_id = request.POST.get("img_id")
+        image = RoomImage.objects.get(room_imgID = img_id)
+        room_id = image.roomid.roomid
+        print(room_id)
+        image.delete()
+        return redirect('edit_photo', room_id)
 
 @login_required( login_url = 'signin' )
 def home(request):
