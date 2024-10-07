@@ -33,10 +33,10 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
     middlename = models.CharField(max_length = 20)
     birthdate = models.DateField(default = timezone.now)
     gender = models.CharField(max_length = 8, choices = GENDERS, default = MALE)
-    barangay = models.CharField(max_length = 50, default = "")
-    province = models.CharField(max_length = 50, default = "")
-    city = models.CharField(max_length = 50, default = "")
-    contact = models.CharField(max_length = 15, default="")
+    barangay = models.CharField(max_length = 50, default = "", null=True)
+    province = models.CharField(max_length = 50, default = "", null=True)
+    city = models.CharField(max_length = 50, default = "", null=True)
+    contact = models.CharField(max_length = 15, default="", null=True)
     
 
     is_staff = models.BooleanField(default=False)
