@@ -125,91 +125,139 @@
             </div>
             <div class="feedbacksbox">
                 <div class="title">
-                    <h3>FEEDBACKS</h3>
+                    <h3>FEEDBACKS</h3>  
                 </div>
+                <form action="{% url 'newfeedback' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="{{ feedbackform.boardingid.name }}" value="{{ building.buildingid }}">
+                    
+                    {{ feedbackform.rating }}
+                    
+                    <label for="message">Message:</label>
+                    <textarea name="{{ feedbackform.message.name }}" id="" cols="30" rows="10" placeholder="Input message Here"></textarea>
+                    
+                    <input type="submit" value="Send">
+                </form>
                 {% for feedback in feedbacks %}
                     <div class="feedbacks">
-                        <h3>(Ngalan sa ga feedback). nakalimtan nako.</h3><p>(Rating: {{ feedback.rating }}) ilisan pud ni nako ug star puhon.</p>
-                        <p>{{ feedback.message}}</p>
-                        <!-- <textarea name="feedback" id="" cols="30" rows="10">{{ feedback.message }}</textarea> -->
+                        <!-- NORMAL DISPLAY SA FEEDBACK -->
+                        <div class="feedbackdisplay">
+                            <h3>{{ feedback.userid.fullname }}</h3>
+
+                            <p>(Rating: {{ feedback.rating }}) 
+                                {% if feedback.rating == '1' %}
+                                ⭐
+                                {% elif feedback.rating == '2' %}
+                                ⭐⭐
+                                {% elif feedback.rating == '3' %}
+                                ⭐⭐⭐
+                                {% elif feedback.rating == '4' %}
+                                ⭐⭐⭐⭐
+                                {% elif feedback.rating == '5' %}
+                                ⭐⭐⭐⭐⭐
+                                {% else %}
+                                👎
+                                {% endif %}
+                            </p>
+                            
+                            <p>{{ feedback.message}}</p>
+                            
+                            <button class="feedback_edit_btn">Edit</button>
+                        </div>
+
+                        <!-- INIG CLICK SA EDIT -->
+                        <div class="edit_comment_container hidden">
+                            <h3>{{ feedback.userid.fullname }}</h3>
+                            <form class="feedback_edit_form" action="{% url 'update_feedback' feedback.feedbackid %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="{{ feedbackform.boardingid.name }}" value="{{ feedback.boardingid.buildingid }}">
+                                <div>
+                                    <p>Rating</p>
+                                    {{ feedbackform.rating }}
+                                </div>
+                                <textarea name="{{ feedbackform.message.name }}" id="" cols="30" rows="10">{{ feedback.message }}</textarea>
+                                <input type="submit" value="Save">
+                            </form>
+                            <button class="feedback_cancel_edit">Cancel</button>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
             
-                <div class="modal hidden">
-                    <form action="{% url 'room_create' building.buildingid %}" method="POST">
-                        {% csrf_token %}
+            <div class="modal hidden">
+                <form action="{% url 'room_create' building.buildingid %}" method="POST">
+                    {% csrf_token %}
+                    <div>
                         <div>
-                            <div>
-                                <h2>Add new room</h2> <button id="addroombackbtn">back</button>
-                            </div>
-                            <div>
-                                <label for="room_name">Room Name:</label>
-                                <input type="text" name="{{ roomform.room_name.name }}" > 
-                            </div>
-                            <div>
-                                <label for="person_free">Person Available:</label>
-                                <input type="text" name="{{ roomform.person_free.name }}" >
-                            </div>
-                            <div>
-                                <label for="current_male">Male resident:</label>
-                                <input type="text" name="{{ roomform.current_male.name }}" />
-                            </div>
-                            <div>
-                                <label for="current_female">Female resident:</label>
-                                <input type="text" name="{{ roomform.current_female.name }}" />
-                            </div>
-                            <div>
-                                <label for="price">Price:</label>
-                                <input type="text" name="{{ roomform.price.name }}" />
-                            </div>
-                            <div>
-                                <label for="room_size">Room Size:</label>
-                                <input type="text" name="{{ roomform.room_size.name }}" />
-                            </div>
+                            <h2>Add new room</h2> <button id="addroombackbtn">back</button>
                         </div>
                         <div>
-                            <p>Highlights</p>
-                            <div>
-                                <label for="bed">Single bed:</label>
-                                <input type="text" name="{{ roomform.bed.name }}" />
-                            </div>
-                            <div>
-                                <label for="double_deck">Double bed:</label>
-                                <input type="text" name="{{ roomform.double_deck.name }}" />
-                            </div>
-                            <div>
-                                <label for="shower">Shower</label>
-                                <input type="checkbox" name="{{ roomform.shower.name }}" />
-                            </div>
-                            <div>
-                                <label for="priv_bathrooom">Private Bathroom</label>
-                                <input type="checkbox" name="{{ roomform.priv_bathrooom.name }}" />
-                            </div>
-                            <div>
-                                <label for="public_bathroom">Public Bathroom</label>
-                                <input type="checkbox" name="{{ roomform.public_bathroom.name }}" />
-                            </div>
-                            <div>
-                                <label for="AC">Air Conditioned</label>
-                                <input type="checkbox" name="{{ roomform.AC.name }}"/>
-                            </div>
-                            <div>
-                                <label for="wardrobe">Wardrobe</label>
-                                <input type="checkbox" name="{{ roomform.wardrobe.name }}" />
-                            </div>
-                            <div>
-                                <label for="kitchen">Kitchen</label>
-                                <input type="checkbox" name="{{ roomform.kitchen.name }}" />
-                            </div>
-                            <div>
-                                <label for="free_wifi">Free Wifi</label>
-                                <input type="checkbox" name="{{ roomform.free_wifi.name }}" />
-                            </div>
+                            <label for="room_name">Room Name:</label>
+                            <input type="text" name="{{ roomform.room_name.name }}" > 
                         </div>
-                        <input id="addroomsave" type="submit" value="SAVE">
-                    </form>
-                </div>
+                        <div>
+                            <label for="person_free">Person Available:</label>
+                            <input type="text" name="{{ roomform.person_free.name }}" >
+                        </div>
+                        <div>
+                            <label for="current_male">Male resident:</label>
+                            <input type="text" name="{{ roomform.current_male.name }}" />
+                        </div>
+                        <div>
+                            <label for="current_female">Female resident:</label>
+                            <input type="text" name="{{ roomform.current_female.name }}" />
+                        </div>
+                        <div>
+                            <label for="price">Price:</label>
+                            <input type="text" name="{{ roomform.price.name }}" />
+                        </div>
+                        <div>
+                            <label for="room_size">Room Size:</label>
+                            <input type="text" name="{{ roomform.room_size.name }}" />
+                        </div>
+                    </div>
+                    <div>
+                        <p>Highlights</p>
+                        <div>
+                            <label for="bed">Single bed:</label>
+                            <input type="text" name="{{ roomform.bed.name }}" />
+                        </div>
+                        <div>
+                            <label for="double_deck">Double bed:</label>
+                            <input type="text" name="{{ roomform.double_deck.name }}" />
+                        </div>
+                        <div>
+                            <label for="shower">Shower</label>
+                            <input type="checkbox" name="{{ roomform.shower.name }}" />
+                        </div>
+                        <div>
+                            <label for="priv_bathrooom">Private Bathroom</label>
+                            <input type="checkbox" name="{{ roomform.priv_bathrooom.name }}" />
+                        </div>
+                        <div>
+                            <label for="public_bathroom">Public Bathroom</label>
+                            <input type="checkbox" name="{{ roomform.public_bathroom.name }}" />
+                        </div>
+                        <div>
+                            <label for="AC">Air Conditioned</label>
+                            <input type="checkbox" name="{{ roomform.AC.name }}"/>
+                        </div>
+                        <div>
+                            <label for="wardrobe">Wardrobe</label>
+                            <input type="checkbox" name="{{ roomform.wardrobe.name }}" />
+                        </div>
+                        <div>
+                            <label for="kitchen">Kitchen</label>
+                            <input type="checkbox" name="{{ roomform.kitchen.name }}" />
+                        </div>
+                        <div>
+                            <label for="free_wifi">Free Wifi</label>
+                            <input type="checkbox" name="{{ roomform.free_wifi.name }}" />
+                        </div>
+                    </div>
+                    <input id="addroomsave" type="submit" value="SAVE">
+                </form>
+            </div>
             <!-- update room modal  -->
             <div id="update_modal" class="room_update_button hidden">
 
@@ -234,7 +282,7 @@
                     <input type="text" name="{{ roomform.room_size.name }}" />
         
         
-                    <p><b>Highlights:</b></p>
+                    <p><b>Additional Information:</b></p>
         
                     <label for="bed">Single bed:</label>
                     <input type="text" name="{{ roomform.bed.name }}" />

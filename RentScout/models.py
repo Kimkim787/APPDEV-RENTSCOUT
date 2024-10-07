@@ -68,6 +68,10 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    @property
+    def fullname(self):
+        return f"{self.firstname} {self.lastname}"
+    
 class Building(models.Model):
     buildingid = models.AutoField(primary_key=True)
     building_owner = models.ForeignKey(ScoutUser, on_delete = models.CASCADE, null=False, blank=False)
@@ -141,6 +145,7 @@ class Feedback(models.Model):
     ]
     feedbackid = models.AutoField(primary_key = True)
     boardingid = models.ForeignKey(Building, on_delete = models.CASCADE)
+    userid = models.ForeignKey(ScoutUser, related_name="reviewer", on_delete = models.CASCADE, null = False, blank = False)
     rating = models.CharField(max_length = 10, choices = RATING_CHOICES, default = ZERO)
     message = models.TextField(default="")
 

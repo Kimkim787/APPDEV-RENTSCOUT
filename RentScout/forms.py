@@ -68,7 +68,7 @@ class RoomForm(ModelForm):
 class FeedBackForm(ModelForm):
     class Meta:
         model = Feedback
-        exclude = ('feedbackid',)
+        exclude = ('feedbackid', 'userid')
 
 class RoomImageForm(ModelForm):
     class Meta:

@@ -54,6 +54,18 @@ $(document).ready(function() {
     $('#photo_container').empty();
     changeViewStatus();
   });
+
+  $('.feedback_edit_btn').on('click', function(){
+    let parent = $(this).closest('.feedbackdisplay');
+    parent.addClass('hidden');
+    parent.next('.edit_comment_container').removeClass('hidden');
+  });
+
+  $('.feedback_cancel_edit').on('click', function(){
+    let parent = $(this).closest('.edit_comment_container');
+    parent.addClass('hidden');
+    parent.prev('.feedbackdisplay').removeClass('hidden');  
+  });
 });
 
 let view_photo_modal = $('#view_photo_modal');

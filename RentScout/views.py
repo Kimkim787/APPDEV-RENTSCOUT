@@ -3,7 +3,7 @@ from .models import (ScoutUser, Building, Highlights, Room,
                      RoomImage, Policies, Feedback,
                     )
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
-                    ScoutUserCreationForm, RoomForm, RoomImageForm
+                    ScoutUserCreationForm, RoomForm, RoomImageForm, FeedBackForm
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -108,10 +108,11 @@ def building_info(request, pk):
     policies = Policies.objects.filter(buildingid = building)
     feedbacks = Feedback.objects.filter(boardingid = pk)
     roomform = RoomForm()
+    feedbackForm = FeedBackForm()
 
     context = {'building':building, 'highlights': highlights, 'room_images': room_images,
                'rooms':rooms, 'policies':policies, 'roomform':roomform, 'feedbacks':feedbacks,
-               
+               'feedbackform':feedbackForm,
             }
     
     return render(request, 'RentScout/building.html', context)
@@ -121,6 +122,38 @@ def building_del(request, pk):
     building.delete()
     return redirect('home')
 
+def create_feedback(request):
+    if request.method == 'POST':
+        feedbackform = FeedBackForm(request.POST)
+        if feedbackform.is_valid():
+            newfeedback = feedbackform.save(commit = False)
+            newfeedback.userid = request.user
+            newfeedback.save()
+            messages.success(request, "Feedback sent")
+            return redirect('building_info', newfeedback.boardingid.buildingid)
+        else:
+            messages.error(request, "Unable to save feedback")
+            
+def update_feedback(request, pk):
+    if request.method == 'POST':
+        print('update feedback POST')
+        oldfeedback = Feedback.objects.get(feedbackid = pk)
+        feedbackform = FeedBackForm(request.POST, instance=oldfeedback)
+
+        if feedbackform.is_valid():
+            print('FORM IS VALID')
+            updated = feedbackform.save(commit=False)
+            updated.save()
+            messages.success(request, "Feedback updated")
+            return redirect('building_info', updated.boardingid.buildingid)
+        else:
+            messages.error(request, "Unable to update feedback")
+            print(feedbackform.errors)
+
+            return redirect('building_info', oldfeedback.boardingid.buildingid)
+
+
+# ROOM THINGS
 def room_create(request, buildingID):
     building = Building.objects.get(buildingid = buildingID)
 
