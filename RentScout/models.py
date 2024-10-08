@@ -110,7 +110,7 @@ class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
     
 class Building(models.Model):
     buildingid = models.AutoField(primary_key=True)
-    building_owner = models.ForeignKey(ScoutUser, on_delete = models.CASCADE, null=False, blank=False)
+    building_owner = models.ForeignKey(ScoutUser_Landlord, on_delete = models.CASCADE, null=False, blank=False)
     building_name = models.CharField(max_length = 250, default="")
     zip_code = models.PositiveIntegerField(default=0, null=True, blank=True)
     street = models.CharField(max_length=75, blank=True, null=True)

@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
                      Feedback, RoomImage, ScoutUser_Landlord)
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
-                    RoomForm, RoomImageForm, LandlordUserCreationForm)
+                    RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin)
 # Register your models here.
 
 class ScoutUserAdmin(admin.ModelAdmin):
@@ -22,7 +22,7 @@ class ScoutUser_LandlordAdmin(admin.ModelAdmin):
 class BuildingAdmin(admin.ModelAdmin):
     list_display = [ 'buildingid', 'building_name', 'zip_code', 'street', 'city',
                     'province', 'country', 'details', 'rooms_vacant']
-    form = BuildingForm
+    form = BuildingFormAdmin
     
 class PoliciesAdmin(admin.ModelAdmin):
     list_display = ['policy_id', 'buildingid', 'policy']
