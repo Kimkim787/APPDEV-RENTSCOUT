@@ -1,8 +1,8 @@
 from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
-                     Feedback, RoomImage)
+                     Feedback, RoomImage, ScoutUser_Landlord)
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
-                    RoomForm, RoomImageForm)
+                    RoomForm, RoomImageForm, LandlordUserCreationForm)
 # Register your models here.
 
 class ScoutUserAdmin(admin.ModelAdmin):
@@ -13,6 +13,12 @@ class ScoutUserAdmin(admin.ModelAdmin):
 # Use 'password' as a read-only field to avoid exposing it directly
     readonly_fields = ('password',)
     
+class ScoutUser_LandlordAdmin(admin.ModelAdmin):
+    list_display = ['userid', 'firstname', 'lastname',
+                    'middlename', 'gender', 'birthdate']
+    form = LandlordUserCreationForm
+
+
 class BuildingAdmin(admin.ModelAdmin):
     list_display = [ 'buildingid', 'building_name', 'zip_code', 'street', 'city',
                     'province', 'country', 'details', 'rooms_vacant']
@@ -50,3 +56,4 @@ admin.site.register(Highlights, HighlightsAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
 admin.site.register(RoomImage, RoomImageAdmin)
+admin.site.register(ScoutUser_Landlord, ScoutUser_LandlordAdmin)

@@ -2,8 +2,8 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm
-from .models import ( ScoutUser, Building, Highlights, Policies, Room, Feedback,
-                     RoomImage, BuildingImage)
+from .models import ( ScoutUser, ScoutUser_Landlord, Building, Highlights, 
+                     Policies, Room, Feedback, RoomImage, BuildingImage)
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -41,7 +41,19 @@ class ScoutUserChangeForm(UserChangeForm):
         model = ScoutUser
         fields = ('firstname', 'lastname', 'middlename',
                   'birthdate', 'gender',)
-        
+
+class LandlordUserCreationForm(UserCreationForm):
+    class Meta:
+        model = ScoutUser_Landlord
+        fields = ('email', 'firstname', 'lastname',
+                  'middlename', 'gender', 'password1', 'password2' ) # 
+
+class LandlordUserChangeForm(UserChangeForm):
+    class Meta:
+        model = ScoutUser_Landlord
+        fields = ('firstname', 'lastname', 'middlename',
+                  'birthdate', 'gender',)
+
 class UserLoginForm(AuthenticationForm):
     pass 
 

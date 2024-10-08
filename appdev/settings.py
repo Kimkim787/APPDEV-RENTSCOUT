@@ -89,9 +89,11 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = "RentScout.ScoutUser"
+AUTH_USER_MODEL = "RentScout.ScoutUser_Landlord"
+# AUTH_USER_MODEL = "RentScout.ScoutUser"
 AUTHENTICATION_BACKENDS = [
     'RentScout.auth_backends.ScoutUserBackend',
+    'RentScout.auth_backends.ScoutUserLandlordBackend',
     'django.contrib.auth.backends.ModelBackend',  # default backend
 ]
 
@@ -143,6 +145,5 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'signin'
-import os
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

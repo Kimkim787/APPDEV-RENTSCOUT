@@ -1,42 +1,62 @@
 from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
-                     RoomImage, Policies, Feedback,
+                     RoomImage, Policies, Feedback, ScoutUser_Landlord,
+                     
                     )
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
-                    ScoutUserCreationForm, RoomForm, RoomImageForm, FeedBackForm
+                    ScoutUserCreationForm, RoomForm, RoomImageForm, FeedBackForm,
+                    LandlordUserCreationForm
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-
 
 from django.views import View
 from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib import messages
 
+import logging
+logger = logging.getLogger(__name__)
+
 def get_user_backend(user):
     if isinstance(user, ScoutUser):
         return 'RentScout.auth_backends.ScoutUserBackend'
-
+    
+    if isinstance(user, ScoutUser_Landlord):
+        return 'RentScout.auth_backends.ScoutUserLandlordBackend'
+    
     return None
 
 def scoutuser_signup(request):
-    page = 'signup'
     form = ScoutUserCreationForm()
-    
+
     if request.method == "POST":
-        print('tried to signup')
-        form = ScoutUserCreationForm(request.POST)
-        print(form)
-        if form.is_valid():
-            print('form is valid')
-            user = form.save()
-            backend = get_user_backend(user)
-            login(request, user, backend)
-            return redirect('home')
-        else:
-            messages.error(request, 'Please enter a valid email or password')
+        role = request.POST.get('role')
+
+        if role == 'Boarder':
+            form = ScoutUserCreationForm(request.POST)
+
+            if form.is_valid():
+                user = form.save()
+                backend = get_user_backend(user)
+                login(request, user, backend)
+                return redirect('home')
             
+            else:
+                messages.error(request, 'Please enter a valid email or password')
+        
+        elif role == 'Landlord':
+            form = LandlordUserCreationForm(request.POST)
+
+            if form.is_valid():
+                user = form.save()
+                backend = get_user_backend(user)
+                login(request, user, backend)
+                return redirect('home')
+            else:
+                messages.error(request, 'Please enter a valid email or password')
+
+
     context = {'form': form, }
     return render(request, 'RentScout/signup.html', context)
 
@@ -44,21 +64,35 @@ def scoutuser_login(request):
     form = EmailAuthenticationForm()
     
     if request.method == 'POST':
-        print('post request')
+        email = request.POST.get('username')
+        password = request.POST.get('password')
+
+        print(email)
+        print(password)
+
         form = EmailAuthenticationForm(request, data = request.POST)
         if form.is_valid():
             email = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = authenticate(request, username = email, password = password)
+            
+            try:
+                user = authenticate(request, username = email, password = password)
+            except:
+                user = UserLoginForm(request, data=request.POST)
+            
+            backend = get_user_backend(user)
+
             if user is not None and isinstance(user, ScoutUser):
-                login(request, user)
-                print('login success')
+                login(request, user, backend)
+                return redirect('home')
+            elif user is not None and isinstance(user, ScoutUser_Landlord):
+                login(request, user, backend)
                 return redirect('home')
             else:
                 print('Invalid email or password')
                 messages.error(request, 'Invalid email or password')
         else:
-            print('User does not exist')
+            print(form.errors)
             messages.error(request, 'User does not exist')
 
     context = {'form': form}
@@ -227,7 +261,6 @@ def home(request):
 
 
 class get_room_data(View):
-    print('room_data')
     def get(self, request):
         query = request.GET.get('primary_key', '') # query comes from ajax
         print(query)

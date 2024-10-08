@@ -13,22 +13,26 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}?100">
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     <title>RENTSCOUT</title>
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+    
 </head>
-<style>
-    *{
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
-</style>
-<body >
 <body>
     <section class="signinbody">
-        {% comment %} <div class="greetbox">
+        {% comment %} 
+        <div class="greetbox">
             <h1>Welcome to <br> <span class="renttxt">Rent</span><span class="scouttxt">Scout!</span></h1>
             <h2>Sign up <span class="signupmsg">now to see some affordable and <br> comfortable rooms.</span></h2>
-        </div> {% endcomment %}
+        </div> 
+        {% endcomment %}
+
         <form class="inputbox" action="" method = 'POST'>
             {% csrf_token %}
             
@@ -58,7 +62,16 @@
                 <label for="password2">Confirm password:</label>
                 <input type="password" name="{{ form.password2.name }}">
                 <!-- <input type="submit" value="Create Account" class="button"> -->
+
+                <label for="role">Role:</label>
+                <select name="role" id="role">
+                    <option value="-------" selected>-------</option>
+                    <option value="Boarder">Boarder</option>
+                    <option value="Landlord">Landlord</option>
+                </select>
                 <button type="submit">Create Account</button>
+
+
             </div>
         </form>
         <div class="signupdiv">

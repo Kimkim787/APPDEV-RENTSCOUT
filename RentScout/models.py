@@ -6,17 +6,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Permission, Group
 
-from .managers import CustomUserManager
-
-# Create your models here.  
-
-# class User(models.Model):
-#     userid = models.AutoField(primary_key=True)
-#     user_acc = models.ForeignKey(User, on_delete=models.CASCADE)
-#     firstname = models.CharField(max_length = 20)
-#     lastname = models.CharField(max_length = 20)
-#     middlename = models.CharField(max_length = 20)
-#     birthdate = models.DateField(default = timezone.now)
+from .managers import ScoutUserManager, LandlordCustomUserManager
 
 class ScoutUser(AbstractBaseUser, PermissionsMixin):
     MALE = 'Male'
@@ -47,7 +37,7 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    objects = CustomUserManager()
+    objects = ScoutUserManager()
 
         #define reverse accessor for GROUP
     groups = models.ManyToManyField(
@@ -62,6 +52,52 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
         verbose_name=_("user permissions"),
         blank=True,
         related_name="scout_user_permissions"  # Specify a related_name to resolve the clash
+    )
+
+
+class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
+    MALE = 'Male'
+    FEMALE = 'Female'
+    GENDERS = [
+        (MALE, 'Male'),
+        (FEMALE, 'Female')
+    ]
+
+    userid = models.AutoField(primary_key=True)
+    email = models.EmailField(_("email address"), unique=True)
+    firstname = models.CharField(max_length = 20)
+    lastname = models.CharField(max_length = 20)
+    middlename = models.CharField(max_length = 20)
+    birthdate = models.DateField(default = timezone.now)
+    gender = models.CharField(max_length = 8, choices = GENDERS, default = MALE)
+    barangay = models.CharField(max_length = 50, default = "", null=True)
+    province = models.CharField(max_length = 50, default = "", null=True)
+    city = models.CharField(max_length = 50, default = "", null=True)
+    contact = models.CharField(max_length = 15, default="", null=True)
+    
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    objects = LandlordCustomUserManager()
+
+        #define reverse accessor for GROUP
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name=_("groups"),
+        blank=True,
+        related_name="scout_landlord_groups"  # Specify a related_name to resolve the clash
+    )
+        #define reverse accessor for Permission
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_("user permissions"),
+        blank=True,
+        related_name="scout_landlord_permissions"  # Specify a related_name to resolve the clash
     )
 
 
@@ -107,7 +143,7 @@ class Highlights(models.Model):
 
 class Room(models.Model):
     roomid = models.AutoField(primary_key=True)
-    building_id = models.ForeignKey(Building, on_delete=models.CASCADE, default="", blank=False, null=False)
+    building_id = models.ForeignKey(Building, on_delete=models.CASCADE)
     room_name = models.CharField(max_length=250)
     person_free = models.IntegerField(validators = [ MinValueValidator(1)])
     current_male = models.IntegerField(default=0)
@@ -145,7 +181,7 @@ class Feedback(models.Model):
     ]
     feedbackid = models.AutoField(primary_key = True)
     boardingid = models.ForeignKey(Building, on_delete = models.CASCADE)
-    userid = models.ForeignKey(ScoutUser, related_name="reviewer", on_delete = models.CASCADE, null = False, blank = False)
+    userid = models.ForeignKey(ScoutUser, related_name="reviewer", on_delete = models.CASCADE, default="", null=False, blank=False)
     rating = models.CharField(max_length = 10, choices = RATING_CHOICES, default = ZERO)
     message = models.TextField(default="")
 
