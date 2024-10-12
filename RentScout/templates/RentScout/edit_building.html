@@ -1,0 +1,146 @@
+{% extends 'index.html' %}
+
+{% block stylecontent %}
+{% load static %}
+    <link rel="stylesheet" href="{% static 'css/edit_building.css' %}?8">
+    <link rel="stylesheet" href="{% static 'css/image_upload.css' %}">
+    <script>
+        const csrfToken = '{% csrf_token %}';
+    </script>
+
+{% endblock stylecontent %}
+
+
+
+{% block bodycontent %}
+    <section>
+        <div id="left_bar">
+            <ul>
+            {% for building in buildings %}
+                <li>
+                    <a href="#">{{ building.building_name }}
+                        <span class="fas fa-caret-down third"></span>
+                    </a>
+                    <ul class="edit_btn_list">
+                        <input type="hidden" id="building_id" value="{{ building.buildingid }}">
+                        <li>
+                            <button class="edit_btn" value="Edit Building">Edit Building</button>
+                        </li>
+                        <li>
+                            <button class="edit_btn" value="Amenities">Amenities</button>
+                        </li>
+                        <li>
+                            <button class="edit_btn" value="Policies">Policies</button>
+                        </li>
+                        <li>
+                            <button class="edit_btn" value="Rooms">Rooms</button>
+                        </li>
+                    </ul>
+                </li>
+            {% endfor %}
+            </ul>
+            
+        </div>
+
+        <div id="middle_bar">
+            <!-- ROOMS VIEW -->
+            <div id="room_view" class="mid_item hidden">
+                <div id="rooms_container">
+                    
+                </div>
+            </div>
+
+            <!-- PHOTOS VIEW -->
+            <div id="photo_view" class="mid_item hidden">
+                <button class="backbtn">Back</button>
+                <h3>Photos of "<span id='photo_name'></span>"</h3>
+                <button class="edit_btn" value="upload_room_photo">Upload Photo</button>
+                <input type="hidden" id="roomid_holder">
+                <ul id="photo_container">
+
+                </ul>
+            </div>
+        </div>
+
+        <div id="form_container">
+            <div id="building_form" class="form_item hidden">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <label for="building_name">Building Name:</label>
+                    <input type="text" name="{{ form.building_name.name }}" value="{{ form.building_name.value }}" required>
+            
+                    <label for="vacant">Vacant Rooms</label>
+                    <input type="number" name = "{{ form.rooms_vacant.name }}" value="{{ form.rooms_vacant.value }}" required>
+            
+                    <label for="zip_code">Zip Code:</label>
+                    <input type="number" name="{{ form.zip_code.name }}" value="{{ form.zip_code.value }}" required>
+            
+                    <label for="street">Street</label>
+                    <input type="text" name = "{{ form.street.name }}" value="{{ form.street.value }}" required>
+            
+                    <label for="city">City</label>
+                    <input type="text" name = "{{ form.city.name }}" value="{{ form.city.value }}" required>
+            
+                    <label for="province">Province</label>
+                    <input type="text" name = "{{ form.province.name }}" value="{{ form.province.value }}" required>
+            
+                    <label for="country">Country</label>
+                    <input type="text" name = "{{ form.country.name }}" value="{{ form.country.value }}" required>
+            
+                    <label for="details">Details</label>
+                    <textarea name="{{ form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
+                    
+                    <label for="coordinates">Coordinates</label>
+                    <input type="text" name="{{ form.coordinates.name }}" value="{{ form.coordinates.value }}" required>
+            
+                    <input type="submit" value="Save">
+                </form>
+            </div>
+
+            <div id="amenities_form" class="form_item hidden">
+                <h1>Amenities Form</h1>
+            </div>
+
+            <div id="policies_form" class="form_item hidden">
+                <h1>Policies Form</h1>
+            </div>
+
+            <div id="upload_room_photo" class="form_item hidden">
+                <h1>Upload Room Photo</h1>
+                <div id="upload_photo_container">
+                    <button id="cancel_upload">Cancel Upload</button>
+                    {% comment %}<!-- Upload  -->{% endcomment %}
+                    <form action="" method="POST" id="file-upload-form" class="uploader" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% comment %} roomid HOLDER {% endcomment %}
+                        <input type="hidden" id="upload_room_holder" name="{{ photoform.roomid.name }}" value="">
+
+                        {% comment %} UPLOAD METHOD {% endcomment %}
+                        <input id="file-upload" type="file" name="{{ photoform.room_img.name }}" accept="image/*" value=""/>
+                        <label for="file-upload" id="file-drag">
+                        <img id="file-image" src="#" alt="Preview" class="hidden">
+                        <div id="start">
+                            <i class="fa fa-download" aria-hidden="true"></i>
+                            <div>Select a file or drag here</div>
+                            <div id="notimage" class="hidden">Please select an image</div>
+                            <span id="file-upload-btn" class="btn btn-primary">Select a file</span>
+                        </div>
+                        <div id="response" class="hidden">
+                            <div id="messages"></div>
+                            <progress class="progress" id="file-progress" value="0">
+                            <span>0</span>%
+                            </progress>
+                        </div>
+                        </label>
+                        <input id="upload_room_photo_btn" type="button" value="Submit">
+                    </form>
+                </div>
+                    </div>
+        </div>
+    </section>
+
+    <script src="{% static 'scripts/edit_building.js' %}?8"></script>
+    <script src="{% static 'scripts/image_upload.js' %}?8" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    {% endblock %}

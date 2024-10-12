@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{% static 'css/modal.css' %}">
 
 {% endblock stylecontent %}
-{% block bodycontent %}
+{% block bodycontent %} 
     <section class="buildingbody">
         <div class="scrollpage">
             {% comment %} VIEW ROOM PHOTOS Modal {% endcomment %}
@@ -33,7 +33,7 @@
                     <textarea name="" id="" cols="30" rows="10">{{ building.details }}</textarea>
                 </div>
                 <div class="highlightsbox">
-                    <h1>Highlights</h1>
+                    <h1>Amenities</h1>
                     <p>{% if highlights.free_wifi %}Free wifi, {% endif %}
                        {% if highlights.shared_kitchen %}Shared Kitchen, {% endif %}
                        {% if highlights.smoke_free %}Smoke Free, {% endif %}
@@ -217,7 +217,7 @@
                         </div>
                     </div>
                     <div>
-                        <p>Highlights</p>
+                        <p>Additional Info</p>
                         <div>
                             <label for="bed">Single bed:</label>
                             <input type="text" name="{{ roomform.bed.name }}" />

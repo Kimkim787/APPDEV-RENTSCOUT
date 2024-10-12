@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
     <script src="{% static 'scripts\jquery.js' %}"></script>
-    {% block stylecontent %}
-    {% endblock stylecontent %}
     <link rel="stylesheet" href="{% static 'css/navigation.css' %}">
     <title>RENTSCOUT</title>
+    {% block stylecontent %}
+    {% endblock stylecontent %}
 </head>
 <style>
     *{
@@ -28,7 +28,9 @@
             <li>temporary</li>
             <li>temporary</li>
             <li>temporary</li>
-            <li>temporary</li>
+            <li>
+                <a href="{% url 'edit_building' %}">Edit Buildings</a>
+            </li>
         </ul>
         <div>
             {% if request.user.is_authenticated %}

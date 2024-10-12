@@ -9,6 +9,7 @@ from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm,
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist as ObjException
 
 from django.views import View
 from django.db.models import Q
@@ -136,7 +137,10 @@ def update_building(request, pk):
 @login_required
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
-    highlights = Highlights.objects.get(buildingid = building)
+    try:
+        highlights = Highlights.objects.get(buildingid = building)
+    except:
+        highlights = None
     rooms = Room.objects.filter(building_id = building)
     room_images = RoomImage.objects.all()
     policies = Policies.objects.filter(buildingid = building)
@@ -155,6 +159,21 @@ def building_del(request, pk):
     building = Building.objects.get(buildingid = pk)
     building.delete()
     return redirect('home')
+
+def building_edit(request):
+
+    if not (isinstance(request.user, ScoutUser_Landlord)):
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    try:
+        buildings = Building.objects.filter(building_owner = request.user)
+        photo_form = RoomImageForm()
+    except ObjException as e:
+        messages.error(request, f'{e}')
+
+
+    context = {'buildings':buildings, 'photoform': photo_form, }
+    return render(request, 'RentScout/edit_building.html', context)
 
 def create_feedback(request):
     if request.method == 'POST':
@@ -227,13 +246,11 @@ def room_photo_upload(request):
     if request.method == 'POST':
         print('request post')
         photoform = RoomImageForm(request.POST, request.FILES)
-        roomid = request.POST.get('roomid')
         if photoform.is_valid():
             print('valid photo form')
             newphoto = photoform.save(commit=False)
             newphoto.save()
-
-    return redirect('edit_photo', roomid)
+        return redirect('edit_building')
 
 def room_edit_photo(request, pk):
     images = RoomImage.objects.filter(roomid = pk)
@@ -260,10 +277,33 @@ def home(request):
     return render(request, 'RentScout/home.html', {})
 
 
+class get_rooms(View):
+    def get(self,request):
+        query = request.GET.get('building_id', '')
+        if query:
+            try:
+                rooms = Room.objects.filter(building_id = query)
+                room_data = []
+                for room in rooms:
+                    room_data.append({
+                        'roomid': room.roomid,
+                        'room_name': room.room_name,
+                    })
+                    
+                return JsonResponse({"room_data":room_data })
+            
+            except Room.DoesNotExist:
+                messages.error(request, 'Error 404: Rooms Not Found')
+                JsonResponse({'error': 'Rooms Not Found'}, status=404)
+        else:
+            messages.error(request, 'Error 405: Bad request')
+            JsonResponse({'error': 'Bad request'}, status=405)
+
+
+
 class get_room_data(View):
     def get(self, request):
         query = request.GET.get('primary_key', '') # query comes from ajax
-        print(query)
         if query:
             try:
                 room = Room.objects.get(roomid = query)
@@ -294,22 +334,73 @@ class get_room_data(View):
         else:
             return JsonResponse({'error': 'No query provided'}, status = 400) # Bad reqeust
 
-class get_room_images(View):
+class get_room_images(View):   
     def get(self, request):
         query = request.GET.get('roomid', '')
         if query:
             
             try:
-                photos = list(RoomImage.objects.filter(
-                roomid = query).values_list('room_img'))
-                image_obj = {}
-                for index, photo in enumerate(photos, start=0):
-                    image_obj[index] = photo  
+                room = Room.objects.get(roomid = query)
+                photos = RoomImage.objects.filter(roomid = query)
+                image_list = []
+                for photo in photos:
+                    image_list.append({
+                        'photo_id': photo.room_imgID,
+                        'photo_url': photo.room_img.url
+                    })
                 
-                print(image_obj)
-                return JsonResponse(image_obj, safe=False)
-            except:
-                return JsonResponse({'error': 'No images found'}, status = 404)
+                response_data = {
+                    "image_list":image_list,
+                    'room_name': room.room_name 
+                }
+                return JsonResponse(response_data)
+            except Exception as e:
+                return JsonResponse({'error': e}, status = 404)
         else:
             return JsonResponse({'error': 'Did not receive a query'}, status = 405)
+
+class del_room_photo_view(View):
+
+    def post(self, request):
+        query = request.POST.get('photo_id', '')
+        if query:
+            try:
+                img = RoomImage.objects.get(room_imgID = query)
+                img.delete()
+                return JsonResponse({'message': "Image deleted"}, status = 200)
+            except RoomImage.DoesNotExist:
+                return JsonResponse({"error": "Room Image Does not exist"}, status = 404)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status = 500)
+        else:
+            return JsonResponse({'error': "Did not receive query data"})
         
+class upload_room_photo_view(View):
+    def post(self, request):
+        print("Processing Photo Upload")
+        try:
+            roomid = request.POST.get('roomid')
+            photoform = RoomImageForm(request.POST, request.FILES)
+            room = Room.objects.get(roomid = roomid)
+            if photoform.is_valid():
+                print('valid photo form')
+                newphoto = photoform.save(commit=False)
+                newphoto.roomid = room
+                newphoto.save()
+                return JsonResponse({'message': 'Photo uploaded'}, status = 200)
+        except Exception as e:
+            return JsonResponse({'error', 'Error photo upload'}, status = 500)
+        
+
+
+
+
+
+
+
+
+
+
+
+
+

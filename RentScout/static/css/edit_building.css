@@ -1,0 +1,47 @@
+
+
+section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 80vh;
+}
+#left_bar{
+    width: 20%;
+    height: 100%;
+    border: 2px solid red;
+}
+
+#middle_bar {
+    width: 20%;
+    height: 100%;
+    border: 2px solid blue;
+
+}
+
+#form_container {
+    width: 50%;
+    height: 100%;   
+    border: 2px solid green;
+
+}
+
+.form_item{
+    background-color: blanchedalmond;
+}
+
+.room_photos {
+    width: 90%;
+}
+
+.hidden {
+    display: none;
+}
+
+.room_item{
+    border: 2px solid rgb(171, 174, 5);
+}
+
+#photo_container li {
+    border: 2px solid red;
+}

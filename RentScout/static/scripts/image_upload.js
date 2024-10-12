@@ -1,5 +1,12 @@
 // File Upload
 // 
+$(document).ready(function(){
+  console.log('WINDOW READY FROM IMAGE UPLOAD JS')
+  $('#cancel_upload').on('click', function(){
+    resetFileUpload();
+  })
+})
+
 function ekUpload(){
     function Init() {
   
@@ -140,3 +147,12 @@ function ekUpload(){
     }
   }
   ekUpload();
+
+function resetFileUpload(){
+  $('#file-drag').removeClass('modal-body');
+  $('#file-image').attr('src', '');
+  $('#file-image').addClass('hidden');
+  $('#start').removeClass('hidden');
+  $('#response').addClass('hidden');
+  $('#messages').empty();
+}
