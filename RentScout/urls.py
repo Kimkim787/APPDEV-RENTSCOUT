@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (get_room_data, get_room_images, get_rooms,
-                    del_room_photo_view, upload_room_photo_view
+                    del_room_photo_view, upload_room_photo_view, building_edit_view,
+                    get_poicies,
                     )
 from . import views
 from django.conf import settings
@@ -16,6 +17,7 @@ urlpatterns = [
     path('create_building/', views.create_building, name='new_building'),
     path('building_info/<int:pk>/', views.building_info, name = 'building_info'),
     path('building/update/<str:pk>/', views.update_building, name='update_building'),
+    path('building/update_view/', building_edit_view.as_view()),
     path('building/edit/', views.building_edit, name='edit_building'),
 
     # FEEDBACK
@@ -35,6 +37,9 @@ urlpatterns = [
     path('room_photo/edit/<int:pk>/', views.room_edit_photo, name='edit_photo'),
     path('room_photo/delete/', views.room_delete_photo, name='del_room_photo'),
     path('room_photo/delete/view/', del_room_photo_view.as_view(), name='del_room_photo_view'),
+
+    # POLICIES
+    path('building/policies_request/', get_poicies.as_view()),
 
 ]
 

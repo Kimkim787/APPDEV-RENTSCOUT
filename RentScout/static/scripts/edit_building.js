@@ -4,17 +4,30 @@ $(document).ready(function(){
         show_room_photos($(this))
     });
 
+    $('#building_update_form').on('submit', function(event){
+        event.preventDefault();
+        console.log('building_update_form' + ' clicked');
+        update_building();
+    });
+
     // TOGGLE FORMS
     $('.edit_btn').on('click', function() {
         $('.form_item').addClass('hidden');
+        // get building id
+        let buildingId = $(this).closest('ul').find('#building_id').val();
         if($(this).val() == 'Edit Building'){
             $('#building_form').removeClass('hidden');
-
+            // set building id to form
+            $('#building_id_holder').val(buildingId);
+            console.log(buildingId)
+            req_bldg_instance(buildingId);
+            
         } else if( $(this).val() == 'Amenities'){
             $('#amenities_form').removeClass('hidden');
 
         } else if( $(this).val() == 'Policies'){
             $('#policies_form').removeClass('hidden');
+            req_bldg_policies(buildingId)
         } else if ($(this).val() == 'Rooms') {
             // REQUEST PHOTOS FOR MIDDLE BAR
             req_rooms($(this));
@@ -40,8 +53,6 @@ $(document).ready(function(){
         })
         .then(function(response) {
             alert('Upload successful!');
-            // Optionally update the DOM here
-            console.log("After uploading: query is " + query);
             show_room_photos(null, query);
             resetFileUpload();
         })
@@ -151,8 +162,10 @@ $(document).ready(function(){
         query = null;
         if(btn){
             query = $(btn).closest('.room_item').find('.roomid_holder').val();
-        } else{
+        } else if(room_id){
             query = room_id;
+        } else{
+            return;
         }
         
         // roomid_holder on middle section
@@ -212,6 +225,83 @@ $(document).ready(function(){
 
 
         }); // ajax
+    }
+
+    // UPDATE BILDING GET FUNCTION
+    function req_bldg_instance(bldg_id){
+        $.ajax({
+            url: '/building/update_view/',
+            type: 'GET',
+            data: {
+                'bldg_id': bldg_id,
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            success: function(data){
+                $('#bldg_name').val(data.building_name);
+                $('#bldg_vacant').val(data.rooms_vacant);
+                $('#bldg_zipcode').val(data.zip_code);
+                $('#bldg_street').val(data.street);
+                $('#bldg_city').val(data.city);
+                $('#bldg_province').val(data.province);
+                $('#bldg_country').val(data.country);
+                $('#bldg_desc').val(data.details);
+                $('#bldg_coords').val(data.coordinates);
+
+            },
+            error: function(xhr, status, error){
+                console.log(`${status}: ${error}`);
+            }
+        });
+    }
+
+    // UPDATE BUILDING POST FUNCTION
+    function update_building(){
+        form_data = {
+            'bldg_id': $('#building_id_holder').val(),
+            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+            'building_name': $('#bldg_name').val(),
+            'rooms_vacant': $('#bldg_vacant').val(),
+            'zip_code': $('#bldg_zipcode').val(),
+            'street': $('#bldg_street').val(),
+            'city': $('#bldg_city').val(),
+            'province': $('#bldg_province').val(),
+            'country': $('#bldg_country').val(),
+            'details': $('#bldg_desc').val(),
+            'coordinates': $('#bldg_coords').val(),
+        }
+        console.log(form_data);
+        $.ajax({
+            url: "/building/update_view/",
+            type: 'POST',
+            data: form_data,
+            success: function(){
+                alert("success");
+            },
+            error: function(){
+                alert('error');
+            }
+        })
+    }
+
+    // GET ALL POLICIES OF BUILDING
+    function req_bldg_policies(query){
+        pol_container = $('#policies_container');
+
+        $.ajax({
+            url: '/building/policies_request/',
+            type: 'GET',
+            data: {
+                'building_id': query,
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+            },
+            success: function(policy_list){
+
+                console.log(policy_list)
+            },
+            error: function(xhr, status, error){
+                alert(`Error ${xhr.status}: ${error}`);
+            }
+        })
     }
 
 }); // ready function

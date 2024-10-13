@@ -18,6 +18,7 @@
             <ul>
             {% for building in buildings %}
                 <li>
+
                     <a href="#">{{ building.building_name }}
                         <span class="fas fa-caret-down third"></span>
                     </a>
@@ -64,34 +65,35 @@
 
         <div id="form_container">
             <div id="building_form" class="form_item hidden">
-                <form action="" method="POST">
+                <form id="building_update_form" action="" method="POST">
                     {% csrf_token %}
+                    <input type="hidden" id="building_id_holder" value="">
                     <label for="building_name">Building Name:</label>
-                    <input type="text" name="{{ form.building_name.name }}" value="{{ form.building_name.value }}" required>
+                    <input type="text" id="bldg_name" name="{{ bldg_form.building_name.name }}" value="{{ form.building_name.value }}" required>
             
                     <label for="vacant">Vacant Rooms</label>
-                    <input type="number" name = "{{ form.rooms_vacant.name }}" value="{{ form.rooms_vacant.value }}" required>
+                    <input type="number" id="bldg_vacant" name = "{{ bldg_form.rooms_vacant.name }}" value="{{ form.rooms_vacant.value }}" required>
             
                     <label for="zip_code">Zip Code:</label>
-                    <input type="number" name="{{ form.zip_code.name }}" value="{{ form.zip_code.value }}" required>
+                    <input type="number" id="bldg_zipcode" name="{{ bldg_form.zip_code.name }}" value="{{ form.zip_code.value }}" required>
             
                     <label for="street">Street</label>
-                    <input type="text" name = "{{ form.street.name }}" value="{{ form.street.value }}" required>
+                    <input type="text" id="bldg_street" name = "{{ bldg_form.street.name }}" value="{{ form.street.value }}" required>
             
                     <label for="city">City</label>
-                    <input type="text" name = "{{ form.city.name }}" value="{{ form.city.value }}" required>
+                    <input type="text" id="bldg_city" name = "{{ bldg_form.city.name }}" value="{{ form.city.value }}" required>
             
                     <label for="province">Province</label>
-                    <input type="text" name = "{{ form.province.name }}" value="{{ form.province.value }}" required>
+                    <input type="text" id="bldg_province" name = "{{ bldg_form.province.name }}" value="{{ form.province.value }}" required>
             
                     <label for="country">Country</label>
-                    <input type="text" name = "{{ form.country.name }}" value="{{ form.country.value }}" required>
+                    <input type="text" id="bldg_country" name = "{{ bldg_form.country.name }}" value="{{ form.country.value }}" required>
             
                     <label for="details">Details</label>
-                    <textarea name="{{ form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
+                    <textarea id="bldg_desc" name="{{ bldg_form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
                     
                     <label for="coordinates">Coordinates</label>
-                    <input type="text" name="{{ form.coordinates.name }}" value="{{ form.coordinates.value }}" required>
+                    <input type="text" id="bldg_coords" name="{{ bldg_form.coordinates.name }}" value="{{ form.coordinates.value }}" required>
             
                     <input type="submit" value="Save">
                 </form>
@@ -103,6 +105,9 @@
 
             <div id="policies_form" class="form_item hidden">
                 <h1>Policies Form</h1>
+                <ul id="policies_container">
+                    
+                </ul>
             </div>
 
             <div id="upload_room_photo" class="form_item hidden">
@@ -139,7 +144,7 @@
         </div>
     </section>
 
-    <script src="{% static 'scripts/edit_building.js' %}?8"></script>
+    <script src="{% static 'scripts/edit_building.js' %}?9"></script>
     <script src="{% static 'scripts/image_upload.js' %}?8" ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 

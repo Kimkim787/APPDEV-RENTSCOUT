@@ -171,9 +171,46 @@ def building_edit(request):
     except ObjException as e:
         messages.error(request, f'{e}')
 
-
-    context = {'buildings':buildings, 'photoform': photo_form, }
+    context = {'buildings':buildings, 'photoform': photo_form}
     return render(request, 'RentScout/edit_building.html', context)
+
+class building_edit_view(View):
+    def get(self, request):
+        bldg_id = request.GET.get('bldg_id', '')
+        if bldg_id:
+            try:
+                building = Building.objects.get(buildingid = bldg_id)
+                form = BuildingForm(instance = building)
+                form_data = {field.name: field.value() for field in form}
+                return JsonResponse(form_data)
+            except Building.DoesNotExist:
+                return JsonResponse({"error": "Building does not exist"}, status = 400)
+            except Exception as e:
+                return JsonResponse({"message": f"{e}"})
+        else:
+            return JsonResponse({"error": "Did not get Building ID"})
+            
+    def post(self, request):
+        if not (isinstance(request.user, ScoutUser_Landlord)):
+            return redirect(request.META.get('HTTP_REFERER'))
+
+        bldg_id = request.POST.get('bldg_id')
+        if bldg_id:
+            try:
+                building = Building.objects.get(buildingid = bldg_id)
+                bldg_form = BuildingForm(request.POST,instance = building)
+                print(bldg_form)
+                if bldg_form.is_valid():
+                    print("bldg form is valid")
+                    new_bldg = bldg_form.save(commit = False)
+                    new_bldg.save()
+                    return JsonResponse({'success': f'Successfuly updated {building.building_name} Building'}, status = 200)
+                else:
+                    return JsonResponse({"error": 'Form update is invalid'}, status = 500)
+            except Building.DoesNotExist:
+                return JsonResponse({'error': "Building doesn't exist"}, status = 405)
+        else:
+            return JsonResponse({'error': "Did not get building id"}, status =405)
 
 def create_feedback(request):
     if request.method == 'POST':
@@ -355,7 +392,7 @@ class get_room_images(View):
                 }
                 return JsonResponse(response_data)
             except Exception as e:
-                return JsonResponse({'error': e}, status = 404)
+                return JsonResponse({'error': e}, status = 500)
         else:
             return JsonResponse({'error': 'Did not receive a query'}, status = 405)
 
@@ -391,7 +428,27 @@ class upload_room_photo_view(View):
         except Exception as e:
             return JsonResponse({'error', 'Error photo upload'}, status = 500)
         
-
+class get_poicies(View):
+    def get(self, request):
+        bldg_id = request.GET.get('building_id', '')
+        if bldg_id:
+            try:
+                policies = Policies.objects.filter(buildingid = bldg_id)
+                print(policies)
+                policy_list = []
+                for policy in policies:
+                    policy_list.append({
+                        'policy_id': policy.policy_id,
+                        'policy': policy.policy
+                    })
+                response_data = {
+                    'policy_lists': policy_list
+                }
+                return JsonResponse(response_data)
+            except Exception as e:
+                return JsonResponse({'error': f"{e}"}, status = 500)
+        else:
+            return JsonResponse({'error': 'Did not receive Building ID'}, status = 405)
 
 
 
