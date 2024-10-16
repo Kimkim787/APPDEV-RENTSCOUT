@@ -70,12 +70,17 @@ class BuildingFormAdmin(ModelForm):
 class PoliciesForm(ModelForm):
     class Meta:
         model = Policies
-        exclude = ('policy_id',)
+        exclude = ('policy_id', 'buildingid')
+
+# class PolicyUpdateForm(ModelForm):
+#     class Meta:
+#         model = Policies
+#         exclude = ('policy_id', 'building_id')
 
 class HighlightsForm(ModelForm):
     class Meta:
         model = Highlights
-        exclude = ('highlights_id', 'building_id')
+        exclude = ('highlights_id','buildingid') # 
 
 class RoomForm(ModelForm):
     class Meta:

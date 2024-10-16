@@ -1,7 +1,9 @@
 from django.urls import path
 from .views import (get_room_data, get_room_images, get_rooms,
                     del_room_photo_view, upload_room_photo_view, building_edit_view,
-                    get_poicies,
+                    get_policies, save_policy_view, del_policy_view, update_policy_view,
+                    # request_amenity_status
+                    create_amenity_view
                     )
 from . import views
 from django.conf import settings
@@ -39,7 +41,16 @@ urlpatterns = [
     path('room_photo/delete/view/', del_room_photo_view.as_view(), name='del_room_photo_view'),
 
     # POLICIES
-    path('building/policies_request/', get_poicies.as_view()),
+    path('building/policies_request/', get_policies.as_view()),
+    path('building/policy/add_new/', save_policy_view.as_view()),
+    path('building/policy/delete/', del_policy_view.as_view()),
+    path('building/policy/update/', update_policy_view.as_view()),
+
+    # AMENITIES
+    path('building/amenity/create_new/', create_amenity_view.as_view()),
+    # path('building/amenity_request/', request_amenity_status.as_view()),
+
+
 
 ]
 

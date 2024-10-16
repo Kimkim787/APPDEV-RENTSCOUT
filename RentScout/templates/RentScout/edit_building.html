@@ -101,12 +101,51 @@
 
             <div id="amenities_form" class="form_item hidden">
                 <h1>Amenities Form</h1>
+                <div id="amenities_status">
+
+                </div>
+                <div id="amenities_update_form">
+
+                </div>
+                <div id="amenities_create_form">
+                    <input type="checkbox" name="{{ amenities_form.free_wifi.name }}"/>
+                    <label for="{{ amenities_form.free_wifi.name }}">Free Wifi</label>
+
+                    <input type="checkbox" name="{{ amenities_form.shared_kitchen.name }}"/>
+                    <label for="{{ amenities_form.shared_kitchen.name }}">Shared Kitchen</label>
+
+                    <input type="checkbox" name="{{ amenities_form.smoke_free.name }}"/>
+                    <label for="{{ amenities_form.smoke_free.name }}">Smoke Free</label>
+
+                    <input type="checkbox" name="{{ amenities_form.janitor.name }}"/>
+                    <label for="{{ amenities_form.janitor.name }}">Janitor</label>
+
+                    <input type="checkbox" name="{{ amenities_form.guard.name }}"/>
+                    <label for="{{ amenities_form.guard.name }}">Guard</label>
+
+                    <input type="checkbox" name="{{ amenities_form.waterbill.name }}"/>
+                    <label for="{{ amenities_form.waterbill.name }}">Water Bill Included</label>
+
+                    <input type="checkbox" name="{{ amenities_form.electricbill.name }}"/>
+                    <label for="{{ amenities_form.electricbill.name }}">Electric Bill Included</label>
+
+                    <input type="checkbox" name="{{ amenities_form.food.name }}"/>
+                    <label for="{{ amenities_form.food.name }}">Food</label>
+
+                    <button id="create_amenity_btn">Create</button>
+                </div>
             </div>
 
             <div id="policies_form" class="form_item hidden">
-                <h1>Policies Form</h1>
+                <h1>Policies</h1>
+                <button id="add_policy_btn" value="">Add new policy</button>
                 <ul id="policies_container">
-                    
+                    <li>
+                        <input type="text" class="policy_id_holder" value="(policy_id)">
+                        <textarea class="policy">lsdkfs</textarea>
+                        <button class="pol_del_btn">Delete</button>
+                        <button class="pol_edit_btn">Edit</button>
+                    </li>
                 </ul>
             </div>
 
@@ -144,7 +183,7 @@
         </div>
     </section>
 
-    <script src="{% static 'scripts/edit_building.js' %}?9"></script>
+    <script src="{% static 'scripts/edit_building.js' %}?12"></script>
     <script src="{% static 'scripts/image_upload.js' %}?8" ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 

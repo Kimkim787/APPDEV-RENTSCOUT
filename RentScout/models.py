@@ -129,6 +129,7 @@ class Policies(models.Model):
     buildingid = models.ForeignKey(Building, on_delete = models.CASCADE)
     policy = models.TextField(default = "", null=True, blank = True)
 
+    #   AMENITIES
 class Highlights(models.Model):
     highlights_id = models.AutoField(primary_key=True)
     buildingid = models.ForeignKey(Building, on_delete = models.CASCADE)

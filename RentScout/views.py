@@ -5,7 +5,7 @@ from .models import (ScoutUser, Building, Highlights, Room,
                     )
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
                     ScoutUserCreationForm, RoomForm, RoomImageForm, FeedBackForm,
-                    LandlordUserCreationForm
+                    LandlordUserCreationForm, PoliciesForm, HighlightsForm
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -15,6 +15,8 @@ from django.views import View
 from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib import messages
+from django.template.loader import render_to_string
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -161,17 +163,24 @@ def building_del(request, pk):
     return redirect('home')
 
 def building_edit(request):
-
+    amenity = {}
     if not (isinstance(request.user, ScoutUser_Landlord)):
         return redirect(request.META.get('HTTP_REFERER'))
 
     try:
         buildings = Building.objects.filter(building_owner = request.user)
         photo_form = RoomImageForm()
+        amenities_form = HighlightsForm()
     except ObjException as e:
         messages.error(request, f'{e}')
 
-    context = {'buildings':buildings, 'photoform': photo_form}
+    try:
+        amenity = Highlights.objects.get()
+    except:
+        pass
+
+    context = {'buildings':buildings, 'photoform': photo_form, 'amenities_form':amenities_form,
+               'amenity': amenity, }
     return render(request, 'RentScout/edit_building.html', context)
 
 class building_edit_view(View):
@@ -336,8 +345,6 @@ class get_rooms(View):
             messages.error(request, 'Error 405: Bad request')
             JsonResponse({'error': 'Bad request'}, status=405)
 
-
-
 class get_room_data(View):
     def get(self, request):
         query = request.GET.get('primary_key', '') # query comes from ajax
@@ -428,7 +435,7 @@ class upload_room_photo_view(View):
         except Exception as e:
             return JsonResponse({'error', 'Error photo upload'}, status = 500)
         
-class get_poicies(View):
+class get_policies(View):
     def get(self, request):
         bldg_id = request.GET.get('building_id', '')
         if bldg_id:
@@ -448,15 +455,121 @@ class get_poicies(View):
             except Exception as e:
                 return JsonResponse({'error': f"{e}"}, status = 500)
         else:
-            return JsonResponse({'error': 'Did not receive Building ID'}, status = 405)
+            return JsonResponse({'error': 'Did not receive Building ID'}, status = 400)
 
+# create new policy
+class save_policy_view(View):
+    def post(self, request):
+        query = request.POST.get('buildingid')
+        if query:
+            try:
+                building = Building.objects.get(buildingid = query)
+                form = PoliciesForm(request.POST)
+                if form.is_valid():
+                    new_pol = form.save(commit=False)
+                    new_pol.buildingid = building
+                    new_pol.save()
+                    return JsonResponse({'success': "New Policy Saved"}, status = 200)
+            except Building.DoesNotExist:
+                return JsonResponse({'error': 'Building Does Not Exist'}, status = 404)
+            except Exception as e:
+                return JsonResponse({'error': f'{e}'}, status = 500)
+        else:
+            return JsonResponse({'error': "Did not receive Building ID"}, status = 400)
 
+class del_policy_view(View):
+    def post(self, request):
+        policy_id = request.POST.get('policy_id')
+        if policy_id:
+            policy = Policies.objects.get(policy_id = policy_id)
+            policy.delete()
+            return JsonResponse({'success': 'Policy Deleted'},status=200)
+        else:
+            return JsonResponse({'error': f"Policy({policy_id}) does not Exist"}, status=400)
 
+class update_policy_view(View):
+    def post(self, request):
+        policy_id = request.POST.get('policy_id')
+        if policy_id:
+            print(policy_id)
+            try:
+                policy = Policies.objects.get(policy_id = policy_id)
+                old_policy = PoliciesForm(request.POST, instance = policy)
+                print(request.POST)
+                if old_policy.is_valid():
+                    updated_policy = old_policy.save(commit=False)
+                    updated_policy.save()
+                    
+                    return JsonResponse({'success': "Successfuly updated policy"}, status = 200)
+                else:
+                    print(old_policy.errors)
+                    return JsonResponse({'error': 'Policy form is invalid'}, status = 400)
+            except Policies.DoesNotExist:
+                return JsonResponse({'error': 'Policy does not exist'}, status = 404)
+            except Exception as e:
+                return JsonResponse({'error': f'CLement {e}'}, status = 500)
+        else:
+            return JsonResponse({'error': 'Did not recieve Policy ID'}, status = 400)
 
-
-
-
-
+class create_amenity_view(View):
+    def post(self, request):
+        building_id = request.POST.get('building_id')
+        building = Building.objects.get(buildingid = building_id)
+        print(request.POST)
+        if building_id:
+            try:
+                form = HighlightsForm(request.POST)
+                if form.is_valid():
+                    newamenity = form.save(commit=False)
+                    newamenity.buildingid = building
+                    newamenity.save()
+                    return JsonResponse({'success': 'Successfuly created amenity'}, status = 200)
+                else:
+                    print(form.errors)
+                    return JsonResponse({'error': 'Form data invalid'}, status=400)
+            except:
+                return JsonResponse({'error': 'Failed to create form'}, status = 500)
+        else:
+            return JsonResponse({'error': 'Did not get Building ID'}, status = 400)
+# class request_amenity_status(View):
+#     def get(self, request):
+#         building_id = request.GET.get('building_id', '')
+#         print(building_id)
+#         if building_id:
+#             try:
+#                 print("has building id", building_id)
+#                 amenity = Highlights.objects.get(buildingid = building_id)
+#                 # amenity_form = HighlightsForm(instance = amenity)
+#                 print(building_id)
+#                 response_data = {
+#                     'building_name': amenity.building_name,
+#                     'free_wifi': amenity.free_wifi,
+#                     'shared_kitchen': amenity.shared_kitchen,
+#                     'smoke_free': amenity.smoke_free,
+#                     'janitor': amenity.janitor,
+#                     'guard': amenity.guard,
+#                     'waterbill': amenity.waterbill,
+#                     'electricbill': amenity.electricbill,
+#                     'food': amenity.food
+#                     # 'amenity_form': amenity_form
+#                 }
+#                 return JsonResponse(response_data, safe = False, status = 200)
+#             except Highlights.DoesNotExist:
+#                 amenity_form = HighlightsForm()
+#                 # form_html = render_to_string('amenity_form_template.html', {'form': amenity_form}, request=request)
+#                 response_data = {
+#                     'error': "Highlights does not exist",
+#                     'status': 404,
+#                     'form': amenity_form
+#                 }
+#                 return JsonResponse({response_data}, status=404)
+#                 # return JsonResponse({'error': 'Highlights does not exist'}, status = 404)
+#             except Exception as e:
+#                 amenity_form = HighlightsForm()
+#                 form_html = render_to_string('amenity_form_template.html', {'form': amenity_form}, request=request)
+#                 return JsonResponse({'form': form_html}, status=200)
+#         else:
+#             return JsonResponse({'error': 'Did not get Building ID'}, status = 400)
 
 
 
