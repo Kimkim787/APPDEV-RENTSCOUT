@@ -2,7 +2,7 @@
 
 {% block stylecontent %}
 {% load static %}
-    <link rel="stylesheet" href="{% static 'css/edit_building.css' %}?8">
+    <link rel="stylesheet" href="{% static 'css/edit_building.css' %}?9">
     <link rel="stylesheet" href="{% static 'css/image_upload.css' %}">
     <script>
         const csrfToken = '{% csrf_token %}';
@@ -46,9 +46,7 @@
         <div id="middle_bar">
             <!-- ROOMS VIEW -->
             <div id="room_view" class="mid_item hidden">
-                <div id="rooms_container">
-                    
-                </div>
+                <div id="rooms_container"></div>
             </div>
 
             <!-- PHOTOS VIEW -->
@@ -58,9 +56,12 @@
                 <button class="edit_btn" value="upload_room_photo">Upload Photo</button>
                 <input type="hidden" id="roomid_holder">
                 <ul id="photo_container">
-
+                    <!-- ROOM PHOTOS HERE -->
                 </ul>
             </div>
+
+            <h1 id="no_room_message" class="mid_item hidden">NO ROOMS FOUND</h1>
+
         </div>
 
         <div id="form_container">
@@ -157,10 +158,14 @@
 
                 </div>
             </div>
+
+            <div id="large_image_view" class="form_item hidden">
+
+            </div>
         </div>
     </section>
 
-    <script src="{% static 'scripts/edit_building.js' %}?16"></script>
+    <script src="{% static 'scripts/edit_building.js' %}?17"></script>
     <script src="{% static 'scripts/image_upload.js' %}?8" ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 

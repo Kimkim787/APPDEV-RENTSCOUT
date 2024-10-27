@@ -1,11 +1,21 @@
 $(document).ready(function(){
     // "SEE PHOTOS" BUTTON CLICKED
     $('#rooms_container').on('click', '.photo_btn', function(){
+        $('.form_item').addClass('hidden');
         show_room_photos($(this))
     });
 
+    // Image clicked
+    $('#photo_container').on('click', '.room_photos', function(){
+        $('.form_item').addClass('hidden');
+        $('#large_image_view').removeClass('hidden');
+        // assign background-img to Large image View
+        $('#large_image_view').css('background-image', `url('${$(this).attr('src')}')`);
+    })
+
     // REQUEST ROOM BTN
     $('#rooms_container').on('click', '.room_update_btn', function(){
+        $('.form_item').addClass('hidden');
         $('#edit_room_form').removeClass('hidden');
         request_room_data($(this));
     });
@@ -127,7 +137,8 @@ $(document).ready(function(){
 
     // middle bar back btn
     $('.backbtn').on('click', function(){
-        $('.mid_item').toggleClass('hidden');
+        $('#photo_view').toggleClass('hidden');
+        $('#room_view').toggleClass('hidden');
     });    
 
     // UPDATE BILDING GET FUNCTION
@@ -200,51 +211,55 @@ $(document).ready(function(){
             },
             success: function(data){
                 // console.log("datas: ");
-                // console.log(data);
-                $.each(data.room_data, function(index, room) {
-                    let room_div = $("<div></div>", {
-                        class: 'room_item'
+                console.log(data);
+                if (data.room_data.length >= 1){
+                    $.each(data.room_data, function(index, room) {
+                        let room_div = $("<div></div>", {
+                            class: 'room_item'
+                        });
+
+                        let input = $('<input>', {
+                            type: 'hidden',
+                            class: 'roomid_holder'
+                        }).val(room.roomid);
+
+                        let btn_div = $('<div></div>', {
+                            class: 'btn_div'
+                        });
+
+                        let p = $('<p></p>', {
+                            id: 'room_name'
+                        }).text(room.room_name);
+
+                        let photo_btn = $('<button></button>', {
+                            text: "See Photos",
+                            class: "photo_btn",
+                        });
+                        let update_btn = $('<button></button>', {
+                            text: "Update Room",
+                            class: 'room_update_btn',
+                        });
+                        
+                        // console.log(input);
+                        // console.log(p);
+
+                        room_div.append(input);
+                        btn_div.append(photo_btn);
+                        btn_div.append(update_btn);
+                        room_div.append(p);
+                        room_div.append(btn_div);
+
+                        // console.log("room div is:");
+                        // console.log(room_div);
+                        $('#rooms_container').append(room_div);
+
+                        $('.mid_item').addClass('hidden'); 
+                        $('#room_view').removeClass('hidden'); 
                     });
-
-                    let input = $('<input>', {
-                        type: 'hidden',
-                        class: 'roomid_holder'
-                    }).val(room.roomid);
-
-                    let btn_div = $('<div></div>', {
-                        class: 'btn_div'
-                    });
-
-                    let p = $('<p></p>', {
-                        id: 'room_name'
-                    }).text(room.room_name);
-
-                    let photo_btn = $('<button></button>', {
-                        text: "See Photos",
-                        class: "photo_btn",
-                    });
-                    let update_btn = $('<button></button>', {
-                        text: "Update Room",
-                        class: 'room_update_btn',
-                    });
-                    
-                    // console.log(input);
-                    // console.log(p);
-
-                    room_div.append(input);
-                    btn_div.append(photo_btn);
-                    btn_div.append(update_btn);
-                    room_div.append(p);
-                    room_div.append(btn_div);
-
-                    // console.log("room div is:");
-                    // console.log(room_div);
-                    $('#rooms_container').append(room_div);
-
-                    $('#photo_view').addClass('hidden'); 
-                    $('#room_view').removeClass('hidden'); 
-                });
-
+                } else {
+                    $('.mid_item').addClass('hidden');
+                    $('#no_room_message').removeClass('hidden');
+                }
             },
             error: function(xhr, status, error) {
                 console.log(xhr.responseText);
