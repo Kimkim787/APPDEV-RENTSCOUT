@@ -87,6 +87,11 @@ class RoomForm(ModelForm):
         model = Room
         exclude = ('roomid','building_id')
 
+class RoomFormAdmin(ModelForm):
+    class Meta:
+        model = Room
+        exclude = ('roomid', )
+
 class FeedBackForm(ModelForm):
     class Meta:
         model = Feedback

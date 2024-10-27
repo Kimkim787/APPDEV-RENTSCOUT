@@ -23,7 +23,7 @@ $(document).ready(function(){
                 let bed = modal_container.find("input[name='bed']");
                 let double_deck = modal_container.find("input[name='double_deck']");
                 let shower = modal_container.find("input[name='shower']");
-                let priv_bathroom = modal_container.find("input[name='priv_bathrooom']");
+                let priv_bathroom = modal_container.find("input[name='priv_bathroom']");
                 let public_bathroom = modal_container.find("input[name='public_bathroom']");
                 let AC = modal_container.find("input[name='AC']");
                 let wardrobe = modal_container.find("input[name='wardrobe']");

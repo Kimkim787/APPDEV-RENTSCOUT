@@ -2,8 +2,8 @@ from django.urls import path
 from .views import (get_room_data, get_room_images, get_rooms,
                     del_room_photo_view, upload_room_photo_view, building_edit_view,
                     get_policies, save_policy_view, del_policy_view, update_policy_view,
-                    # request_amenity_status
-                    create_amenity_view
+                    request_amenity_status, create_amenity_view, update_amenity_view,
+                    update_room
                     )
 from . import views
 from django.conf import settings
@@ -28,9 +28,10 @@ urlpatterns = [
 
     # ROOMS
     path('room_create/<int:buildingID>', views.room_create, name='room_create'),
-    path('room_update/', get_room_data.as_view(), name='room_update'),
+    path('room/request/', get_room_data.as_view(), name='room_update'),
     path('room/get_rooms/', get_rooms.as_view(), name='get_rooms'),
     path('room_update/save/', views.room_update, name='room_save'),
+    path('room_update_view/', update_room.as_view()),
 
     # ROOMPHOTOS
     path('room_photo/upload/', views.room_photo_upload, name='room_photo_upload'),
@@ -48,8 +49,8 @@ urlpatterns = [
 
     # AMENITIES
     path('building/amenity/create_new/', create_amenity_view.as_view()),
-    # path('building/amenity_request/', request_amenity_status.as_view()),
-
+    path('building/amenity_request/', request_amenity_status.as_view()),
+    path('building/amenity/update/', update_amenity_view.as_view()),
 
 
 ]

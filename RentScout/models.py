@@ -153,7 +153,7 @@ class Room(models.Model):
     # --------------FURNITURES------------------
     room_size = models.CharField(max_length = 20) # get l&w then concat
     shower = models.BooleanField(default=False)
-    priv_bathrooom = models.BooleanField(default=False)
+    priv_bathroom = models.BooleanField(default=False)
     public_bathroom = models.BooleanField(default=False)
     AC = models.BooleanField(default=False) # aircon
     wardrobe = models.BooleanField(default = False)

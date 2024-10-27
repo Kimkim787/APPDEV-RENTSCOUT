@@ -2,7 +2,8 @@ from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
                      Feedback, RoomImage, ScoutUser_Landlord)
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
-                    RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin)
+                    RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin,
+                    RoomFormAdmin)
 # Register your models here.
 
 class ScoutUserAdmin(admin.ModelAdmin):
@@ -33,17 +34,20 @@ class HighlightsAdmin(admin.ModelAdmin):
                     'guard', 'food']
     
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ['roomid','room_name'] #'buildingid', , 'person_free',
+    list_display = ['roomid','room_name', 'get_building_name'] #'buildingid', , 'person_free',
                     #'current_male', 'current_female', 'price', 'room_size',
                    #'shower', 'priv_bathroom', 'public_bathroom', 'AC', 'wardrobe',
                    #'kitchen', 'bedroom', 'double_deck', 'free_wifi'
-    form = RoomForm
+    form = RoomFormAdmin
+
+    def get_building_name(self, obj):
+        return obj.building_id.building_name
 
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = ['feedbackid', 'boardingid', 'rating', 'message']
 
 class RoomImageAdmin(admin.ModelAdmin):
-    list_display = ['room_imgID', 'get_room_name', 'room_imgID']
+    list_display = ['room_imgID', 'get_room_name']
     form = RoomImageForm
 
     def get_room_name(self, obj):

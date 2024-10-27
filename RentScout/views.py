@@ -163,7 +163,7 @@ def building_del(request, pk):
     return redirect('home')
 
 def building_edit(request):
-    amenity = {}
+    # amenity = {}
     if not (isinstance(request.user, ScoutUser_Landlord)):
         return redirect(request.META.get('HTTP_REFERER'))
 
@@ -174,13 +174,14 @@ def building_edit(request):
     except ObjException as e:
         messages.error(request, f'{e}')
 
-    try:
-        amenity = Highlights.objects.get()
-    except:
-        pass
+    # try:
+    #     amenity = Highlights.objects.get(buildingid = buildings)
+    # except:
+    #     pass
 
     context = {'buildings':buildings, 'photoform': photo_form, 'amenities_form':amenities_form,
-               'amenity': amenity, }
+            #    'amenity': amenity, 
+               }
     return render(request, 'RentScout/edit_building.html', context)
 
 class building_edit_view(View):
@@ -361,7 +362,7 @@ class get_room_data(View):
                     'price': room.price,
                     'room_size': room.room_size,
                     'shower': room.shower,
-                    'priv_bathroom': room.priv_bathrooom,
+                    'priv_bathroom': room.priv_bathroom,
                     'public_bathroom': room.public_bathroom,
                     'AC': room.AC,
                     'wardrobe': room.wardrobe,
@@ -377,6 +378,25 @@ class get_room_data(View):
                 return JsonResponse({'error': 'Room not found'}, status = 404) # Page not found
         else:
             return JsonResponse({'error': 'No query provided'}, status = 400) # Bad reqeust
+
+class update_room(View):
+    def post(self, request):
+        room_id = request.POST.get('room_id', '')
+        if room_id:
+            try:
+                room = Room.objects.get(roomid = room_id)
+                roomForm = RoomForm(request.POST, instance=room)
+                if roomForm.is_valid():
+                    roomForm.save()
+                    return JsonResponse({'success': 'Successfuly updated Room'}, status = 200)
+                else:
+                    return JsonResponse({'error': 'Form invalid'}, status = 400)
+            except Room.DoesNotExist:
+                return JsonResponse({'error': 'Room Does Not Exist'}, status = 404)
+            except Exception as e:
+                return JsonResponse({'error': e}, status = 500)
+        else:
+            return JsonResponse({'error': 'Did not receive Room ID'}, status = 400)
 
 class get_room_images(View):   
     def get(self, request):
@@ -434,7 +454,7 @@ class upload_room_photo_view(View):
                 return JsonResponse({'message': 'Photo uploaded'}, status = 200)
         except Exception as e:
             return JsonResponse({'error', 'Error photo upload'}, status = 500)
-        
+
 class get_policies(View):
     def get(self, request):
         bldg_id = request.GET.get('building_id', '')
@@ -491,15 +511,16 @@ class update_policy_view(View):
     def post(self, request):
         policy_id = request.POST.get('policy_id')
         if policy_id:
-            print(policy_id)
+            # print(policy_id)
             try:
                 policy = Policies.objects.get(policy_id = policy_id)
                 old_policy = PoliciesForm(request.POST, instance = policy)
-                print(request.POST)
+                # print(request.POST)
+                print(old_policy)
                 if old_policy.is_valid():
-                    updated_policy = old_policy.save(commit=False)
-                    updated_policy.save()
-                    
+                    old_policy.save(commit=False)
+                    old_policy.save()
+                    print('UPdate policy success')
                     return JsonResponse({'success': "Successfuly updated policy"}, status = 200)
                 else:
                     print(old_policy.errors)
@@ -507,7 +528,7 @@ class update_policy_view(View):
             except Policies.DoesNotExist:
                 return JsonResponse({'error': 'Policy does not exist'}, status = 404)
             except Exception as e:
-                return JsonResponse({'error': f'CLement {e}'}, status = 500)
+                return JsonResponse({'error': f'{e}'}, status = 500)
         else:
             return JsonResponse({'error': 'Did not recieve Policy ID'}, status = 400)
 
@@ -531,45 +552,65 @@ class create_amenity_view(View):
                 return JsonResponse({'error': 'Failed to create form'}, status = 500)
         else:
             return JsonResponse({'error': 'Did not get Building ID'}, status = 400)
-# class request_amenity_status(View):
-#     def get(self, request):
-#         building_id = request.GET.get('building_id', '')
-#         print(building_id)
-#         if building_id:
-#             try:
-#                 print("has building id", building_id)
-#                 amenity = Highlights.objects.get(buildingid = building_id)
-#                 # amenity_form = HighlightsForm(instance = amenity)
-#                 print(building_id)
-#                 response_data = {
-#                     'building_name': amenity.building_name,
-#                     'free_wifi': amenity.free_wifi,
-#                     'shared_kitchen': amenity.shared_kitchen,
-#                     'smoke_free': amenity.smoke_free,
-#                     'janitor': amenity.janitor,
-#                     'guard': amenity.guard,
-#                     'waterbill': amenity.waterbill,
-#                     'electricbill': amenity.electricbill,
-#                     'food': amenity.food
-#                     # 'amenity_form': amenity_form
-#                 }
-#                 return JsonResponse(response_data, safe = False, status = 200)
-#             except Highlights.DoesNotExist:
-#                 amenity_form = HighlightsForm()
-#                 # form_html = render_to_string('amenity_form_template.html', {'form': amenity_form}, request=request)
-#                 response_data = {
-#                     'error': "Highlights does not exist",
-#                     'status': 404,
-#                     'form': amenity_form
-#                 }
-#                 return JsonResponse({response_data}, status=404)
-#                 # return JsonResponse({'error': 'Highlights does not exist'}, status = 404)
-#             except Exception as e:
-#                 amenity_form = HighlightsForm()
-#                 form_html = render_to_string('amenity_form_template.html', {'form': amenity_form}, request=request)
-#                 return JsonResponse({'form': form_html}, status=200)
-#         else:
-#             return JsonResponse({'error': 'Did not get Building ID'}, status = 400)
+        
+class request_amenity_status(View):
+    def get(self, request):
+        building_id = request.GET.get('building_id', '')
+        print(building_id)
+        if building_id:
+            try:
+                print("has building id", building_id)
+                amenity = Highlights.objects.get(buildingid = building_id)
+                # amenity_form = HighlightsForm(instance = amenity)
+                print(building_id)
+                response_data = {
+                    'status': 200,
+                    'building_name': amenity.buildingid.building_name,
+                    'free_wifi': amenity.free_wifi,
+                    'shared_kitchen': amenity.shared_kitchen,
+                    'smoke_free': amenity.smoke_free,
+                    'janitor': amenity.janitor,
+                    'guard': amenity.guard,
+                    'waterbill': amenity.waterbill,
+                    'electricbill': amenity.electricbill,
+                    'food': amenity.food
+                    # 'amenity_form': amenity_form
+                }
+                return JsonResponse(response_data, safe = False, status = 200)
+            except Highlights.DoesNotExist:
+                response_data = {
+                    'error': "Highlights does not exist",
+                    'status': 404,
+                }
+                return JsonResponse(response_data, safe = False, status=200)
+                # return JsonResponse({'error': 'Highlights does not exist'}, status = 404)
+            except Exception as e:
+                return JsonResponse({'form_html': f'{e}'}, status=500)        
+        else:
+            return JsonResponse({'error': 'Did not get Building ID'}, status = 400)
+
+class update_amenity_view(View):
+    def post(self, request):
+        building_id = request.POST.get('building_id')
+        print(building_id)
+        if building_id:
+            try:
+                building = Building.objects.get(buildingid = building_id)
+                amenity = Highlights.objects.get(buildingid = building)
+                amenityForm = HighlightsForm(request.POST, instance=amenity)
+                if amenityForm.is_valid():
+                    amenityForm.save(commit=False)
+                    amenityForm.save()
+                    return JsonResponse({'success': 'Successfuly update Amenity'}, status =200)
+                else:
+                    return JsonResponse({'error': 'Form invalid'}, status = 400)
+            except Highlights.DoesNotExist:
+                return JsonResponse({'error': 'Amenity not found'}, status = 404)
+            except Exception as e:
+                return JsonResponse({'error': f'CLement {e}'}, status = 500)
+        else:
+            return JsonResponse({'error': 'Did not recieve Building ID'}, status = 400)
+                
 
 
 

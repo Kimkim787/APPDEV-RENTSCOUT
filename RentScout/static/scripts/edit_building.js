@@ -4,6 +4,17 @@ $(document).ready(function(){
         show_room_photos($(this))
     });
 
+    // REQUEST ROOM BTN
+    $('#rooms_container').on('click', '.room_update_btn', function(){
+        $('#edit_room_form').removeClass('hidden');
+        request_room_data($(this));
+    });
+
+    // UPDATE ROOM BTN
+    $('#edit_room_form').on('click', '#edit_room_save', function(){
+        update_room($(this));
+    })
+    
     $('#building_update_form').on('submit', function(event){
         event.preventDefault();
         update_building();
@@ -15,10 +26,16 @@ $(document).ready(function(){
     });
 
     // AMENITIES CREATION BUTTON
-    $('#create_amenity_btn').on('click', function(event){
+    $('#amenities_create_form').on('click', '#create_amenity_btn', function(event){
         console.log('create amentiy butn');
         create_amenity($(this));
     })
+
+    // AMENITIES UPDATE BUTTON
+    $('#amenity_update_form').on('click', '#update_amenity_btn', function(e){
+        update_amenity($(this));
+    })
+
     // CANCEL POLICY CREATION FORM
     $('#policies_container').on('click', '#new_pol_cancel_btn', function(e){
         $('#new_pol_form').remove();
@@ -47,16 +64,17 @@ $(document).ready(function(){
 
         let textarea = $('<textarea></textarea>', {
             class: 'edit_policy_text',
-            id: `edit_policy_${policy_id_holder.val()}`,
+            // id: `edit_policy_${policy_id_holder.val()}`,
             text: old_policy
         })
 
         let submit_btn = $('<button></button>', {
             text: 'Save',
-            class: 'save_update_policy'
+            class: 'save_update_policy',
+            value: policy_id_holder.val()
         })
 
-        li.append(policy_id_holder);
+        // li.append(policy_id_holder);
         li.append(textarea);
         li.append(submit_btn);
 
@@ -69,9 +87,10 @@ $(document).ready(function(){
     })
         // TOGGLE FORMS
     $('.edit_btn').on('click', function() {
+        // hide forms (third column)
         $('.form_item').addClass('hidden');
         // get building id
-        let buildingId = $(this).closest('ul').find('#building_id').val();
+        let buildingId = $(this).closest('ul').find('.building_id').val();
         
             // EDIT BUILDING
         if($(this).val() == 'Edit Building'){
@@ -83,8 +102,8 @@ $(document).ready(function(){
             
             // AMENITIES
         } else if( $(this).val() == 'Amenities'){
-            $('#amenities_form').removeClass('hidden');
-            // request_amenity($(this));
+            $('#amenities_section').removeClass('hidden');
+            request_amenity($(this));
             // POLICIES
         } else if( $(this).val() == 'Policies'){
             $('#policies_form').removeClass('hidden');
@@ -96,6 +115,7 @@ $(document).ready(function(){
             // ROOMS
         } else if ($(this).val() == 'Rooms') {
             // REQUEST PHOTOS FOR MIDDLE BAR
+            console.log('rooms');
             request_rooms($(this));
 
             // UPLOAD PHOTO BTN
@@ -110,44 +130,58 @@ $(document).ready(function(){
         $('.mid_item').toggleClass('hidden');
     });    
 
-    // UPLOAD PHOTO BTN CLICK
-    $('#upload_room_photo_btn').on('click', function() {
-        let query = $(this).closest('#upload_photo_container').find('#upload_room_holder').val();
-        let formData = new FormData($('#file-upload-form')[0]);
-        axios.post('/room_photo/upload/as_view', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        })
-        .then(function(response) {
-            alert('Upload successful!');
-            show_room_photos(null, query);
-            resetFileUpload();
-        })
-        .catch(function(error) {
-            console.error(error);
-            alert(`Error: ${error.response.data.error || 'Upload failed!'}`);
-        });
-    });
-
-    // DELETE PHOTO_VIEW
-    function fn_delete_room_photo(button){
-        let query = $(button).siblings('input[name="img_id"]').val();
-        console.log(query);
+    // UPDATE BILDING GET FUNCTION
+    function request_bldg_instance(bldg_id){
         $.ajax({
-            url: '/room_photo/delete/view/',
-            type: 'POST',
+            url: '/building/update_view/',
+            type: 'GET',
             data: {
-                'photo_id': query,
+                'bldg_id': bldg_id,
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
             },
-            success: function(response, status, message){
-                button.closest('li').remove(); // Remove the <li> from the DOM
-                alert("Successfully deleted image")
+            success: function(data){
+                $('#bldg_name').val(data.building_name);
+                $('#bldg_vacant').val(data.rooms_vacant);
+                $('#bldg_zipcode').val(data.zip_code);
+                $('#bldg_street').val(data.street);
+                $('#bldg_city').val(data.city);
+                $('#bldg_province').val(data.province);
+                $('#bldg_country').val(data.country);
+                $('#bldg_desc').val(data.details);
+                $('#bldg_coords').val(data.coordinates);
+
             },
             error: function(xhr, status, error){
-                console.log(error);
-                alert(`Error: ${xhr.responseText.error || error}`);
+                console.log(`${status}: ${error}`);
+            }
+        });
+    }
+
+    // UPDATE BUILDING POST FUNCTION
+    function update_building(){
+        form_data = {
+            'bldg_id': $('#building_id_holder').val(),
+            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+            'building_name': $('#bldg_name').val(),
+            'rooms_vacant': $('#bldg_vacant').val(),
+            'zip_code': $('#bldg_zipcode').val(),
+            'street': $('#bldg_street').val(),
+            'city': $('#bldg_city').val(),
+            'province': $('#bldg_province').val(),
+            'country': $('#bldg_country').val(),
+            'details': $('#bldg_desc').val(),
+            'coordinates': $('#bldg_coords').val(),
+        }
+        console.log(form_data);
+        $.ajax({
+            url: "/building/update_view/",
+            type: 'POST',
+            data: form_data,
+            success: function(){
+                alert("success");
+            },
+            error: function(){
+                alert('error');
             }
         })
     }
@@ -156,7 +190,7 @@ $(document).ready(function(){
     function request_rooms(btn){
         $('#photo_container').empty();
         $('#rooms_container').empty();
-        let query = $(btn).closest('ul').find('#building_id').val();
+        let query = $(btn).closest('ul').find('.building_id').val();
             // REQUEST ROOMS FOR ROOM_VIEW
         $.ajax({
             url: '/room/get_rooms/',
@@ -191,7 +225,7 @@ $(document).ready(function(){
                     });
                     let update_btn = $('<button></button>', {
                         text: "Update Room",
-                        class: 'update_btn',
+                        class: 'room_update_btn',
                     });
                     
                     // console.log(input);
@@ -295,60 +329,163 @@ $(document).ready(function(){
         }); // ajax
     }
 
-    // UPDATE BILDING GET FUNCTION
-    function request_bldg_instance(bldg_id){
+    // UPLOAD PHOTO BTN CLICK
+    $('#upload_room_photo_btn').on('click', function() {
+        let query = $(this).closest('#upload_photo_container').find('#upload_room_holder').val();
+        let formData = new FormData($('#file-upload-form')[0]);
+        axios.post('/room_photo/upload/as_view', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        .then(function(response) {
+            alert('Upload successful!');
+            show_room_photos(null, query);
+            resetFileUpload();
+        })
+        .catch(function(error) {
+            console.error(error);
+            alert(`Error: ${error.response.data.error || 'Upload failed!'}`);
+        });
+    });
+
+    // DELETE PHOTO_VIEW
+    function fn_delete_room_photo(button){
+        let query = $(button).siblings('input[name="img_id"]').val();
+        console.log(query);
         $.ajax({
-            url: '/building/update_view/',
-            type: 'GET',
+            url: '/room_photo/delete/view/',
+            type: 'POST',
             data: {
-                'bldg_id': bldg_id,
+                'photo_id': query,
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
             },
-            success: function(data){
-                $('#bldg_name').val(data.building_name);
-                $('#bldg_vacant').val(data.rooms_vacant);
-                $('#bldg_zipcode').val(data.zip_code);
-                $('#bldg_street').val(data.street);
-                $('#bldg_city').val(data.city);
-                $('#bldg_province').val(data.province);
-                $('#bldg_country').val(data.country);
-                $('#bldg_desc').val(data.details);
-                $('#bldg_coords').val(data.coordinates);
-
+            success: function(response, status, message){
+                button.closest('li').remove(); // Remove the <li> from the DOM
+                alert("Successfully deleted image")
             },
             error: function(xhr, status, error){
-                console.log(`${status}: ${error}`);
+                console.log(error);
+                alert(`Error: ${xhr.responseText.error || error}`);
             }
-        });
+        })
     }
 
-    // UPDATE BUILDING POST FUNCTION
-    function update_building(){
-        form_data = {
-            'bldg_id': $('#building_id_holder').val(),
-            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-            'building_name': $('#bldg_name').val(),
-            'rooms_vacant': $('#bldg_vacant').val(),
-            'zip_code': $('#bldg_zipcode').val(),
-            'street': $('#bldg_street').val(),
-            'city': $('#bldg_city').val(),
-            'province': $('#bldg_province').val(),
-            'country': $('#bldg_country').val(),
-            'details': $('#bldg_desc').val(),
-            'coordinates': $('#bldg_coords').val(),
-        }
-        console.log(form_data);
+    function request_room_data(btn){
+        let room_id = $(btn).closest('.room_item')
+            .find('input[class="roomid_holder"]').val();
+        
+        let form_container = $('#edit_room_form_container');
         $.ajax({
-            url: "/building/update_view/",
+            url: '/room/request/',
+            type: 'GET',
+            data: {
+                'primary_key': room_id,
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+            },
+
+            success: function(response_data){
+                console.log(response_data);
+                form_container.html(`
+                    <label for="room_name">Room Name:</label>
+                    <input type="text" name="room_name" value="${response_data.room_name}"> 
+                    <label for="person_free">Person Available:</label>
+                    <input type="text" name="person_free" value="${response_data.person_free}">
+                    
+                    <label for="current_male">Male resident:</label>
+                    <input type="text" name="current_male" value="${response_data.current_male}">
+                
+                    <label for="current_female">Female resident:</label>
+                    <input type="text" name="current_female" value="${response_data.current_female}">
+                
+                    <label for="price">Price:</label>
+                    <input type="text" name="price" value="${response_data.price}">
+                
+                    <label for="room_size">Room Size:</label>
+                    <input type="text" name="room_size" value="${response_data.room_size}">
+                
+                
+                    <p><b>Additional Information:</b></p>
+                
+                    <label for="bed">Single bed:</label>
+                    <input type="text" name="bed" value="${response_data.bed}">
+                
+                    <label for="double_deck">Double bed:</label>
+                    <input type="text" name="double_deck" value="${response_data.double_deck}">
+                
+                    <input type="checkbox" name="shower" ${response_data.shower ? 'checked':''}>
+                    <label for="shower">Shower</label>
+                
+                    <input type="checkbox" name="priv_bathroom" ${response_data.priv_bathroom ? 'checked':''}>
+                    <label for="priv_bathroom">Private Bathroom</label>
+                
+                    <input type="checkbox" name="public_bathroom" ${response_data.public_bathroom ? 'checked':''}>
+                    <label for="public_bathroom">Public Bathroom</label>
+                
+                    <input type="checkbox" name="AC" ${response_data.AC ? 'checked':''}>
+                    <label for="AC">Air Conditioned</label>
+                
+                    <input type="checkbox" name="wardrobe" ${response_data.wardrobe ? 'checked':''}
+                    <label for="wardrobe">Wardrobe</label>
+                
+                    <input type="checkbox" name="kitchen" ${response_data.kitchen ? 'checked':''}>
+                    <label for="kitchen">Kitchen</label>
+                
+                    <input type="checkbox" name="free_wifi" ${response_data.free_wifi ? 'checked':''}>
+                    <label for="free_wifi">Free Wifi</label>
+                
+                    <button id="edit_room_save" value="${response_data.roomid}" >Save<button>
+                `);
+            },
+            error: function(xhr, status, error){
+                console.log(error);
+                alert(`Error: ${xhr.responseText.error || error}`);
+            }
+        })
+
+    }
+    
+    function update_room(btn){
+        let room_id = $(btn).val();
+        let form = $('#edit_room_form_container');
+
+        let form_data = {
+            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+
+            'room_id': $('#edit_room_save').val(),
+            'room_name': $('input[name="room_name"]').val(),
+            'person_free': $('input[name="person_free"]').val(),
+            'current_male': $('input[name="current_male"]').val(),
+            'current_female': $('input[name="current_female"]').val(),
+            'price': $('input[name="price"]').val(),
+            'room_size': $('input[name="room_size"]').val(),
+            'bed': $('input[name="bed"]').val(),
+            'double_deck': $('input[name="double_deck"]').val(),
+        
+            'shower': $('input[name="shower"]').is(':checked'),
+            'priv_bathroom': $('input[name="priv_bathroom"]').is(':checked'),
+            'public_bathroom': $('input[name="public_bathroom"]').is(':checked'),
+            'AC': $('input[name="AC"]').is(':checked'),
+            'wardrobe': $('input[name="wardrobe"]').is(':checked'),
+            'kitchen': $('input[name="kitchen"]').is(':checked'),
+            'free_wifi': $('input[name="free_wifi"]').is(':checked')
+        };
+
+        $.ajax({
+            url: '/room_update_view/',
             type: 'POST',
             data: form_data,
             success: function(){
-                alert("success");
+                alert('success');
             },
-            error: function(){
-                alert('error');
+            error: function(xhr, status, error){
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                } else {
+                    alert(`Error ${xhr.status}: ${error}`);
+                }
             }
-        })
+        });
     }
 
     function show_newpolicy_form(){
@@ -385,7 +522,7 @@ $(document).ready(function(){
         li.append(save_btn);
         pol_container.prepend(li);  
         } // else
-}
+    }
 
     // GET ALL POLICIES OF BUILDING
     function request_bldg_policies(query){
@@ -407,7 +544,7 @@ $(document).ready(function(){
 
                     let input = $('<input>', {
                         type: 'text',
-                        class: 'policy_id_holder', 
+                        class: 'policy_id_holder hidden',
                         value: policy.policy_id
                     });
 
@@ -418,7 +555,8 @@ $(document).ready(function(){
 
                     let del_btn = $('<button></button>', {
                         class: 'pol_del_btn',
-                        text: 'Delete'
+                        text: 'Delete',
+                        value: policy.policy_id
                     });
 
                     let edit_btn = $('<button></button>', {
@@ -496,9 +634,12 @@ $(document).ready(function(){
 
     function update_policy(btn){
         let policy_text = $(btn).closest('li')
-            .find('textarea[class="edit_policy_text"]').text();
-        let policy_id = $(btn).closest('li')
-            .find('input[class="policy_id_holder"]').val();
+            .find('textarea[class="edit_policy_text"]').val();
+
+        let policy_id = $(btn).val();
+
+        console.log(policy_text);
+        console.log(policy_id);
         $.ajax({
             url: '/building/policy/update/',
             type: 'POST',
@@ -508,7 +649,8 @@ $(document).ready(function(){
                 'policy': policy_text
             },
             success: function(){
-                alert('success')
+                alert('success');
+                refresh_policy_display();
             }, 
             error: function(xhr, status, error){
                 if (xhr.responseJSON && xhr.responseJSON.error) {
@@ -522,7 +664,7 @@ $(document).ready(function(){
 
 
     function create_amenity(btn){
-        let building_id = $('#building_id').val();
+        let building_id = $(btn).val();
         let form = $(btn).closest('#amenities_create_form');
         let free_wifi = form.find('input[name="free_wifi"]').is(':checked');
         let shared_kitchen = form.find('input[name="shared_kitchen"]').is(':checked');
@@ -551,7 +693,8 @@ $(document).ready(function(){
             type: 'POST',
             data: form_data,
             success: function(){
-                alert('success');
+                alert('Successfuly created Amenities');
+                request_amenity(null, building_id);
             },
             error: function(xhr, status, error){
                 if (xhr.responseJSON && xhr.responseJSON.error) {
@@ -562,33 +705,151 @@ $(document).ready(function(){
             }
         })
     }
-    // function request_amenity(btn){
-    //     let bldg_id = $(btn).closest('ul').find('#building_id');
-    //     $.ajax({
-    //         url: '/building/amenity_request/',
-    //         type: 'GET',
-    //         data: {
-    //             'building_id': bldg_id.val(),
-    //             'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-    //         },
-    //         success: function(data){
-    //             alert('Success');
-    //             console.log(data);
-    //         },
-    //         error: function(xhr, status, error){
-    //             if (xhr.responseJSON && xhr.responseJSON.error) {
-    //                 if (xhr.status === 404) {
-    //                     console.log("status is 404");
 
-    //                 } else{
-    //                 alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
-    //                 }
-    //             } else {
-    //                 alert(`Error ${xhr.status}: ${error}`);
-    //             }
-    //         }
-    //     })
-    // }
+    function request_amenity(btn=null, query=null){
+        $('.amenity_form_items').addClass('hidden');
+        bldg_id = ""
+        if(btn){
+            bldg_id = $(btn).closest('ul').find('.building_id').val();
+        } else {
+            bldg_id = query;
+        }
+        console.log(bldg_id);
+        $.ajax({
+            url: '/building/amenity_request/',
+            type: 'GET',
+            data: {
+                'building_id': bldg_id,
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+            },
+            success: function(data){
+                // If Amenities was found
+                if (data.status === 200){
+                    console.log("success");
+                    $('#amenities_create_form').empty();
+                    amenity_container = $('#amenity_update_form');
+                    amenity_container.empty();
+                    
+                    amenity_container.html(`
+                            <input type="checkbox" name="free_wifi" id="free_wifi" ${data.free_wifi ? 'checked' : ''}/>
+                            <label for="free_wifi">Free Wifi</label>
 
+                            <input type="checkbox" name="shared_kitchen" id="shared_kitchen" ${data.shared_kitchen ? 'checked' : ''}/>
+                            <label for="shared_kitchen">Shared Kitchen</label>
+
+                            <input type="checkbox" name="smoke_free" id="smoke_free" ${data.smoke_free ? 'checked' : ''}/>
+                            <label for="smoke_free">Smoke Free</label>
+
+                            <input type="checkbox" name="janitor" id="janitor" ${data.janitor ? 'checked' : ''}/>
+                            <label for="janitor">Janitor</label>
+
+                            <input type="checkbox" name="guard" id="guard" ${data.guard ? 'checked' : ''}/>
+                            <label for="guard">Guard</label>
+
+                            <input type="checkbox" name="waterbill" id="waterbill" ${data.waterbill ? 'checked' : ''}/>
+                            <label for="waterbill">Water Bill Included</label>
+
+                            <input type="checkbox" name="electricbill" id="electricbill" ${data.electricbill ? 'checked' : ''}/>
+                            <label for="electricbill">Electric Bill Included</label>
+
+                            <input type="checkbox" name="food" id="food" ${data.food ? 'checked' : ''}/>
+                            <label for="food">Food</label>
+
+                            <button id="update_amenity_btn" value="${bldg_id}">Update</button>
+                    `)
+                    amenity_container.removeClass('hidden');
+                } else { // If no amenities was found
+                    $('#amenity_update_form').empty();
+                    $('#create_amenity_btn').val(bldg_id);
+                    $('#amenities_create_form').removeClass('hidden');
+                    $('#amenities_create_form').html(`
+                        <input type="checkbox" name="free_wifi"/>
+                        <label for="free_wifi">Free Wifi</label>
+
+                        <input type="checkbox" name="shared_kitchen"/>
+                        <label for="shared_kitchen">Shared Kitchen</label>
+
+                        <input type="checkbox" name="smoke_free"/>
+                        <label for="smoke_free">Smoke Free</label>
+
+                        <input type="checkbox" name="janitor"/>
+                        <label for="janitor">Janitor</label>
+
+                        <input type="checkbox" name="guard"/>
+                        <label for="guard">Guard</label>
+
+                        <input type="checkbox" name="waterbill"/>
+                        <label for="waterbill">Water Bill Included</label>
+
+                        <input type="checkbox" name="electricbill"/>
+                        <label for="electricbill">Electric Bill Included</label>
+
+                        <input type="checkbox" name="food"/>
+                        <label for="food">Food</label>
+
+                        <button id="create_amenity_btn" value="${bldg_id}">Create</button>
+                    `);
+                }
+            },
+            error: function(xhr, status, error){
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    if (status === 404) {
+                        console.log("status is 404");
+                    } else{
+                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    }
+                } else {
+                    alert('Other errors');
+                }
+            }
+        })
+    }
+
+    function update_amenity(btn){
+        let building_id = $(btn).val();
+        let form = $(btn).closest('#amenity_update_form');
+        let free_wifi = form.find('input[name="free_wifi"]').is(':checked');
+        let shared_kitchen = form.find('input[name="shared_kitchen"]').is(':checked');
+        let smoke_free = form.find('input[name="smoke_free"]').is(':checked');
+        let janitor = form.find('input[name="janitor"]').is(':checked');
+        let guard = form.find('input[name="guard"]').is(':checked');
+        let waterbill = form.find('input[name="waterbill"]').is(':checked');
+        let electricbill = form.find('input[name="electricbill"]').is(':checked');
+        let food = form.find('input[name="food"]').is(':checked');
+
+        form_data = {
+            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+            'building_id': building_id,
+            'free_wifi': free_wifi,
+            'shared_kitchen': shared_kitchen,
+            'smoke_free': smoke_free,
+            'janitor': janitor,
+            'guard': guard,
+            'waterbill': waterbill,
+            'electricbill': electricbill,
+            'food': food,
+        }
+        console.log(form_data);
+        $.ajax({
+            url: '/building/amenity/update/',
+            type: 'POST',
+            data: form_data,
+            success: function(){
+                alert('success');
+                request_amenity(null, building_id);
+            },
+            error: function(xhr, status, error){
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    if (status === 404) {
+                        console.log("status is 404");
+                    } else{
+                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    }
+                } else {
+                    alert('Other errors');
+                }
+            }
+        });
+    }
 }); // ready function
 
