@@ -2,7 +2,9 @@ $(document).ready(function(){
     // "SEE PHOTOS" BUTTON CLICKED
     $('#rooms_container').on('click', '.photo_btn', function(){
         $('.form_item').addClass('hidden');
-        show_room_photos($(this))
+        show_room_photos($(this));
+        $('#upload_room_photo').removeClass('hidden');
+
     });
 
     // Image clicked
@@ -347,7 +349,12 @@ $(document).ready(function(){
     // UPLOAD PHOTO BTN CLICK
     $('#upload_room_photo_btn').on('click', function() {
         let query = $(this).closest('#upload_photo_container').find('#upload_room_holder').val();
+        
         let formData = new FormData($('#file-upload-form')[0]);
+        if (!formData.get('file')){
+            alert('Please select a file');
+            return;
+        }
         axios.post('/room_photo/upload/as_view', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
