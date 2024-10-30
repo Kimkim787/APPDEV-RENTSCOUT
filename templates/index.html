@@ -6,6 +6,7 @@
     {% load static %}
     <script src="{% static 'scripts\jquery.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/navigation.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <title>RENTSCOUT</title>
     {% block stylecontent %}
     {% endblock stylecontent %}
@@ -45,7 +46,7 @@
     </nav>
 
     {% comment %} TEMPORARY. AYAW E APIL SA DESIGN {% endcomment%}
-    <a href="{% url 'building_info' 1 %}">Building 2</a> 
+    
 
     {% block bodycontent %}
     {% endblock %}

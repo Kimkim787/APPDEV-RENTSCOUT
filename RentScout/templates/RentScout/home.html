@@ -1,6 +1,83 @@
 {% extends 'index.html' %}
+{% load static %} 
 
 {% block bodycontent %}
-    <h2>RENTSCOUT</h2>
-
+<div class="heropage">
+    <div class="heropic">
+        <div class="txtbox">
+            <h1>We’ll help you find your place you’ll love</h1>
+        </div>
+        <form class="searchbox">
+            <input type="text" placeholder="Enter an Address, neighborhood, city,  or ZIP code">
+            <img src="{% static 'imgs/home/searchicon.png' %}" alt="Search Icon">
+        </form>
+    </div>
+    <div class="buildings_box">
+        <div class="buildingbox">
+            <a href="{% url 'building_info' 1 %}">
+                <img src="{% static 'imgs/home/buildingpic.png' %}" alt="">
+                <div>
+                    <h6>6022, UPPER <br>BUG-OT ARGAO, CEBU</h6>
+                </div>
+            </a> 
+        </div>
+        <div class="buildingbox">
+            <a href="{% url 'building_info' 1 %}">
+                <img src="{% static 'imgs/home/buildingpic.png' %}" alt="">
+                <div>
+                    <h6>6022, UPPER <br>BUG-OT ARGAO, CEBU</h6>
+                </div>
+            </a> 
+        </div>
+        <div class="buildingbox">
+            <a href="{% url 'building_info' 1 %}">
+                <img src="{% static 'imgs/home/buildingpic.png' %}" alt="">
+                <div>
+                    <h6>6022, UPPER <br>BUG-OT ARGAO, CEBU</h6>
+                </div>
+            </a> 
+        </div>
+        <div class="buildingbox">
+            <a href="{% url 'building_info' 1 %}">
+                <img src="{% static 'imgs/home/buildingpic.png' %}" alt="">
+                <div>
+                    <h6>6022, UPPER <br>BUG-OT ARGAO, CEBU</h6>
+                </div>
+            </a> 
+        </div>
+        <div class="buildingbox">
+            <a href="{% url 'building_info' 1 %}">
+                <img src="{% static 'imgs/home/buildingpic.png' %}" alt="">
+                <div>
+                    <h6>6022, UPPER <br>BUG-OT ARGAO, CEBU</h6>
+                </div>
+            </a> 
+        </div>
+        <div class="buildingbox">
+            <a href="{% url 'building_info' 1 %}">
+                <img src="{% static 'imgs/home/buildingpic.png' %}" alt="">
+                <div>
+                    <h6>6022, UPPER <br>BUG-OT ARGAO, CEBU</h6>
+                </div>
+            </a> 
+        </div>
+        <div class="buildingbox">
+            <a href="{% url 'building_info' 1 %}">
+                <img src="{% static 'imgs/home/buildingpic.png' %}" alt="">
+                <div>
+                    <h6>6022, UPPER <br>BUG-OT ARGAO, CEBU</h6>
+                </div>
+            </a> 
+        </div>
+        <div class="buildingbox">
+            <a href="{% url 'building_info' 1 %}">
+                <img src="{% static 'imgs/home/buildingpic.png' %}" alt="">
+                <div>
+                    <h6>6022, UPPER <br>BUG-OT ARGAO, CEBU</h6>
+                </div>
+            </a> 
+        </div>
+    </div>
+</div>
+    
 {% endblock %}
