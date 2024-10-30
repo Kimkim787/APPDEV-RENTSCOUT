@@ -3,7 +3,8 @@ from django.forms import ModelForm
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm
 from .models import ( ScoutUser, ScoutUser_Landlord, Building, Highlights, 
-                     Policies, Room, Feedback, RoomImage, BuildingImage)
+                     Policies, Room, Feedback, RoomImage, BuildingImage,
+                     ScoutUserBookmark, LandlordUserBookmark, )
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -42,6 +43,18 @@ class ScoutUserChangeForm(UserChangeForm):
         fields = ('firstname', 'lastname', 'middlename',
                   'birthdate', 'gender',)
 
+class ScoutUserProfileForm(UserChangeForm):
+    class Meta:
+        model = ScoutUser
+        fields = ('firstname', 'lastname', 'middlename',
+                  'birthdate', 'gender', 'barangay', 
+                  'province', 'city', 'contact',)
+        
+    barangay = forms.CharField(required=False)
+    province = forms.CharField(required=False)
+    city = forms.CharField(required=False)
+    contact = forms.CharField(required=False)
+
 class LandlordUserCreationForm(UserCreationForm):
     class Meta:
         model = ScoutUser_Landlord
@@ -53,6 +66,18 @@ class LandlordUserChangeForm(UserChangeForm):
         model = ScoutUser_Landlord
         fields = ('firstname', 'lastname', 'middlename',
                   'birthdate', 'gender',)
+
+class LandlordUserProfileForm(UserChangeForm):
+    class Meta:
+        model = ScoutUser_Landlord
+        fields = ('firstname', 'lastname', 'middlename',
+                  'birthdate', 'gender', 'barangay', 
+                  'province', 'city', 'contact',)
+
+    barangay = forms.CharField(required=False)
+    province = forms.CharField(required=False)
+    city = forms.CharField(required=False)
+    contact = forms.CharField(required=False)
 
 class UserLoginForm(AuthenticationForm):
     pass 
@@ -106,3 +131,13 @@ class BuildingImageForm(ModelForm):
     class Meta:
         model = BuildingImage
         exclude = ('building_imgID', 'building_img')
+
+class ScoutBookmarkForm(ModelForm):
+    class Meta:
+        model = ScoutUserBookmark
+        fields = ('buildingid', )
+        
+class LandlordBookmarkForm(ModelForm):
+    class Meta:
+        model = LandlordUserBookmark
+        fields = ('buildingid', )

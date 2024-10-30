@@ -1,22 +1,27 @@
 from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
-                     Feedback, RoomImage, ScoutUser_Landlord)
+                     Feedback, RoomImage, ScoutUser_Landlord,
+                     ScoutUserBookmark, LandlordUserBookmark)
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
                     RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin,
-                    RoomFormAdmin)
+                    RoomFormAdmin, LandlordUserProfileForm, ScoutUserProfileForm,
+                    ScoutBookmarkForm, LandlordBookmarkForm)
 # Register your models here.
 
 class ScoutUserAdmin(admin.ModelAdmin):
-    list_display = ['userid', 'firstname', 'lastname',
-                    'middlename', 'gender', 'birthdate']
+    list_display = ['userid', 'email', 'firstname', 'lastname',
+                    'middlename', 'gender', 'birthdate', 
+                    'barangay', 'province', 'city', 'contact']
     form = ScoutUserCreationForm
 
 # Use 'password' as a read-only field to avoid exposing it directly
     readonly_fields = ('password',)
     
 class ScoutUser_LandlordAdmin(admin.ModelAdmin):
-    list_display = ['userid', 'firstname', 'lastname',
-                    'middlename', 'gender', 'birthdate']
+    list_display = ['userid', 'email', 'firstname', 'lastname',
+                    'middlename', 'gender', 'birthdate',
+                    'barangay', 'province', 'city', 'contact']
+
     form = LandlordUserCreationForm
 
 
@@ -53,6 +58,13 @@ class RoomImageAdmin(admin.ModelAdmin):
     def get_room_name(self, obj):
             return obj.roomid.room_name
     
+
+class ScoutBookmarkAdmin(admin.ModelAdmin):
+    list_display = ['buildingid', 'owner']
+
+class LandlordBookmarkAdmin(admin.ModelAdmin):
+    list_display = ['buildingid', 'owner']
+
 admin.site.register(ScoutUser, ScoutUserAdmin)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(Policies, PoliciesAdmin)
@@ -61,3 +73,5 @@ admin.site.register(Room, RoomAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
 admin.site.register(RoomImage, RoomImageAdmin)
 admin.site.register(ScoutUser_Landlord, ScoutUser_LandlordAdmin)
+admin.site.register(ScoutUserBookmark, ScoutBookmarkAdmin)
+admin.site.register(LandlordUserBookmark, LandlordBookmarkAdmin)

@@ -192,9 +192,10 @@
   padding: 20px;
   border-top: 1px solid #746154;
 }
-.feedbacks p{
+/* .feedbacks p{ */
   /* padding: 0 20px 20px 20px; */
-}
+/*   
+} */
 .fixedpage{
   display: flex;
   flex-direction: column;
@@ -322,3 +323,40 @@ p span{
   z-index: 999; /* Just behind the modal */
   display: none;
 }
+
+
+/* FOR BOOKMARK THINGS */
+@keyframes pulse{
+  0%{ transform: scale(1); }
+  50%{ transform: scale(1.5); }
+  100%{ transform: scale(1); }
+}
+
+#heart_sign {
+  width: 40px;
+  height: 40px;
+  background-image: url('../imgs/svgs/black_heart.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: background-image 2 ease;
+}
+
+#heart_sign.heart-active {
+  animation: pulse 1s ease;
+  background-image: url('../imgs/svgs/red_heart.svg');
+}
+
+/* #heart-icon {
+  cursor: pointer;
+  transition: fill 0.5s ease; 
+} */
+
+/* .heart-path { */
+  /* fill: white; Initial fill color */
+/* } */
+
+
+
+/* .heart-active .heart-path {
+  animation: pulse 1s ease;
+} */

@@ -2,8 +2,8 @@
 
 {% block stylecontent %}
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/building.css' %}?100">
-    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+    <link rel="stylesheet" href="{% static 'css/building.css' %}?102">
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}?100">
 
 {% endblock stylecontent %}
 {% block bodycontent %} 
@@ -147,12 +147,20 @@
                             <p>(Rating: {{ feedback.rating }}) 
                                 {% if feedback.rating == '1' %}
                                 ⭐
+                                {% elif feedback.rating == '1.5' %}
+                                ⭐💫
                                 {% elif feedback.rating == '2' %}
                                 ⭐⭐
+                                {% elif feedback.rating == '2.5' %}
+                                ⭐⭐💫
                                 {% elif feedback.rating == '3' %}
                                 ⭐⭐⭐
+                                {% elif feedback.rating == '3.5' %}
+                                ⭐⭐⭐💫
                                 {% elif feedback.rating == '4' %}
                                 ⭐⭐⭐⭐
+                                {% elif feedback.rating == '4.5' %}
+                                ⭐⭐⭐⭐💫
                                 {% elif feedback.rating == '5' %}
                                 ⭐⭐⭐⭐⭐
                                 {% else %}
@@ -319,6 +327,13 @@
         <div class="fixedpage">
             <div class="bhousenamebox">
                 <h2>{{ building.building_name }}</h2>
+
+
+                <!-- <input type="submit" value="🤍"> -->
+                <div id="heart_container" value="{{ building.buildingid }}">
+                    <!-- <div id="heart_sign" class="heart" value="{{ building.buildingid }}"></div> -->
+                </div>
+
                 <a href="{% url 'home' %}"><img src="{% static 'imgs/building/back-button.png' %}" alt="back" ></a>
             </div>
             <div class="infobox">
@@ -342,5 +357,5 @@
         </div>
         <script src="{% static 'scripts/modal.js' %}?100"></script>
     </section>
-    <script src="{% static 'scripts/building.js' %}?101"></script>
+    <script src="{% static 'scripts/building.js' %}?103"></script>
     {% endblock bodycontent %}

@@ -28,7 +28,9 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
     city = models.CharField(max_length = 50, default = "", null=True)
     contact = models.CharField(max_length = 15, default="", null=True)
     
-
+    def fullname(self):
+        return f'{self.firstname} {self.lastname}'
+    
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -68,7 +70,7 @@ class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
     firstname = models.CharField(max_length = 20)
     lastname = models.CharField(max_length = 20)
     middlename = models.CharField(max_length = 20)
-    birthdate = models.DateField(default = timezone.now)
+    birthdate = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length = 8, choices = GENDERS, default = MALE)
     barangay = models.CharField(max_length = 50, default = "", null=True)
     province = models.CharField(max_length = 50, default = "", null=True)
@@ -195,3 +197,12 @@ class RoomImage(models.Model):
     room_imgID = models.AutoField(primary_key = True)
     room_img = models.FileField(upload_to = 'upload/room_imgs', blank = True, null = True)
     roomid = models.ForeignKey(Room, related_name = 'room_photo', on_delete = models.CASCADE, null = False, blank = False)
+
+
+class ScoutUserBookmark(models.Model):
+    buildingid = models.ForeignKey(Building, related_name="scoutuser_bookmark_building", on_delete=models.CASCADE)
+    owner = models.ForeignKey(ScoutUser, related_name="scoutuser_bookmark_owner", on_delete=models.CASCADE)
+
+class LandlordUserBookmark(models.Model):
+    buildingid = models.ForeignKey(Building, related_name="landlord_bookmark_building", on_delete=models.CASCADE)
+    owner = models.ForeignKey(ScoutUser_Landlord, related_name="landlord_bookmark_owner", on_delete=models.CASCADE)

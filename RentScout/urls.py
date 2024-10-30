@@ -3,7 +3,8 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     del_room_photo_view, upload_room_photo_view, building_edit_view,
                     get_policies, save_policy_view, del_policy_view, update_policy_view,
                     request_amenity_status, create_amenity_view, update_amenity_view,
-                    update_room
+                    update_room, create_bookmark, get_bookmark_status, remove_bookmark,
+                    
                     )
 from . import views
 from django.conf import settings
@@ -53,6 +54,12 @@ urlpatterns = [
     path('building/amenity/update/', update_amenity_view.as_view()),
 
 
+    # USERPROFILE
+    path('user/user_profile/', views.user_profile, name='user_profile'),
+    path('user/user_profile/update/', views.update_user_profile, name='update_user_profile'),
+    path('user/bookmark/add/', create_bookmark.as_view(), name='add_bookmark'),
+    path('user/bookmark/building/page/', get_bookmark_status.as_view()),
+    path('user/bookmark/delete/', remove_bookmark.as_view()),
 ]
 
 if settings.DEBUG:

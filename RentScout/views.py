@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
+                     ScoutUserBookmark, LandlordUserBookmark
                      
                     )
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
                     ScoutUserCreationForm, RoomForm, RoomImageForm, FeedBackForm,
-                    LandlordUserCreationForm, PoliciesForm, HighlightsForm
+                    LandlordUserCreationForm, PoliciesForm, HighlightsForm,
+                    ScoutUserProfileForm, LandlordUserProfileForm,
+                    ScoutBookmarkForm, LandlordBookmarkForm, 
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -324,6 +327,50 @@ def home(request):
     return render(request, 'RentScout/home.html', {})
 
 
+@login_required(login_url='signin')
+def user_profile(request):
+    if isinstance(request.user, ScoutUser):
+        form = ScoutUserProfileForm()
+        user_data = ScoutUser.objects.get(userid = request.user.userid)
+        context = {'form': form, 'user_data': user_data}
+        print(user_data)
+    else:
+        form = LandlordUserProfileForm()
+        user_data = ScoutUser_Landlord.objects.get(userid = request.user.userid)
+        context = {'form': form, 'user_data': user_data}
+        print(user_data)
+    return render(request, 'RentScout/user_profile.html', context)
+
+def update_user_profile(request):
+    if request.method == 'POST':
+        if isinstance(request.user, ScoutUser):
+            user = ScoutUser.objects.get(userid = request.user.userid)
+            tryForm = ScoutUserProfileForm(request.POST, instance=user)
+
+            if tryForm.is_valid():
+                updatedForm = tryForm.save(commit=False)
+                updatedForm.save()
+                messages.success(request, 'Your profile has been updated')
+                return redirect('user_profile')
+            else:
+                messages.error(request, 'Form is invalid')
+                return redirect('user_profile')
+        
+    elif isinstance(request.user, ScoutUser_Landlord):
+        user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
+        tryForm = LandlordUserProfileForm(  request.POST, instance=user)
+
+        if tryForm.is_valid():
+            updatedForm = tryForm.save(commit=False)
+            updatedForm.save()
+            messages.success(request, 'Your profile has been updated')
+            return redirect('user_profile')
+        else:
+            print(tryForm.errors)
+            messages.error(request, 'Form is invalid')
+            return redirect('user_profile')
+                        
+
 class get_rooms(View):
     def get(self,request):
         query = request.GET.get('building_id', '')
@@ -611,7 +658,82 @@ class update_amenity_view(View):
         else:
             return JsonResponse({'error': 'Did not recieve Building ID'}, status = 400)
                 
+class get_bookmark_status(View):
+    def get(self, request):
+        building_id = request.GET.get('buildingid', '')
+        if building_id:
+            try:
+                print('has building id')
+                if isinstance(request.user, ScoutUser): 
+                    print('an instance of scoutuser')
+                    building = Building.objects.get(buildingid = building_id)
+                    bookmark = ScoutUserBookmark.objects.filter(owner=request.user, buildingid=building)
+                    print(bookmark)
+                    if bookmark:
+                        return JsonResponse({'success': 'Already Bookmarked',
+                                             'buildingid': building_id}, status = 200)
+                    else:
+                        return JsonResponse({'success': 'Not Bookmarked',
+                                             'buildingid': building_id}, status = 200)
+                    
+                elif isinstance(request.user, ScoutUser_Landlord):  
+                    print('an instance of landlord')
+                    building = Building.objects.get(buildingid = building_id)
+                    bookmark = LandlordUserBookmark.objects.filter(owner=request.user, buildingid=building)
+                    print(bookmark)
+                    if bookmark:
+                        return JsonResponse({'success': 'Already Bookmarked',
+                                             'buildingid': building_id}, status = 200)
+                    else:
+                        return JsonResponse({'success': 'Not Bookmarked',
+                                             'buildingid': building_id}, status = 200)
+                else:
+                    return JsonResponse({'error': 'User is not a true user'}, status = 500)
+                
+            except Building.DoesNotExist:
+                return JsonResponse ({'error': 'Buildingdoes not exist'}, status = 500)
+            except Exception as e:
+                return JsonResponse({'error': f'{e}'}, status = 500)
+        else:
+            return JsonResponse({'error': 'Did not get Building ID'}, status = 405)
 
+class create_bookmark(View):
+    def post(self, request):
+        if isinstance(request.user, ScoutUser):
+            form = ScoutBookmarkForm(request.POST)
+            if form.is_valid():
+                newbookmark = form.save(commit=False)
+                newbookmark.owner = request.user
+                newbookmark.save()
+                return JsonResponse({'success': 'Saved to Bookmark'}, status = 200)
+            else:
+                return JsonResponse({'error': 'Form invalid'}, status = 400)
+            
+        elif isinstance(request.user, ScoutUser_Landlord):
+            form = LandlordBookmarkForm(request.POST)
+            if form.is_valid():
+                newbookmark = form.save(commit=False)
+                newbookmark.owner = request.user
+                newbookmark.save()
+                return JsonResponse({'success': 'Saved to Bookmark'}, status = 200)
+            else:
+                return JsonResponse({'error': 'Form invalid'}, status = 400)
 
-
-
+class remove_bookmark(View):
+    def post(self, request):
+        buildingid = request.POST.get('building_id')
+        if buildingid is None:
+            return JsonResponse({'error': 'Did not receive Building ID'})
+        
+        if isinstance(request.user, ScoutUser):
+            building = Building.objects.get(buildingid= buildingid)
+            user = ScoutUser.objects.get(userid = request.user.userid)
+            bookmark = ScoutUserBookmark.objects.filter( owner=user, buildingid = building )
+            bookmark.delete()
+            return JsonResponse({'success': 'Bookmark has been removed'}, status = 200)
+        elif isinstance(request.user, ScoutUser_Landlord):
+            building = Building.objects.get(buildingid= buildingid)
+            user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
+            bookmark = LandlordUserBookmark.objects.filter( owner=user, buildingid = building )
+            bookmark.delete()
+            return JsonResponse({'success': 'Bookmark has been removed'}, status = 200)
