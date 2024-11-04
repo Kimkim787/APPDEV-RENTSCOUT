@@ -1,13 +1,16 @@
 from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
-                     Feedback, RoomImage, ScoutUser_Landlord,
-                     ScoutUserBookmark, LandlordUserBookmark)
+                     Feedback, RoomImage, ScoutUser_Landlord, AdminUser,
+                     ScoutUserBookmark, LandlordUserBookmark)   
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
                     RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin,
                     RoomFormAdmin, LandlordUserProfileForm, ScoutUserProfileForm,
                     ScoutBookmarkForm, LandlordBookmarkForm)
 # Register your models here.
 
+class AdminUserAdmin(admin.ModelAdmin):
+    list_display = ['userid', 'email', 'username']
+    
 class ScoutUserAdmin(admin.ModelAdmin):
     list_display = ['userid', 'email', 'firstname', 'lastname',
                     'middlename', 'gender', 'birthdate', 
@@ -76,3 +79,4 @@ admin.site.register(RoomImage, RoomImageAdmin)
 admin.site.register(ScoutUser_Landlord, ScoutUser_LandlordAdmin)
 admin.site.register(ScoutUserBookmark, ScoutBookmarkAdmin)
 admin.site.register(LandlordUserBookmark, LandlordBookmarkAdmin)
+admin.site.register(AdminUser, AdminUserAdmin)

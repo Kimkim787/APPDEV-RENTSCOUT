@@ -89,11 +89,12 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = "RentScout.ScoutUser_Landlord"
+AUTH_USER_MODEL = "RentScout.AdminUser"
 # AUTH_USER_MODEL = "RentScout.ScoutUser"
 AUTHENTICATION_BACKENDS = [
     'RentScout.auth_backends.ScoutUserBackend',
     'RentScout.auth_backends.ScoutUserLandlordBackend',
+    'RentScout.auth_backends.AdminUserBackend',
     'django.contrib.auth.backends.ModelBackend',  # default backend
 ]
 

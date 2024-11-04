@@ -13,6 +13,37 @@ from django.dispatch import receiver
 from django.db.models import Avg
 from django.core.validators import MinValueValidator
 
+
+class AdminUser(AbstractBaseUser, PermissionsMixin):
+    userid = models.AutoField(primary_key=True)
+    username = models.CharField(max_length = 50, null=False, blank=False)
+    email = models.EmailField(_("email address"), unique=True)
+        
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    objects = ScoutUserManager()
+
+        #define reverse accessor for GROUP
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name=_("groups"),
+        blank=True,
+        related_name="admin_user_groups"  # Specify a related_name to resolve the clash
+    )
+        #define reverse accessor for Permission
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_("user permissions"),
+        blank=True,
+        related_name="admin_user_permissions"  # Specify a related_name to resolve the clash
+    )
+
 class ScoutUser(AbstractBaseUser, PermissionsMixin):
     MALE = 'Male'
     FEMALE = 'Female'

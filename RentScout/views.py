@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
-                     ScoutUserBookmark, LandlordUserBookmark
+                     ScoutUserBookmark, LandlordUserBookmark, AdminUser
                     )
 
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
@@ -32,6 +32,8 @@ def get_user_backend(user):
     if isinstance(user, ScoutUser_Landlord):
         return 'RentScout.auth_backends.ScoutUserLandlordBackend'
     
+    if isinstance(user, AdminUser):
+        return 'RentScout.auth_backends.AdminUserBackend'
     return None
 
 def scoutuser_signup(request):
@@ -93,6 +95,9 @@ def scoutuser_login(request):
                 login(request, user, backend)
                 return redirect('home')
             elif user is not None and isinstance(user, ScoutUser_Landlord):
+                login(request, user, backend)
+                return redirect('home')
+            elif user is not None and isinstance(user, AdminUser):
                 login(request, user, backend)
                 return redirect('home')
             else:
@@ -196,7 +201,8 @@ class building_edit_view(View):
                 building = Building.objects.get(buildingid = bldg_id)
                 form = BuildingForm(instance = building)
                 form_data = {field.name: field.value() for field in form}
-                print(form_data)
+                form_data['building_image'] = building.building_image.url if building.building_image else None
+                print(form_data)    
                 return JsonResponse(form_data, status = 200)
             except Building.DoesNotExist:
                 return JsonResponse({"error": "Building does not exist"}, status = 400)
