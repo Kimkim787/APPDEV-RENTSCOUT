@@ -2,13 +2,13 @@ from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
                      ScoutUserBookmark, LandlordUserBookmark
-                     
                     )
+
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
                     ScoutUserCreationForm, RoomForm, RoomImageForm, FeedBackForm,
                     LandlordUserCreationForm, PoliciesForm, HighlightsForm,
                     ScoutUserProfileForm, LandlordUserProfileForm,
-                    ScoutBookmarkForm, LandlordBookmarkForm, 
+                    ScoutBookmarkForm, LandlordBookmarkForm, ScrapperFile
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -21,7 +21,8 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 
 
-import logging
+import logging, math, csv
+from django.core.paginator import Paginator
 logger = logging.getLogger(__name__)
 
 def get_user_backend(user):
@@ -195,7 +196,8 @@ class building_edit_view(View):
                 building = Building.objects.get(buildingid = bldg_id)
                 form = BuildingForm(instance = building)
                 form_data = {field.name: field.value() for field in form}
-                return JsonResponse(form_data)
+                print(form_data)
+                return JsonResponse(form_data, status = 200)
             except Building.DoesNotExist:
                 return JsonResponse({"error": "Building does not exist"}, status = 400)
             except Exception as e:
@@ -370,6 +372,68 @@ def update_user_profile(request):
             messages.error(request, 'Form is invalid')
             return redirect('user_profile')
                         
+class get_buildings_bypage(View):
+    def get(self, request):
+        page = request.GET.get('page', 1)
+
+        filter = request.GET.get('filter', None)
+
+        if filter == '':
+            filter = None
+
+        if not page:
+            return JsonResponse({'error': 'Did not recieve Building ID'}, status = 405)
+        
+        print(filter)
+        try:
+            if filter is not None:
+                try:
+                    filter_numeric = int(filter)
+                except ValueError:
+                    filter_numeric = None
+
+                all_buildings = Building.objects.filter(
+                    Q(building_name__icontains = filter) |
+                    Q(street__icontains = filter) |
+                    Q(city__icontains = filter) |
+                    Q(province__icontains = filter) |
+                    Q(country__icontains = filter) |
+                    Q(coordinates__icontains = filter) |
+                    (Q(zip_code = filter_numeric) if filter_numeric is not None else Q()) |
+                    (Q(average_rating = filter_numeric) if filter_numeric is not None else Q())
+                )
+            else:
+                all_buildings = Building.objects.all()
+            
+            print(all_buildings)
+            paginator = Paginator(all_buildings, 8)
+
+            building_page = paginator.get_page(page)
+
+            building_data = [
+                {
+                    'building_id': building.buildingid,
+                    'building_name': building.building_name,
+                    'building_address': building.complete_address(),
+                    'building_image': building.building_image.url if building.building_image else None,
+                }
+                for building in building_page
+            ]
+
+            response_data = {
+                'building_datas': building_data,
+                'total_pages': paginator.num_pages,
+                'current_page': building_page.number,
+                'has_next': building_page.has_next(),
+                'has_previous': building_page.has_previous(),
+            }
+
+            return JsonResponse(response_data)
+        
+        except Building.DoesNotExist:
+            return JsonResponse({'error': "Buildings Does Not Exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
 
 class get_rooms(View):
     def get(self,request):
@@ -737,3 +801,48 @@ class remove_bookmark(View):
             bookmark = LandlordUserBookmark.objects.filter( owner=user, buildingid = building )
             bookmark.delete()
             return JsonResponse({'success': 'Bookmark has been removed'}, status = 200)
+
+
+
+# SCRAPPER
+def building_file_scrapper(request):
+    if request.method == 'POST':
+        file = ScrapperFile(request.POST, request.FILES)
+        print(request.FILES)
+        if file.is_valid():
+            csv_file = request.FILES['file']
+            decoded_file = csv_file.read().decode('utf-8').splitlines()
+            reader = csv.DictReader(decoded_file)
+            user = ScoutUser_Landlord.objects.get(userid = 1)
+            try:
+                for row in reader:
+                # Prepare the building data
+                    form = BuildingForm({
+                        'building_name': row.get('building_name', ''),
+                        'zip_code': row.get('zip_code', 0),
+                        'street': row.get('street', ''),
+                        'city': row.get('city', 'None'),
+                        'province': row.get('province', 'None'),
+                        'country': row.get('country', 'None'),
+                        'details': row.get('details', ''),
+                        'rooms_vacant': row.get('rooms_vacant', 0),
+                        'coordinates': row.get('coordinates', ''),
+                        'average_rating': row.get('average_rating', 0.0),
+                    })
+
+                    if form.is_valid():
+                        newBuilding = form.save(commit=False)
+                        newBuilding.building_owner = user
+                        newBuilding.building_image = f"/upload/building_imgs/{row.get('building_image')}"
+                        newBuilding.save()
+                    
+            except Exception as e:
+
+                messages.error(request, f"{e}")
+                return redirect('building_scrapper')
+        else:
+                messages.error(request, "File Scrapper Invalid")
+                print(file.errors)
+                return redirect('building_scrapper')
+    form = ScrapperFile()
+    return render(request, 'RentScout/building_scrapper.html', {"form":form})

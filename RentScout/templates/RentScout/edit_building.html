@@ -15,11 +15,10 @@
 {% block bodycontent %}
     <section>
         <div id="left_bar">
-            <ul>
+            <ul>    
             {% for building in buildings %}
                 <li>
-
-                    <a href="#">{{ building.building_name }}
+                    <a href="{% url 'building_info' building.buildingid %}">{{ building.building_name }}
                         <span class="fas fa-caret-down third"></span>
                     </a>
                     <ul class="edit_btn_list">

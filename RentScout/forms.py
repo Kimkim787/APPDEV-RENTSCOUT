@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm
 from .models import ( ScoutUser, ScoutUser_Landlord, Building, Highlights, 
-                     Policies, Room, Feedback, RoomImage, BuildingImage,
+                     Policies, Room, Feedback, RoomImage,
                      ScoutUserBookmark, LandlordUserBookmark, )
 
 
@@ -127,11 +127,6 @@ class RoomImageForm(ModelForm):
         model = RoomImage
         exclude = ('room_imgID',)
     
-class BuildingImageForm(ModelForm):
-    class Meta:
-        model = BuildingImage
-        exclude = ('building_imgID', 'building_img')
-
 class ScoutBookmarkForm(ModelForm):
     class Meta:
         model = ScoutUserBookmark
@@ -141,3 +136,29 @@ class LandlordBookmarkForm(ModelForm):
     class Meta:
         model = LandlordUserBookmark
         fields = ('buildingid', )
+
+
+
+# trash
+class ScrapperFile(forms.Form):
+    file = forms.FileField()
+
+class BuildingScrapper(ModelForm):
+    class Meta:
+        model = Building
+        exclude = ('buildingid', 'building_owner')
+
+
+    # def clean_file(self):
+    #     uploaded_file = self.cleaned_data.get('file')
+        
+    #     # Validate file size
+    #     max_file_size = 10 * 1024 * 1024  # 10 MB
+    #     if uploaded_file.size > max_file_size:
+    #         raise forms.ValidationError("File size should not exceed 10MB.")
+        
+    #     # Validate file type
+    #     if not uploaded_file.name.endswith('.csv'):
+    #         raise forms.ValidationError("File must be a CSV file.")
+        
+    #     return uploaded_file

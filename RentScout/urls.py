@@ -4,6 +4,7 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     get_policies, save_policy_view, del_policy_view, update_policy_view,
                     request_amenity_status, create_amenity_view, update_amenity_view,
                     update_room, create_bookmark, get_bookmark_status, remove_bookmark,
+                    get_buildings_bypage, 
                     
                     )
 from . import views
@@ -15,6 +16,9 @@ urlpatterns = [
     path('signup/', views.scoutuser_signup, name='signup'),
     path('signin/', views.scoutuser_login, name="signin"),
     path('logout/', views.scoutuser_logout, name='logout'),
+
+    # DASHBOARD (HOME PAGE)
+    path('home_page/request/buildings/', get_buildings_bypage.as_view()),
 
     # BUILDINGS
     path('create_building/', views.create_building, name='new_building'),
@@ -60,6 +64,9 @@ urlpatterns = [
     path('user/bookmark/add/', create_bookmark.as_view(), name='add_bookmark'),
     path('user/bookmark/building/page/', get_bookmark_status.as_view()),
     path('user/bookmark/delete/', remove_bookmark.as_view()),
+
+    # SCRAPPERS
+    path('scrapper/building/', views.building_file_scrapper, name='building_scrapper'),
 ]
 
 if settings.DEBUG:

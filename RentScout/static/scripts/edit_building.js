@@ -145,6 +145,7 @@ $(document).ready(function(){
 
     // UPDATE BILDING GET FUNCTION
     function request_bldg_instance(bldg_id){
+        console.log('requesting bldg instance');
         $.ajax({
             url: '/building/update_view/',
             type: 'GET',
@@ -152,16 +153,18 @@ $(document).ready(function(){
                 'bldg_id': bldg_id,
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
             },
-            success: function(data){
-                $('#bldg_name').val(data.building_name);
-                $('#bldg_vacant').val(data.rooms_vacant);
-                $('#bldg_zipcode').val(data.zip_code);
-                $('#bldg_street').val(data.street);
-                $('#bldg_city').val(data.city);
-                $('#bldg_province').val(data.province);
-                $('#bldg_country').val(data.country);
-                $('#bldg_desc').val(data.details);
-                $('#bldg_coords').val(data.coordinates);
+            success: function(response){    
+                console.log("Data:");   
+                console.log(response);
+                $('#bldg_name').val(response.building_name);
+                $('#bldg_vacant').val(response.rooms_vacant);
+                $('#bldg_zipcode').val(response.zip_code);
+                $('#bldg_street').val(response.street);
+                $('#bldg_city').val(response.city);
+                $('#bldg_province').val(response.province);
+                $('#bldg_country').val(response.country);
+                $('#bldg_desc').val(response.details);
+                $('#bldg_coords').val(response.coordinates);
 
             },
             error: function(xhr, status, error){

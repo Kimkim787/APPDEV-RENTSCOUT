@@ -6,7 +6,6 @@
     {% load static %}
     <script src="{% static 'scripts\jquery.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/navigation.css' %}">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <title>RENTSCOUT</title>
     {% block stylecontent %}
     {% endblock stylecontent %}
@@ -25,9 +24,13 @@
         <img src="{% static 'imgs/nav/logo22.png' %}" alt="Website logo" >
 
         <ul>
+            <li>
+                <a href="{% url 'home' %}">Home</a>
+            </li>
             <li>temporary</li>
-            <li>temporary</li>
-            <li>temporary</li>
+            <li>
+                <a href="{% url 'building_scrapper' %}">Building Scrapper</a>
+            </li>
             <li>
                 <a href="{% url 'user_profile' %}">MY PROFILE</a>
             </li>

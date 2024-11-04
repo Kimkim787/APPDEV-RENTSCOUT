@@ -55,7 +55,7 @@
 
 /* ------- suggested buildings ---------- */
 
-.buildings_box{
+#buildings_container{
     height: fit-content;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -77,4 +77,14 @@
 .buildingbox a{
     text-decoration: none;
     color: black;
+}
+
+.building_address_container{
+    width: 180px;
+    text-overflow: ellipsis;
+
+}
+
+.building_address_container h6{
+    margin: 0;
 }

@@ -8,6 +8,11 @@ from django.contrib.auth.models import Permission, Group
 
 from .managers import ScoutUserManager, LandlordCustomUserManager
 
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from django.db.models import Avg
+from django.core.validators import MinValueValidator
+
 class ScoutUser(AbstractBaseUser, PermissionsMixin):
     MALE = 'Male'
     FEMALE = 'Female'
@@ -122,9 +127,14 @@ class Building(models.Model):
     details = models.TextField(blank=True, null=True)
     rooms_vacant = models.IntegerField(validators = [MinValueValidator(0)])
     coordinates = models.CharField(max_length = 255, blank = False, null = False, default = "")
+    building_image = models.FileField(upload_to = 'upload/building_imgs', blank = True, null = True)
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
 
     def complete_address(self):
         return f"{self.zip_code}, {self.street}, {self.province}, {self.city}, {self.country}"
+
+    class Meta:
+        ordering = ['-average_rating']
 
 class Policies(models.Model):
     policy_id = models.AutoField(primary_key=True)
@@ -183,15 +193,17 @@ class Feedback(models.Model):
         (FIVE, '5'), (ZERO, '0')
     ]
     feedbackid = models.AutoField(primary_key = True)
-    boardingid = models.ForeignKey(Building, on_delete = models.CASCADE)
+    boardingid = models.ForeignKey(Building, related_name = 'building_rating', on_delete = models.CASCADE)
     userid = models.ForeignKey(ScoutUser, related_name="reviewer", on_delete = models.CASCADE, default="", null=False, blank=False)
     rating = models.CharField(max_length = 10, choices = RATING_CHOICES, default = ZERO)
     message = models.TextField(default="")
 
-class BuildingImage(models.Model):
-    building_imgID = models.AutoField(primary_key = True)
-    building_img = models.FileField(upload_to = 'building_imgs', blank = True, null = True)
-    buildingid = models.ForeignKey(Building, related_name = 'building_photo', on_delete = models.CASCADE, null = False, blank = False)
+@receiver([post_save, post_delete], sender=Feedback)
+def update_building_rating(sender, instance, **kwargs):
+    building = instance.boardingid
+    avg_rating = building.building_rating.aggregate(Avg('rating'))['rating__avg'] or 0.0
+    building.average_rating = round(avg_rating, 2)
+    building.save()
 
 class RoomImage(models.Model):
     room_imgID = models.AutoField(primary_key = True)

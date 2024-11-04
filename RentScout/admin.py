@@ -27,7 +27,8 @@ class ScoutUser_LandlordAdmin(admin.ModelAdmin):
 
 class BuildingAdmin(admin.ModelAdmin):
     list_display = [ 'buildingid', 'building_name', 'zip_code', 'street', 'city',
-                    'province', 'country', 'details', 'rooms_vacant']
+                    'province', 'country', 'details', 'rooms_vacant', 'average_rating',
+                    ]
     form = BuildingFormAdmin
     
 class PoliciesAdmin(admin.ModelAdmin):
