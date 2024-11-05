@@ -50,8 +50,8 @@ def scoutuser_signup(request):
                 backend = get_user_backend(user)
                 login(request, user, backend)
                 return redirect('home')
-            
             else:
+                print(form.errors)
                 messages.error(request, 'Please enter a valid email or password')
         
         elif role == 'Landlord':
@@ -341,12 +341,15 @@ def user_profile(request):
         form = ScoutUserProfileForm()
         user_data = ScoutUser.objects.get(userid = request.user.userid)
         context = {'form': form, 'user_data': user_data}
-        print(user_data)
-    else:
+    elif isinstance(request.user, ScoutUser_Landlord):
         form = LandlordUserProfileForm()
         user_data = ScoutUser_Landlord.objects.get(userid = request.user.userid)
         context = {'form': form, 'user_data': user_data}
-        print(user_data)
+    elif isinstance(request.user, AdminUser):
+        # Partial: View admin job status. daily actions.
+        form = ""
+        user_data = AdminUser.objects.get(userid = request.user.userid)
+        context = {'form': form, 'user_data': user_data}
     return render(request, 'RentScout/user_profile.html', context)
 
 def update_user_profile(request):
@@ -390,7 +393,6 @@ class get_buildings_bypage(View):
         if not page:
             return JsonResponse({'error': 'Did not recieve Building ID'}, status = 405)
         
-        print(filter)
         try:
             if filter is not None:
                 try:
@@ -411,10 +413,26 @@ class get_buildings_bypage(View):
             else:
                 all_buildings = Building.objects.all()
             
-            print(all_buildings)
             paginator = Paginator(all_buildings, 8)
 
             building_page = paginator.get_page(page)
+            user_bookmarks = []
+
+            if isinstance(request.user, ScoutUser):
+                current_user = request.user
+                user_bookmarks = ScoutUserBookmark.objects.filter(owner=current_user).values_list('buildingid', flat=True)
+                print(f'user is scout: {current_user.email}')
+            elif isinstance(request.user, ScoutUser_Landlord):
+                current_user = request.user
+                user_bookmarks = LandlordUserBookmark.objects.filter(owner=current_user).values_list('buildingid', flat=True)
+                print(f'user is landlord: {current_user.email}')
+            elif isinstance(request.user, AdminUser):
+                current_user = request.user
+                print(f'user is admin: {current_user.email}')
+            else:
+                current_user = None
+                print('User type is not recognized.')
+
 
             building_data = [
                 {
@@ -422,10 +440,10 @@ class get_buildings_bypage(View):
                     'building_name': building.building_name,
                     'building_address': building.complete_address(),
                     'building_image': building.building_image.url if building.building_image else None,
-                }
+                    'bookmark_status': building.buildingid in user_bookmarks    
+                }   
                 for building in building_page
             ]
-
             response_data = {
                 'building_datas': building_data,
                 'total_pages': paginator.num_pages,

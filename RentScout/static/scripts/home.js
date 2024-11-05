@@ -24,7 +24,19 @@ $(document).ready(function(){
 
     });
 
-    // PREVIOUS BUTTON CLICK
+    // HEART ICON CLICK (BOOKMARK)
+    building_container.on('click', '.heart_sign', function(){
+        console.log($(this));
+        if($(this).hasClass('heart-active')){
+            remove_bookmark($(this));
+        } else {
+            add_bookmark($(this));
+        }
+        
+    }) 
+
+
+        // PREVIOUS BUTTON CLICK
     $('#buildings_container').on('click', '#prev_btn', function(){
         filter = $('#filter_value').val();
         let current_page = $('#buildings_container').find('.active_page').attr('value');
@@ -77,20 +89,34 @@ $(document).ready(function(){
                     let div = $('<div></div>', {
                         class: 'building_address_container'
                     })
-                    let h6 = $('<h6></h6>', {
-                        text: building.building_address
+                    let anchor_tag2 = $('<a></a>', {
+                        text: building.building_address,
+                        href: `building_info/${building.building_id}/`,
                     })
 
                     let building_name = $('<h3></h3>', {
                         text: building.building_name,
                     })
+                    
+                    let heart_sign = $('<div></div>', {
+                        class: 'heart_sign',
+                        value: building.building_id
+                    })
 
-                    div.append(h6);
+                    if (building.bookmark_status){
+                        heart_sign.addClass('heart-active')
+                    }
+                    
+                    
+                    div.append(anchor_tag2);
+                    anchor_tag.append(building_name);
                     anchor_tag.append(image);
-                    anchor_tag.append(div);
 
-                    box.append(building_name);
                     box.append(anchor_tag);
+                    box.append(div);
+                    box.append(heart_sign);
+                    // box.append(building_name);
+                    
 
                     building_container.append(box);
                     // END FOR DISPLAYING BUILDINGS
@@ -139,4 +165,44 @@ $(document).ready(function(){
             }
         })
     }
+
+    function add_bookmark(btn){
+        building_id = $(btn).attr('value');
+        console.log(building_id);
+        $.ajax({
+          url: '/user/bookmark/add/',
+          type: 'POST',
+          data: {
+            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+            'buildingid': building_id
+          },
+          success: function(){
+            $(btn).toggleClass('heart-active');
+          },
+          error: function(xhr, status, error){
+            console.log(error);
+            alert(`Error: ${xhr.responseText.error || error}`);
+          }
+        });
+      }
+
+    function remove_bookmark(btn){
+        building_id = $(btn).attr('value');
+        $.ajax({
+            url: '/user/bookmark/delete/',
+            type: 'POST',
+            data: {
+            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+            'building_id': building_id
+            },
+            success: function (){
+                $(btn).removeClass('heart-active')
+            },
+            error: function(xhr, status, error){
+            console.log(error);
+            alert(`Error: ${xhr.responseText.error || error}`);
+            }
+        })
+    }
+
 })

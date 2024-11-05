@@ -35,7 +35,8 @@ class ScoutUserCreationForm(UserCreationForm):
     class Meta:
         model = ScoutUser
         fields = ('email', 'firstname', 'lastname',
-                  'middlename', 'gender', 'password1', 'password2' ) # 
+                  'middlename', 'gender', 'password1', 'password2', )
+                   #'barangay', 'province', 'city', 'contact' ) # 
 
 class ScoutUserChangeForm(UserChangeForm):
     class Meta:

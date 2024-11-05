@@ -88,3 +88,18 @@
 .building_address_container h6{
     margin: 0;
 }
+
+.heart_sign {
+    width: 40px;
+    height: 40px;
+    background-image: url('../imgs/svgs/black_heart.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: background-image 2 ease;
+  }
+  
+.heart_sign.heart-active {
+animation: pulse 1s ease;
+background-image: url('../imgs/svgs/red_heart.svg');
+}
+  
