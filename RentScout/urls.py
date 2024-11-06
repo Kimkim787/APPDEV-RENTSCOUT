@@ -4,7 +4,8 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     get_policies, save_policy_view, del_policy_view, update_policy_view,
                     request_amenity_status, create_amenity_view, update_amenity_view,
                     update_room, create_bookmark, get_bookmark_status, remove_bookmark,
-                    get_buildings_bypage, 
+                    get_buildings_bypage, create_building_report, get_all_reports,
+                    delete_building_view, delete_building_report
                     
                     )
 from . import views
@@ -26,6 +27,7 @@ urlpatterns = [
     path('building/update/<str:pk>/', views.update_building, name='update_building'),
     path('building/update_view/', building_edit_view.as_view()),
     path('building/edit/', views.building_edit, name='edit_building'),
+    path('building/delete_view/', delete_building_view.as_view()),
 
     # FEEDBACK
     path('building/feedback/', views.create_feedback, name='newfeedback'),
@@ -55,7 +57,7 @@ urlpatterns = [
     # AMENITIES
     path('building/amenity/create_new/', create_amenity_view.as_view()),
     path('building/amenity_request/', request_amenity_status.as_view()),
-    path('building/amenity/update/', update_amenity_view.as_view()),
+    path('building/amenity/upcreate_reportdate/', update_amenity_view.as_view()),
 
 
     # USERPROFILE
@@ -65,6 +67,14 @@ urlpatterns = [
     path('user/bookmark/building/page/', get_bookmark_status.as_view()),
     path('user/bookmark/delete/', remove_bookmark.as_view()),
 
+    # MAP 
+    path('building/map/', views.go_map, name='map'),
+    
+    # REPORTS
+    path('building/reports/view', views.all_reports, name='reports_page'),
+    path('building/create_report/', create_building_report.as_view()),
+    path('buildings/report/get_all/', get_all_reports.as_view()),
+    path('building/reports/delete/', delete_building_report.as_view()),
     # SCRAPPERS
     path('scrapper/building/', views.building_file_scrapper, name='building_scrapper'),
 ]

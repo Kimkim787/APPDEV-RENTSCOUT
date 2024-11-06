@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
                      Feedback, RoomImage, ScoutUser_Landlord, AdminUser,
-                     ScoutUserBookmark, LandlordUserBookmark)   
+                     ScoutUserBookmark, LandlordUserBookmark, BuildingReport,
+                     )   
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
                     RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin,
                     RoomFormAdmin, LandlordUserProfileForm, ScoutUserProfileForm,
@@ -69,6 +70,10 @@ class ScoutBookmarkAdmin(admin.ModelAdmin):
 class LandlordBookmarkAdmin(admin.ModelAdmin):
     list_display = ['buildingid', 'owner']
 
+
+class BuildingReportAdmin(admin.ModelAdmin):
+    list_display = ['reportid', 'date_reported', 'reason']
+
 admin.site.register(ScoutUser, ScoutUserAdmin)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(Policies, PoliciesAdmin)
@@ -80,3 +85,4 @@ admin.site.register(ScoutUser_Landlord, ScoutUser_LandlordAdmin)
 admin.site.register(ScoutUserBookmark, ScoutBookmarkAdmin)
 admin.site.register(LandlordUserBookmark, LandlordBookmarkAdmin)
 admin.site.register(AdminUser, AdminUserAdmin)
+admin.site.register(BuildingReport, BuildingReportAdmin)

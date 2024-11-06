@@ -3,8 +3,8 @@ from django.forms import ModelForm
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm
 from .models import ( ScoutUser, ScoutUser_Landlord, Building, Highlights, 
-                     Policies, Room, Feedback, RoomImage,
-                     ScoutUserBookmark, LandlordUserBookmark, )
+                     Policies, Room, Feedback, RoomImage, 
+                     ScoutUserBookmark, LandlordUserBookmark, BuildingReport )
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -86,7 +86,7 @@ class UserLoginForm(AuthenticationForm):
 class BuildingForm(ModelForm):
     class Meta:
         model = Building
-        exclude = ('buildingid', 'building_owner')
+        exclude = ('buildingid', 'building_owner', 'average_rating')
 
 class BuildingFormAdmin(ModelForm):
     class Meta:
@@ -138,6 +138,10 @@ class LandlordBookmarkForm(ModelForm):
         model = LandlordUserBookmark
         fields = ('buildingid', )
 
+class BuildingReportForm(ModelForm):
+    class Meta:
+        model = BuildingReport
+        exclude = ('reportid', 'reporter', 'date_reported', )
 
 
 # trash

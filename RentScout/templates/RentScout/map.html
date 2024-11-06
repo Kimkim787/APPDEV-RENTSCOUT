@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+
+{% block stylecontent %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/map.css' %}">
+{% endblock stylecontent %}
+
+
+{% block bodycontent %}
+<iframe id="map_view" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15725.623234787823!2d123.4719825!3d9.8162428!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33abc06ec1f064db%3A0x2da5544e3c320134!2sPink%20House!5e0!3m2!1sen!2sph!4v1730801506892!5m2!1sen!2sph" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+{% endblock %}

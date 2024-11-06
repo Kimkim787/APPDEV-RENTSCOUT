@@ -81,6 +81,27 @@ $(document).ready(function() {
     parent.prev('.feedbackdisplay').removeClass('hidden');  
   });
 
+  // REPORT BUTTON
+  $(document).on('click', '#report_button', function(){
+    console.log($(this).closest('div').find('input[name="buildingid"]').val());
+    $.ajax({
+      url: '/building/create_report/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+        'buildingid': $(this).closest('div').find('input[name="buildingid"]').val(),
+        'reason': $('textarea[name="reason"]').val(),
+      },
+      success: function(reponse){
+        alert('successfuly reported');
+      },
+      error: function(xhr, status, error) {
+        console.error("AJAX Error: " + status + ": " + error);
+      }    
+    })
+  });
+
+
   function request_bookmark_status(return_status = false){
     console.log("Requesting bookamr status");
 
@@ -111,9 +132,9 @@ $(document).ready(function() {
 
         heart_container.append(heart);
       },
-      error: function(xhr, status, error) {
-        console.error("AJAX Error: " + status + ": " + error);
-      }    
+      error: function(xhr, status, error){
+        alert(`Error: ${xhr.responseText.error || error}`);
+      }
     })
   }
 

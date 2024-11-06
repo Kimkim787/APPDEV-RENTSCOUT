@@ -322,13 +322,24 @@
                     <input type="submit" value="SAVE">
                 </form>
             </div>
+
+            <!-- REPORT MODAL -->
+            <div id="report_modal" class="model">
+                <input type="hidden" name="{{ building_report_form.buildingid.name }}" value="{{ building.buildingid }}">
+                <h4>Reporting {{ building.building_name }}</h4>
+                <label for="reason">Please state your reason for the report:</label>
+                <textarea name="{{ building_report_form.reason.name }}" id="" cols="30" rows="10" placeholder="Limit of 250 characters"></textarea>
+                <button id="report_button">Report</button>
+                <button id="cancel_report_button">Cancel</button>
+            </div>  
+
         </div>
         
         <div class="fixedpage">
             <div class="bhousenamebox">
                 <h2>{{ building.building_name }}</h2>
 
-
+                <img src="{% static 'imgs/svgs/report.svg' %}" alt="report_image">
                 <!-- <input type="submit" value="🤍"> -->
                 <div id="heart_container" value="{{ building.buildingid }}">
                     <!-- <div id="heart_sign" class="heart" value="{{ building.buildingid }}"></div> -->
@@ -336,13 +347,14 @@
 
                 <a href="{% url 'home' %}"><img src="{% static 'imgs/building/back-button.png' %}" alt="back" ></a>
             </div>
-            <div class="infobox">
+            <div class="infobox">   
                 <p>{{ building.complete_address }}</p>
                 <p class="owner"><span>{{ building.building_owner }}</span> (Owner's email)</p>
                 <p><span>vacant room: </span>{{ building.rooms_vacant }}</p>
                 
                 {% if building.building_owner == request.user %}
                     <button id="add_new_room_btn">Add New Room</button>
+                    <a href="{{ building.coordinates }}" target="_blank">View in Map</a>
                     <a href="{% url 'update_building' building.buildingid %}">Update</a>
                 {% endif %}
             </div>
@@ -355,7 +367,8 @@
                 </div>
             </div>
         </div>
+
         <script src="{% static 'scripts/modal.js' %}?100"></script>
     </section>
-    <script src="{% static 'scripts/building.js' %}?103"></script>
+    <script src="{% static 'scripts/building.js' %}?104"></script>
     {% endblock bodycontent %}

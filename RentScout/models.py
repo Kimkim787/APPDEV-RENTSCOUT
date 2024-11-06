@@ -159,7 +159,7 @@ class Building(models.Model):
     rooms_vacant = models.IntegerField(validators = [MinValueValidator(0)])
     coordinates = models.CharField(max_length = 255, blank = False, null = False, default = "")
     building_image = models.FileField(upload_to = 'upload/building_imgs', blank = True, null = True)
-    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, null=True, blank=True)
 
     def complete_address(self):
         return f"{self.zip_code}, {self.street}, {self.province}, {self.city}, {self.country}"
@@ -249,4 +249,13 @@ class ScoutUserBookmark(models.Model):
 class LandlordUserBookmark(models.Model):
     buildingid = models.ForeignKey(Building, related_name="landlord_bookmark_building", on_delete=models.CASCADE)
     owner = models.ForeignKey(ScoutUser_Landlord, related_name="landlord_bookmark_owner", on_delete=models.CASCADE)
-    
+
+class BuildingReport(models.Model):
+    reportid = models.AutoField(primary_key=True)
+    buildingid = models.ForeignKey(Building, related_name = 'building_reported', on_delete = models.CASCADE)
+    reporter = models.ForeignKey(ScoutUser, related_name = 'reporting_user', on_delete = models.SET_NULL, null=True)
+    date_reported = models.DateTimeField(auto_now_add=True)
+    reason = models.CharField(max_length=250, null=False, blank=False, default="")
+
+    class Meta:
+        ordering = ['date_reported']

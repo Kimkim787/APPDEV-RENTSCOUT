@@ -1,0 +1,15 @@
+{% extends 'index.html' %}
+
+{% block stylecontent %}
+{% load static %}
+
+{% endblock stylecontent %}
+
+
+{% block bodycontent %}
+    {% csrf_token %}
+    <div id="reports_container">
+        
+    </div>
+    <script src="{% static 'scripts/all_reports.js' %}"></script>
+{% endblock %}

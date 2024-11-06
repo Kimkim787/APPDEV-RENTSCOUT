@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
-                     ScoutUserBookmark, LandlordUserBookmark, AdminUser
+                     ScoutUserBookmark, LandlordUserBookmark, AdminUser, BuildingReport
                     )
 
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
                     ScoutUserCreationForm, RoomForm, RoomImageForm, FeedBackForm,
                     LandlordUserCreationForm, PoliciesForm, HighlightsForm,
                     ScoutUserProfileForm, LandlordUserProfileForm,
-                    ScoutBookmarkForm, LandlordBookmarkForm, ScrapperFile
+                    ScoutBookmarkForm, LandlordBookmarkForm, ScrapperFile, BuildingReportForm
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -120,12 +120,13 @@ def create_building(request):
     form = BuildingForm()
     if request.method == 'POST':
         form = BuildingForm(request.POST, request.FILES)
+        print(form)
         if form.is_valid():
             newbuilding = form.save(commit = False)
             newbuilding.building_owner = request.user
             newbuilding.save()
             return redirect('home')
-    
+        print(form.errors)
     context = {'form': form, 'page':page, }
     return render(request, 'RentScout/create_building.html', context)
 
@@ -152,16 +153,18 @@ def building_info(request, pk):
         highlights = Highlights.objects.get(buildingid = building)
     except:
         highlights = None
+
     rooms = Room.objects.filter(building_id = building)
     room_images = RoomImage.objects.all()
     policies = Policies.objects.filter(buildingid = building)
     feedbacks = Feedback.objects.filter(boardingid = pk)
     roomform = RoomForm()
+    reportform = BuildingReportForm()
     feedbackForm = FeedBackForm()
 
     context = {'building':building, 'highlights': highlights, 'room_images': room_images,
                'rooms':rooms, 'policies':policies, 'roomform':roomform, 'feedbacks':feedbacks,
-               'feedbackform':feedbackForm,
+               'feedbackform':feedbackForm, 'building_report_form': reportform, 
             }
     
     return render(request, 'RentScout/building.html', context)
@@ -225,7 +228,7 @@ class building_edit_view(View):
                     print("bldg form is valid")
                     new_bldg = bldg_form.save(commit = False)
                     new_bldg.save()
-                    return JsonResponse({'success': f'Successfuly updated {building.building_name} Building'}, status = 200)
+                    return JsonResponse({'success': f'successfully updated {building.building_name} Building'}, status = 200)
                 else:
                     return JsonResponse({"error": 'Form update is invalid'}, status = 500)
             except Building.DoesNotExist:
@@ -233,6 +236,28 @@ class building_edit_view(View):
         else:
             return JsonResponse({'error': "Did not get building id"}, status =405)
 
+class delete_building_view(View):
+    def post(self, request):
+        try:
+            buildingid = request.POST.get('buildingid')
+            print('Received building id:', buildingid)  # Debugging line
+            
+            if not buildingid:
+                return JsonResponse({'error': 'Building ID not provided'}, status=400)
+
+            building = Building.objects.get(buildingid=buildingid)
+            building.delete()
+            messages.success(request, 'Building successfully deleted')
+            return JsonResponse({'success': 'Building successfully deleted'}, status=200)
+        
+        except Building.DoesNotExist:
+            print("Building does not exist")
+            return JsonResponse({'error': 'Building does not exist'}, status=404)
+        
+        except Exception as e:
+            print("Error:", e)
+            return JsonResponse({'error': f'Unexpected error: {e}'}, status=500)
+        
 def create_feedback(request):
     if request.method == 'POST':
         feedbackform = FeedBackForm(request.POST)
@@ -291,7 +316,7 @@ def room_update(request):
            updated_room = tryroom.save(commit=False)
            updated_room.save()
            print('Successfully updated room', room.room_name)
-           messages.success(request, 'Successfuly updated room')
+           messages.success(request, 'successfully updated room')
            return redirect('building_info', room.building_id.buildingid)
         else:
             print("Failed to update room", tryroom.errors)
@@ -381,6 +406,48 @@ def update_user_profile(request):
             messages.error(request, 'Form is invalid')
             return redirect('user_profile')
                         
+def go_map(request):
+
+    context = {}
+    return render(request, 'RentScout/map.html', context)
+
+
+def all_reports(request):
+    context = {}
+    return render(request, 'RentScout/admin/all_reports.html', context)
+
+class get_all_reports(View):
+    def get(self, request):
+        try:
+            reports_all = BuildingReport.objects.all()
+            paginator = Paginator(reports_all, 10)
+            report_page = paginator.get_page(1)
+            report_datas = [
+                {
+                'reportid': report.reportid,
+                'buildingid': report.buildingid.buildingid,
+                'building_image': report.buildingid.building_image.url,
+                'building_name': report.buildingid.building_name,
+                'reporter': report.reporter.email,
+                'date_reported': report.date_reported,
+                'reason': report.reason
+                }
+                for report in report_page
+            ]
+
+            response_data = {
+                'reports': report_datas,
+                'total_pages': paginator.num_pages,
+                'current_page': report_page.number,
+                'has_next': report_page.has_next(),
+                'has_previous': report_page.has_previous(),
+            }
+            return JsonResponse(response_data, status = 200)
+        except BuildingReport.DoesNotExist:
+            return JsonResponse({'error': "Building Reports Does Not Exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'})
+        
 class get_buildings_bypage(View):
     def get(self, request):
         page = request.GET.get('page', 1)
@@ -523,7 +590,7 @@ class update_room(View):
                 roomForm = RoomForm(request.POST, instance=room)
                 if roomForm.is_valid():
                     roomForm.save()
-                    return JsonResponse({'success': 'Successfuly updated Room'}, status = 200)
+                    return JsonResponse({'success': 'successfully updated Room'}, status = 200)
                 else:
                     return JsonResponse({'error': 'Form invalid'}, status = 400)
             except Room.DoesNotExist:
@@ -656,7 +723,7 @@ class update_policy_view(View):
                     old_policy.save(commit=False)
                     old_policy.save()
                     print('UPdate policy success')
-                    return JsonResponse({'success': "Successfuly updated policy"}, status = 200)
+                    return JsonResponse({'success': "successfully updated policy"}, status = 200)
                 else:
                     print(old_policy.errors)
                     return JsonResponse({'error': 'Policy form is invalid'}, status = 400)
@@ -679,7 +746,7 @@ class create_amenity_view(View):
                     newamenity = form.save(commit=False)
                     newamenity.buildingid = building
                     newamenity.save()
-                    return JsonResponse({'success': 'Successfuly created amenity'}, status = 200)
+                    return JsonResponse({'success': 'successfully created amenity'}, status = 200)
                 else:
                     print(form.errors)
                     return JsonResponse({'error': 'Form data invalid'}, status=400)
@@ -736,7 +803,7 @@ class update_amenity_view(View):
                 if amenityForm.is_valid():
                     amenityForm.save(commit=False)
                     amenityForm.save()
-                    return JsonResponse({'success': 'Successfuly update Amenity'}, status =200)
+                    return JsonResponse({'success': 'successfully update Amenity'}, status =200)
                 else:
                     return JsonResponse({'error': 'Form invalid'}, status = 400)
             except Highlights.DoesNotExist:
@@ -826,8 +893,50 @@ class remove_bookmark(View):
             bookmark.delete()
             return JsonResponse({'success': 'Bookmark has been removed'}, status = 200)
 
+class create_building_report(View):
+    def post(self, request):
+        try:
+            buildingid = request.POST.get('buildingid')
+            user = ScoutUser.objects.get(userid = request.user.userid)
+            building = Building.objects.get(buildingid = buildingid)
 
+            form = BuildingReportForm(request.POST)
+            if form.is_valid():
+                new_report = form.save(commit=False)
+                new_report.buildingid = building
+                new_report.reporter = user
+                new_report.save()
+                print(new_report)
+                messages.success(request, "Report successfully sent")
+                return JsonResponse({'success': 'Report successfully sent'}, status = 200)
+            else:
+                print(form.errors)
+                messages.error(request, 'Report Invalid')
+                return JsonResponse({'error': 'Form invalid'}, status = 405)
+        except ScoutUser.DoesNotExist:
+            return JsonResponse({'error': 'User Does Not Exist'}, status = 404)
+        except Building.DoesNotExist:
+            return JsonResponse({'error': 'Building Does Not Exist'}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
 
+class delete_building_report(View):
+    def post(self, request):
+        reportid = request.POST.get('reportid')
+        print(reportid)
+        if not reportid:
+            return JsonResponse({'error': 'Did not receive Report ID'}, status = 400)
+        
+        try:
+            report = BuildingReport.objects.get(reportid = reportid)
+            report.delete()
+            messages.success(request, 'Report successfully Denied')
+            return JsonResponse({'success': 'Report successfully Denied'}, status = 200)
+        except BuildingReport.DoesNotExist:
+            return JsonResponse({'error': 'Report Does Not Exist'}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+        
 # SCRAPPER
 def building_file_scrapper(request):
     if request.method == 'POST':

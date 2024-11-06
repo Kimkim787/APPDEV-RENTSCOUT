@@ -37,6 +37,17 @@
             <li>
                 <a href="{% url 'edit_building' %}">Edit Buildings</a>
             </li>
+            <li>
+                <a href="{% url 'new_building' %}">Create Building</a>
+            </li>
+            <li>
+                <a href="{% url 'reports_page' %}">Reports</a>
+            </li>
+            <!-- <li>
+                <a href="https://www.google.com/maps/search/?api=1" target="_blank">
+                    Open Google Maps
+                </a>           
+            </li> -->
         </ul>
         <div>
             {% if request.user.is_authenticated %}
