@@ -4,31 +4,152 @@ section {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    height: 80vh;
+    height: 86.6vh;
+    padding: 25px;
+    gap: 30px;
+    background-color: #f5f5f5;
 }
 #left_bar{
-    width: 20%;
     height: 100%;
-    border: 2px solid red;
+    display: flex;
+    width: fit-content;
+    border-radius: 15px;
+}
+#left_bar .leftbarbox{
+    width: 220px;
+    border-radius: 15px;
+    background-color: #000;
+}
+img[src*="down.png"] {
+    filter: invert(1);
 }
 
-#middle_bar {
-    width: 20%;
-    height: 100%;
-    border: 2px solid blue;
-
+.leftbarbox .adiv a{
+    border-bottom: 1px solid #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #000;
+}
+.adiv:first-of-type .buildingname {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }
 
-#form_container {
+.adiv{
+    background-color: #f5f5f5;
+}
+.leftbarbox a.active img {
+    transform: rotate(180deg);
+    transition: transform 0.2s ease 0.1s;
+}
+.leftbarbox img{
+    height: 30px;
+    width: 30px;
+    transition: transform 0.2s ease;
+}
+.leftbarbox,
+.edit_btn_list {
+    list-style-type: none;
+}
+.edit_btn_list{
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    flex-direction: column;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+}
+.edit_btn_list.show {
+    max-height: fit-content;
+    opacity: 1;
+}
+#room_bar {
+    display: None;
+    flex-direction: column;
+    align-items: center;
+    width: 280px;
+    height: 100%;
+    background-color: #f3ede5;
+    border-radius: 20px;
+}
+
+#room_view{
+    height: 100%;
+}
+#rooms_container{
+    display: None;
+    flex-direction: column;
+    height: fit-content;
+    gap: 20px;
+    width: 280px;
+    padding: 15px;
+    border-radius: 15px;
+    height: 100%;
+    overflow: auto;
+}
+#rooms_container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#rooms_container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#rooms_container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#rooms_container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+#rooms_container .room_item{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: white;
+}
+.photo_btn,
+.room_update_btn{
+    background-color: #000;
+    font-size: 10px;
+    border: none;
+    padding: 7px 20px;
+    border-radius: 5px;
+    color: white;
+}
+.backbtn{
+    border: none;
+    background-color: none;
+}
+.name_button{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    max-width: 50%;
-    height: 100%;
-    max-height: 100%;   
-    border: 2px solid green;
 }
-
+.name_button img{
+    height: 25px;
+    
+}
+.room_photos{
+}
+#room_name{
+    color: black;
+}
+#rooms_container .btn_div{
+    display: flex;
+    justify-content: space-between;
+}
 .form_item{
-    background-color: blanchedalmond;
+    display: flex;
 }
 
 .room_photos {
@@ -46,11 +167,474 @@ section {
 .hidden {
     display: none;
 }
+#photo_container{
+    display: flex;
+    flex-direction: column;
+    height: 350px;
+    list-style-type: none;
+    overflow: auto;
+    gap: 10px;
+}
+#photo_container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
 
-.room_item{
-    border: 2px solid rgb(171, 174, 5);
+#photo_container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#photo_container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#photo_container::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 #photo_container li {
-    border: 2px solid red;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: end;
+}
+.delete-icon{
+    position: absolute;
+    right: -5px;
+}
+.room_photos{
+    height: 100%;
+    width: 100%;
+}
+#photo_view{
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    overflow: auto;
+    background-color: #f3ede5;
+}
+#photo_view .edit_btn{
+    background-color: #000;
+    color: white;
+    border: none;
+    padding: 10px 0px;
+    width: 100%;
+    border-radius: 5px;
+    /* 
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+    font-size: 25px; 
+    */
+}
+#photo_name{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+.name_button h3{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+.delete-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 5px; 
+}
+
+.hide{
+    display: none;
+}
+
+.hiddenbtns li{
+    display: flex;
+    justify-content: end;
+    width: 100%;
+    background-color: #746154;
+}
+.hiddenbtns li .div{
+    min-height: 100%;
+    min-width: 20%;
+    background-color: #f5f5f5;
+    border-top-right-radius: 20px;
+}
+.hiddenbtns li .div1{
+    min-height: 100%;
+    min-width: 20%;
+    background-color: #f5f5f5;
+}
+.hiddenbtns li:last-child {
+    background-color: #f5f5f5;
+}
+.hiddenbtns li button{
+    width: 80%;
+    text-align: left;
+    border: none;
+    background-color: #746154;
+    color: white;
+    height: 100%;
+    padding: 10px 15px;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background-color ease 0.15s;
+}
+.hiddenbtns li button:hover{
+    background-color: #000;
+}
+.li{
+    transition: background-color ease 0.15s;
+}
+.li:hover{
+    background-color: #000;
+}
+.edit_btn_list li:last-child .edit_btn {
+    border-bottom-left-radius: 20px;
+}
+.no-border {
+    border-bottom: none;
+    border-bottom-left-radius: 20px;
+}
+
+.gap-added {
+    margin-right: 30px;
+}
+
+#photo_view{
+    display: None;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 280px;
+    padding: 15px;
+    height: 100%;
+    border-radius: 15px;
+}
+#no_room_message{
+    margin-top: 10px;
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+    /* font-size: 25px;  */
+}
+#form_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 15px;
+}
+#building_form{
+    display: None;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 15px;
+    padding: 10px;
+    gap: 10px;
+}
+#building_form h1{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+    font-size: 25px;
+}
+#building_update_form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 60%;
+    padding: 10px 20px;
+    background-color: #f3ede5;
+    border-radius: 10px;
+}
+.input_box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 5px;
+}
+.input_label_div{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    width: 100%;
+}
+.input_label_div input{
+    padding: 6px;
+    width: 50%;
+    background-color: #f5f5f5;
+    border: none;
+}
+.input_label_div textarea{
+    height: 60px;
+    padding: 5px;
+    width: 50%;
+    background-color: #f5f5f5;
+    border: none;
+}
+#building_update_form input[type="submit"] {
+    padding: 10px 60px;
+    border-radius: 10px;
+    border: none;
+    background-color: #000;
+    color: #fff;
+}
+
+#amenities_section{
+    display: None;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 15px;
+    gap: 15px;
+}
+#amenities_section h1{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+    font-size: 25px;
+}
+#amenities_create_form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #f3ede5;
+}
+#amenity_form{
+    display: flex;
+    width: 40%;
+}
+.all_checkboxes_container{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.checkbox_div2{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px;
+    width: 100%;
+}
+#amenities_create_form button{
+    padding: 10px 60px;
+    border-radius: 10px;
+    border: none;
+    background-color: #000;
+    color: #fff;
+}
+
+#policies_form{
+    display: None;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    gap: 20px;
+}
+#policies_form h1{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+#add_policy_btn{
+    width: 50%;
+    padding: 7px 0px;
+    border: none;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+}
+#policies_form .policies_div{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    width: 60%;
+    height: 70%;
+    padding: 20px;
+    gap: 20px;
+    background-color: #f3ede5;
+    border-radius: 15px;
+}
+#policies_container{
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 5px;
+    overflow: auto;
+}
+#policies_container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#policies_container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#policies_container::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 10px;
+}
+
+#policies_container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+#policies_container li{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#new_pol_form{
+}
+#policies_container li p{
+    width: 65%;
+    padding: 6px 5px;
+    background-color: #f5f5f5;
+    height: 70px;
+}
+#policies_container li textarea{
+    width: 65%;
+    padding: 5px;
+    background-color: #f5f5f5;
+    height: 70px;
+}
+.buttonbox,
+.addbox{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 30%;
+    gap: 10px;
+}
+.buttonbox button,
+.addbox button{
+    border: none;
+    background-color: #000;
+    color: white;
+    border-radius: 5px;
+    height: 100%;
+}
+.save_update_policy{
+    padding: 8px 0px;
+    width: 30%;
+    border: none;
+    background-color: #000;
+    color: white;
+    border-radius: 5px;
+}
+#upload_room_photo{
+    height: 100%;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+#upload_room_photo h1{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+#upload_photo_container{
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    width: 60%;
+}
+#file-upload-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 30px;
+}
+#upload_room_photo_btn{
+    border: none;
+    background-color: #000;
+    color: white;
+    width: 60%;
+    padding: 10px 0px;
+    border-radius: 5px;
+}
+#edit_room_form{
+    height: 100%;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#edit_room_form h1{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+#edit_room_form_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    gap: 20px;
+}
+.editroombox{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.editroombox2{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.lblinptdiv{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#edit_room_form_container div input{
+    width: 50%;
+    background-color: #f5f5f5;
+    border: none;
+    padding: 6px;
+}
+
+.additionalinfobox{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 5px;
+}
+.checkboxsdiv{
+    display: flex;
+    width: 200px;
+}
+.checkboxsdiv label{
+    width: 200px;
+}
+#edit_room_save{
+    width: 50%;
+    background-color: #000;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
 }

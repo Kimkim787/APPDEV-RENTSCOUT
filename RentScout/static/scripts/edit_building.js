@@ -4,7 +4,7 @@ $(document).ready(function(){
         $('.form_item').addClass('hidden');
         show_room_photos($(this));
         $('#upload_room_photo').removeClass('hidden');
-
+        $('#edit_room_form').css('display', 'none');
     });
 
     // Image clicked
@@ -66,32 +66,30 @@ $(document).ready(function(){
     })
 
     // POLICY EDIT BTN
-    $('#policies_container').on('click', '.pol_edit_btn', function(){
+    $('#policies_container').on('click', '.pol_edit_btn', function() {
         let li = $(this).closest('li');
-        let policy_id_holder = li.find('input');
         let old_policy = li.find('p[class="policy"]').text();
-        
-        // empty element li
+        let policy_id = li.find('input').val();
+    
+        // Clear the content of `li` but keep the ID in the button
         li.empty();
-
+    
         let textarea = $('<textarea></textarea>', {
             class: 'edit_policy_text',
-            // id: `edit_policy_${policy_id_holder.val()}`,
             text: old_policy
-        })
-
+        });
+    
         let submit_btn = $('<button></button>', {
             text: 'Save',
             class: 'save_update_policy',
-            value: policy_id_holder.val()
-        })
-
-        // li.append(policy_id_holder);
+            'data-policy-id': policy_id // Store policy_id here
+        });
+        
+    
         li.append(textarea);
         li.append(submit_btn);
-
-        // add new element to list
-    })
+    });
+    
 
     // POLICY SAVE EDIT BTN
     $('#policies_container').on('click', '.save_update_policy', function(){
@@ -145,7 +143,6 @@ $(document).ready(function(){
 
     // UPDATE BILDING GET FUNCTION
     function request_bldg_instance(bldg_id){
-        console.log('requesting bldg instance');
         $.ajax({
             url: '/building/update_view/',
             type: 'GET',
@@ -153,18 +150,16 @@ $(document).ready(function(){
                 'bldg_id': bldg_id,
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
             },
-            success: function(response){    
-                console.log("Data:");   
-                console.log(response);
-                $('#bldg_name').val(response.building_name);
-                $('#bldg_vacant').val(response.rooms_vacant);
-                $('#bldg_zipcode').val(response.zip_code);
-                $('#bldg_street').val(response.street);
-                $('#bldg_city').val(response.city);
-                $('#bldg_province').val(response.province);
-                $('#bldg_country').val(response.country);
-                $('#bldg_desc').val(response.details);
-                $('#bldg_coords').val(response.coordinates);
+            success: function(data){
+                $('#bldg_name').val(data.building_name);
+                $('#bldg_vacant').val(data.rooms_vacant);
+                $('#bldg_zipcode').val(data.zip_code);
+                $('#bldg_street').val(data.street);
+                $('#bldg_city').val(data.city);
+                $('#bldg_province').val(data.province);
+                $('#bldg_country').val(data.country);
+                $('#bldg_desc').val(data.details);
+                $('#bldg_coords').val(data.coordinates);
 
             },
             error: function(xhr, status, error){
@@ -203,63 +198,58 @@ $(document).ready(function(){
     }
 
     // REQUEST ROOMS FOR MIDDLE BAR
-    function request_rooms(btn){
+    function request_rooms(btn) {
         $('#photo_container').empty();
         $('#rooms_container').empty();
         let query = $(btn).closest('ul').find('.building_id').val();
-            // REQUEST ROOMS FOR ROOM_VIEW
+    
         $.ajax({
             url: '/room/get_rooms/',
             data: {
                 'building_id': query,
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
             },
-            success: function(data){
-                // console.log("datas: ");
+            success: function(data) {
                 console.log(data);
-                if (data.room_data.length >= 1){
+                if (data.room_data.length >= 1) {
                     $.each(data.room_data, function(index, room) {
                         let room_div = $("<div></div>", {
                             class: 'room_item'
                         });
-
+    
                         let input = $('<input>', {
                             type: 'hidden',
                             class: 'roomid_holder'
                         }).val(room.roomid);
-
+    
                         let btn_div = $('<div></div>', {
                             class: 'btn_div'
                         });
-
-                        let p = $('<p></p>', {
+    
+                        let p = $('<h2></h2>', {
                             id: 'room_name'
                         }).text(room.room_name);
-
+    
                         let photo_btn = $('<button></button>', {
                             text: "See Photos",
                             class: "photo_btn",
                         });
+    
                         let update_btn = $('<button></button>', {
                             text: "Update Room",
                             class: 'room_update_btn',
                         });
-                        
-                        // console.log(input);
-                        // console.log(p);
-
+    
                         room_div.append(input);
                         btn_div.append(photo_btn);
                         btn_div.append(update_btn);
                         room_div.append(p);
                         room_div.append(btn_div);
-
-                        // console.log("room div is:");
-                        // console.log(room_div);
+    
                         $('#rooms_container').append(room_div);
-
-                        $('.mid_item').addClass('hidden'); 
-                        $('#room_view').removeClass('hidden'); 
+    
+                        $('.mid_item').addClass('hidden');
+                        $('#room_view').removeClass('hidden');
                     });
                 } else {
                     $('.mid_item').addClass('hidden');
@@ -270,9 +260,7 @@ $(document).ready(function(){
                 console.log(xhr.responseText);
                 alert(error, status);
             }
-
-        })
-
+        });
     }
 
     // SHOW ROOM PHOTOS TO MIDDLE BAR
@@ -307,16 +295,18 @@ $(document).ready(function(){
                 $.each(data.image_list, function( index, photo){
                     let li = $("<li></li>");
 
-                    let del_btn = $('<button></button>', {
-                        class: 'del_photo_btn',
-                        type: 'button',
-                        text: 'delete',
+                    let del_btn = $('<img>', {
+                        src: deleteIconUrl,  // Assuming deleteIconUrl is already defined in the template
+                        alt: 'Delete',
+                        class: 'delete-icon',
+                        title: 'Delete',  // Tooltip for accessibility
                         click: function() {
                             if (confirm('Are you sure you want to delete this photo?')) {
                                 fn_delete_room_photo($(this));
                             }
                         }
                     });
+                    
                     
                     let id_holder = $('<input>', {
                         type: 'hidden',
@@ -351,13 +341,22 @@ $(document).ready(function(){
 
     // UPLOAD PHOTO BTN CLICK
     $('#upload_room_photo_btn').on('click', function() {
+        // Retrieve the value from the hidden room ID input
         let query = $(this).closest('#upload_photo_container').find('#upload_room_holder').val();
         
-        let formData = new FormData($('#file-upload-form')[0]);
-        if (!formData.get('file')){
+        // Get the file input element
+        let fileInput = document.getElementById('file-upload');
+        
+        // Check if a file is selected
+        if (!fileInput.files || fileInput.files.length === 0) {
             alert('Please select a file');
             return;
         }
+    
+        // Create FormData object from the form
+        let formData = new FormData($('#file-upload-form')[0]);
+    
+        // Submit the form data via Axios
         axios.post('/room_photo/upload/as_view', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -373,6 +372,8 @@ $(document).ready(function(){
             alert(`Error: ${error.response.data.error || 'Upload failed!'}`);
         });
     });
+    
+    
 
     // DELETE PHOTO_VIEW
     function fn_delete_room_photo(button){
@@ -412,55 +413,78 @@ $(document).ready(function(){
             success: function(response_data){
                 console.log(response_data);
                 form_container.html(`
-                    <label for="room_name">Room Name:</label>
-                    <input type="text" name="room_name" value="${response_data.room_name}"> 
-                    <label for="person_free">Person Available:</label>
-                    <input type="text" name="person_free" value="${response_data.person_free}">
+                    <div class="editroombox">
+                        <div class="editroombox2">
+                            <div class="lblinptdiv">
+                                <label for="room_name">Room Name:</label>
+                                <input type="text" name="room_name" value="${response_data.room_name}">
+                            </div>
+                            <div class="lblinptdiv">
+                                <label for="person_free">Person Available:</label>
+                                <input type="text" name="person_free" value="${response_data.person_free}">
+                            </div>
+                            <div class="lblinptdiv">
+                                <label for="current_male">Male resident:</label>
+                                <input type="text" name="current_male" value="${response_data.current_male}">
+                            </div>
+                            <div class="lblinptdiv">
+                                <label for="current_female">Female resident:</label>
+                                <input type="text" name="current_female" value="${response_data.current_female}">
+                            </div>
+                            <div class="lblinptdiv">
+                                <label for="price">Price:</label>
+                                <input type="text" name="price" value="${response_data.price}">
+                            </div>
+                            <div class="lblinptdiv">
+                                <label for="room_size">Room Size:</label>
+                                <input type="text" name="room_size" value="${response_data.room_size}">
+                            </div>
+                        </div>
+
+                        <p><b>Additional Information:</b></p>
                     
-                    <label for="current_male">Male resident:</label>
-                    <input type="text" name="current_male" value="${response_data.current_male}">
-                
-                    <label for="current_female">Female resident:</label>
-                    <input type="text" name="current_female" value="${response_data.current_female}">
-                
-                    <label for="price">Price:</label>
-                    <input type="text" name="price" value="${response_data.price}">
-                
-                    <label for="room_size">Room Size:</label>
-                    <input type="text" name="room_size" value="${response_data.room_size}">
-                
-                
-                    <p><b>Additional Information:</b></p>
-                
-                    <label for="bed">Single bed:</label>
-                    <input type="text" name="bed" value="${response_data.bed}">
-                
-                    <label for="double_deck">Double bed:</label>
-                    <input type="text" name="double_deck" value="${response_data.double_deck}">
-                
-                    <input type="checkbox" name="shower" ${response_data.shower ? 'checked':''}>
-                    <label for="shower">Shower</label>
-                
-                    <input type="checkbox" name="priv_bathroom" ${response_data.priv_bathroom ? 'checked':''}>
-                    <label for="priv_bathroom">Private Bathroom</label>
-                
-                    <input type="checkbox" name="public_bathroom" ${response_data.public_bathroom ? 'checked':''}>
-                    <label for="public_bathroom">Public Bathroom</label>
-                
-                    <input type="checkbox" name="AC" ${response_data.AC ? 'checked':''}>
-                    <label for="AC">Air Conditioned</label>
-                
-                    <input type="checkbox" name="wardrobe" ${response_data.wardrobe ? 'checked':''}
-                    <label for="wardrobe">Wardrobe</label>
-                
-                    <input type="checkbox" name="kitchen" ${response_data.kitchen ? 'checked':''}>
-                    <label for="kitchen">Kitchen</label>
-                
-                    <input type="checkbox" name="free_wifi" ${response_data.free_wifi ? 'checked':''}>
-                    <label for="free_wifi">Free Wifi</label>
-                
-                    <button id="edit_room_save" value="${response_data.roomid}" >Save<button>
-                `);
+                        <div class="lblinptdiv">
+                            <label for="bed">Single bed:</label>
+                            <input type="text" name="bed" value="${response_data.bed}">
+                        </div>
+                        <div class="lblinptdiv">
+                            <label for="double_deck">Double bed:</label>
+                            <input type="text" name="double_deck" value="${response_data.double_deck}">
+                        </div>
+                        
+                        <div class="additionalinfobox">
+                            <div class="checkboxsdiv">
+                                <input type="checkbox" name="shower" ${response_data.shower ? 'checked' : ''}>
+                                <label for="shower">Shower</label>
+                            </div>
+                            <div class="checkboxsdiv">
+                                <input type="checkbox" name="priv_bathroom" ${response_data.priv_bathroom ? 'checked' : ''}>
+                                <label for="priv_bathroom">Private Bathroom</label>
+                            </div>
+                            <div class="checkboxsdiv">
+                                <input type="checkbox" name="public_bathroom" ${response_data.public_bathroom ? 'checked' : ''}>
+                                <label for="public_bathroom">Public Bathroom</label>
+                            </div>
+                            <div class="checkboxsdiv">
+                                <input type="checkbox" name="AC" ${response_data.AC ? 'checked' : ''}>
+                                <label for="AC">Air Conditioned</label>
+                            </div>
+                            <div class="checkboxsdiv">
+                                <input type="checkbox" name="wardrobe" ${response_data.wardrobe ? 'checked' : ''}>
+                                <label for="wardrobe">Wardrobe</label>
+                            </div>
+                            <div class="checkboxsdiv">
+                                <input type="checkbox" name="kitchen" ${response_data.kitchen ? 'checked' : ''}>
+                                <label for="kitchen">Kitchen</label>
+                            </div>
+                            <div class="checkboxsdiv">
+                                <input type="checkbox" name="free_wifi" ${response_data.free_wifi ? 'checked' : ''}>
+                                <label for="free_wifi">Free Wifi</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="edit_room_save" value="${response_data.roomid}">Save</button>
+                `);                
             },
             error: function(xhr, status, error){
                 console.log(error);
@@ -527,8 +551,14 @@ $(document).ready(function(){
             id: 'new_pol_form_title',
             text: 'New Policy Form'
         })
+
+        let addbox = $('<div></div>', {
+            class: 'addbox'
+        });
+
         let textarea = $('<textarea></textarea>', {
             name: 'policy',
+            placeholder: 'Add new policy here'
         });
 
         let cancel_btn = $('<button></button>', {
@@ -541,16 +571,18 @@ $(document).ready(function(){
             text: 'Save'
         });
 
-        li.append(title);
+        addbox.append(cancel_btn);
+        addbox.append(save_btn);
+
+        // li.append(title);
         li.append(textarea);
-        li.append(cancel_btn);
-        li.append(save_btn);
+        li.append(addbox);
         pol_container.prepend(li);  
         } // else
     }
 
     // GET ALL POLICIES OF BUILDING
-    function request_bldg_policies(query){
+    function request_bldg_policies(query) {
         let pol_container = $('#policies_container');
         pol_container.empty();
         $.ajax({
@@ -560,48 +592,55 @@ $(document).ready(function(){
                 'building_id': query,
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
             },
-            success: function(data){
-                console.log(data)
-                ul = $('#policies_container');
-
-                $.each(data.policy_lists, function(index, policy){
-                    let li = $('<li></li>')
-
-                    let input = $('<input>', {
-                        type: 'text',
-                        class: 'policy_id_holder hidden',
-                        value: policy.policy_id
-                    });
-
+            success: function(data) {
+                console.log(data);
+                let ul = $('#policies_container');
+    
+                $.each(data.policy_lists, function(index, policy) {
+                    let li = $('<li></li>');
                     let textarea = $('<p></p>', {
                         class: 'policy',
                         text: policy.policy
                     });
-
+                
+                    // Add hidden input to store policy_id
+                    let policyIdInput = $('<input>', {
+                        type: 'hidden',
+                        value: policy.policy_id // Set the policy ID here
+                    });
+                
+                    let buttonbox = $('<div></div>', {
+                        class: 'buttonbox'
+                    });
+                
                     let del_btn = $('<button></button>', {
                         class: 'pol_del_btn',
                         text: 'Delete',
                         value: policy.policy_id
                     });
-
+                
                     let edit_btn = $('<button></button>', {
                         class: 'pol_edit_btn',
                         text: 'Edit'
                     });
-
-                    li.append(input);
+                
+                    buttonbox.append(del_btn);
+                    buttonbox.append(edit_btn);
+                
+                    // Append the hidden input and other elements to li
+                    li.append(policyIdInput);
                     li.append(textarea);
-                    li.append(del_btn);
-                    li.append(edit_btn);
-
+                    li.append(buttonbox);
+                
                     ul.append(li);
-                })
+                });                
             },
-            error: function(xhr, status, error){
+            error: function(xhr, status, error) {
                 alert(`Error ${xhr.status}: ${error}`);
             }
-        })
+        });
     }
+    
 
     function save_new_policy(btn){
         let bldg_id = $('#add_policy_btn').val()
@@ -657,35 +696,42 @@ $(document).ready(function(){
         request_bldg_policies(bldg_id)
     }
 
-    function update_policy(btn){
-        let policy_text = $(btn).closest('li')
-            .find('textarea[class="edit_policy_text"]').val();
-
-        let policy_id = $(btn).val();
-
-        console.log(policy_text);
-        console.log(policy_id);
+    function update_policy(btn) {
+        let li = $(btn).closest('li');
+        let policy_text = li.find('textarea.edit_policy_text').val();
+        let policy_id = $(btn).data('policy-id'); // Retrieve policy_id here
+    
+        console.log("Policy Text:", policy_text);
+        console.log("Policy ID:", policy_id); // Verify if policy_id is retrieved correctly
+    
+        if (!policy_id) {
+            alert("Policy ID not found");
+            return;
+        }
+    
         $.ajax({
             url: '/building/policy/update/',
             type: 'POST',
             data: {
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-                'policy_id': policy_id, 
+                'policy_id': policy_id,
                 'policy': policy_text
             },
-            success: function(){
-                alert('success');
+            success: function() {
+                alert('Success');
                 refresh_policy_display();
-            }, 
-            error: function(xhr, status, error){
+            },
+            error: function(xhr, status, error) {
                 if (xhr.responseJSON && xhr.responseJSON.error) {
                     alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
                 } else {
                     alert(`Error ${xhr.status}: ${error}`);
                 }
             }
-        })
+        });
     }
+    
+    
 
 
     function create_amenity(btn){
@@ -756,29 +802,38 @@ $(document).ready(function(){
                     amenity_container.empty();
                     
                     amenity_container.html(`
-                            <input type="checkbox" name="free_wifi" id="free_wifi" ${data.free_wifi ? 'checked' : ''}/>
-                            <label for="free_wifi">Free Wifi</label>
-
-                            <input type="checkbox" name="shared_kitchen" id="shared_kitchen" ${data.shared_kitchen ? 'checked' : ''}/>
-                            <label for="shared_kitchen">Shared Kitchen</label>
-
-                            <input type="checkbox" name="smoke_free" id="smoke_free" ${data.smoke_free ? 'checked' : ''}/>
-                            <label for="smoke_free">Smoke Free</label>
-
-                            <input type="checkbox" name="janitor" id="janitor" ${data.janitor ? 'checked' : ''}/>
-                            <label for="janitor">Janitor</label>
-
-                            <input type="checkbox" name="guard" id="guard" ${data.guard ? 'checked' : ''}/>
-                            <label for="guard">Guard</label>
-
-                            <input type="checkbox" name="waterbill" id="waterbill" ${data.waterbill ? 'checked' : ''}/>
-                            <label for="waterbill">Water Bill Included</label>
-
-                            <input type="checkbox" name="electricbill" id="electricbill" ${data.electricbill ? 'checked' : ''}/>
-                            <label for="electricbill">Electric Bill Included</label>
-
-                            <input type="checkbox" name="food" id="food" ${data.food ? 'checked' : ''}/>
-                            <label for="food">Food</label>
+                            <div class="checbox_div>
+                                <input type="checkbox" name="free_wifi" id="free_wifi" ${data.free_wifi ? 'checked' : ''}/>
+                                <label for="free_wifi">Free Wifi</label>
+                            </div>
+                            <div class="checbox_div>
+                                <input type="checkbox" name="shared_kitchen" id="shared_kitchen" ${data.shared_kitchen ? 'checked' : ''}/>
+                                <label for="shared_kitchen">Shared Kitchen</label>
+                            </div>
+                            <div class="checbox_div>
+                                <input type="checkbox" name="smoke_free" id="smoke_free" ${data.smoke_free ? 'checked' : ''}/>
+                                <label for="smoke_free">Smoke Free</label>
+                            </div>
+                            <div class="checbox_div>
+                                <input type="checkbox" name="janitor" id="janitor" ${data.janitor ? 'checked' : ''}/>
+                                <label for="janitor">Janitor</label>
+                            </div>
+                            <div class="checbox_div>
+                                <input type="checkbox" name="guard" id="guard" ${data.guard ? 'checked' : ''}/>
+                                <label for="guard">Guard</label>
+                            </div>
+                            <div class="checbox_div>
+                                <input type="checkbox" name="waterbill" id="waterbill" ${data.waterbill ? 'checked' : ''}/>
+                                <label for="waterbill">Water Bill Included</label>
+                            </div>
+                            <div class="checbox_div>
+                                <input type="checkbox" name="electricbill" id="electricbill" ${data.electricbill ? 'checked' : ''}/>
+                                <label for="electricbill">Electric Bill Included</label>
+                            </div>
+                            <div class="checbox_div>
+                                <input type="checkbox" name="food" id="food" ${data.food ? 'checked' : ''}/>
+                                <label for="food">Food</label>
+                            </div>
 
                             <button id="update_amenity_btn" value="${bldg_id}">Update</button>
                     `)
@@ -788,30 +843,40 @@ $(document).ready(function(){
                     $('#create_amenity_btn').val(bldg_id);
                     $('#amenities_create_form').removeClass('hidden');
                     $('#amenities_create_form').html(`
-                        <input type="checkbox" name="free_wifi"/>
-                        <label for="free_wifi">Free Wifi</label>
-
-                        <input type="checkbox" name="shared_kitchen"/>
-                        <label for="shared_kitchen">Shared Kitchen</label>
-
-                        <input type="checkbox" name="smoke_free"/>
-                        <label for="smoke_free">Smoke Free</label>
-
-                        <input type="checkbox" name="janitor"/>
-                        <label for="janitor">Janitor</label>
-
-                        <input type="checkbox" name="guard"/>
-                        <label for="guard">Guard</label>
-
-                        <input type="checkbox" name="waterbill"/>
-                        <label for="waterbill">Water Bill Included</label>
-
-                        <input type="checkbox" name="electricbill"/>
-                        <label for="electricbill">Electric Bill Included</label>
-
-                        <input type="checkbox" name="food"/>
-                        <label for="food">Food</label>
-
+                        <div class="all_checkboxes_container">
+                            <div class="checkbox_div2">
+                                <label for="free_wifi">Free Wifi</label>
+                                <input type="checkbox" name="free_wifi"/>
+                            </div>
+                            <div class="checkbox_div2">
+                                <label for="shared_kitchen">Shared Kitchen</label>
+                                <input type="checkbox" name="shared_kitchen"/>
+                            </div>
+                            <div class="checkbox_div2">
+                                <label for="smoke_free">Smoke Free</label>
+                                <input type="checkbox" name="smoke_free"/>
+                            </div>
+                            <div class="checkbox_div2">
+                                <label for="janitor">Janitor</label>
+                                <input type="checkbox" name="janitor"/>
+                            </div>
+                            <div class="checkbox_div2">
+                                <label for="guard">Guard</label>
+                                <input type="checkbox" name="guard"/>
+                            </div>
+                            <div class="checkbox_div2">
+                                <label for="waterbill">Water Bill Included</label>
+                                <input type="checkbox" name="waterbill"/>
+                            </div>
+                            <div class="checkbox_div2">
+                                <label for="electricbill">Electric Bill Included</label>
+                                <input type="checkbox" name="electricbill"/>
+                            </div>
+                            <div class="checkbox_div2">
+                                <label for="food">Food</label>
+                                <input type="checkbox" name="food"/>
+                            </div>
+                        </div>
                         <button id="create_amenity_btn" value="${bldg_id}">Create</button>
                     `);
                 }
@@ -878,3 +943,106 @@ $(document).ready(function(){
     }
 }); // ready function
 
+
+
+// -------- new added js code ---------
+
+document.querySelectorAll(".buildingname").forEach((buildingName, index) => {
+    buildingName.addEventListener("click", function () {
+        const hiddenBtns = document.querySelectorAll(".hiddenbtns")[index];
+        const isVisible = hiddenBtns.classList.contains("show");
+
+        // Hide all button lists, reset rotation, and reset borders for all items
+        document.querySelectorAll(".hiddenbtns").forEach((btnList, i) => {
+            btnList.classList.remove("show");
+            document.querySelectorAll(".buildingname")[i].classList.remove("active", "no-border");
+        });
+
+        // Toggle visibility, border removal, and rounded border for the clicked item
+        if (!isVisible) {
+            hiddenBtns.classList.add("show");
+            buildingName.classList.add("active", "no-border");
+        }
+    });
+});
+
+document.querySelectorAll(".edit_btn").forEach(button => {
+    button.addEventListener("click", function() {
+        const roomsContainer = document.getElementById("rooms_container");
+        const no_room_message = document.getElementById("no_room_message");
+        const photo_view = document.getElementById("photo_view");
+
+        if (this.value === "Rooms") {
+            document.getElementById("left_bar").style.gap = "30px";
+            roomsContainer.style.display = "flex";
+            document.getElementById("policies_form").style.display = "none";
+            document.getElementById("room_bar").style.display = "flex";
+            document.getElementById("building_form").style.display = "none";
+            document.getElementById("amenities_section").style.display = "none";
+            document.getElementById("photo_view").style.display = "none";
+            document.getElementById("upload_room_photo").style.display = "None";
+            document.getElementById("edit_room_form").style.display = "None";
+        } else if(this.value === "Edit Building"){
+            document.getElementById("policies_form").style.display = "none";
+            document.getElementById("room_bar").style.display = "none";
+            document.getElementById("building_form").style.display = "flex";
+            document.getElementById("amenities_section").style.display = "none";
+            document.getElementById("upload_room_photo").style.display = "None";
+            document.getElementById("edit_room_form").style.display = "None";
+        }else if(this.value === "Amenities"){
+            document.getElementById("policies_form").style.display = "none";
+            document.getElementById("room_bar").style.display = "None";
+            document.getElementById("building_form").style.display = "none";
+            document.getElementById("amenities_section").style.display = "flex";
+            document.getElementById("upload_room_photo").style.display = "None";
+            document.getElementById("edit_room_form").style.display = "None";
+        }else if(this.value === "Policies"){
+            document.getElementById("policies_form").style.display = "Flex";
+            document.getElementById("room_bar").style.display = "None";
+            document.getElementById("building_form").style.display = "none";
+            document.getElementById("amenities_section").style.display = "none";
+            document.getElementById("upload_room_photo").style.display = "None";
+            document.getElementById("edit_room_form").style.display = "None";
+        }else if(this.value === "upload_room_photo"){
+            document.getElementById("policies_form").style.display = "none";
+            document.getElementById("building_form").style.display = "none";
+            document.getElementById("amenities_section").style.display = "none";
+            document.getElementById("upload_room_photo").style.display = "Flex";
+            document.getElementById("edit_room_form").style.display = "None";
+        }else {
+            document.getElementById("left_bar").style.gap = "0";
+            roomsContainer.style.display = "None";
+            photo_view.classList.add("hide");
+            document.getElementById("building_form").style.display = "None";
+            document.getElementById("amenities_section").style.display = "None";
+            document.getElementById("photo_view").style.display = "None";
+            document.getElementById("room_bar").style.display = "None";
+            document.getElementById("policies_form").style.display = "None";
+            document.getElementById("upload_room_photo").style.display = "None";
+            document.getElementById("edit_room_form").style.display = "None";
+            document.getElementById("edit_room_form").style.display = "None";
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const firstAdivAnchor = document.querySelector(".adiv .buildingname");
+    if (firstAdivAnchor) {
+        firstAdivAnchor.style.borderTopLeftRadius = "15px";
+        firstAdivAnchor.style.borderTopRightRadius = "15px";
+    }
+});
+
+$(document).on('click', '.photo_btn', function() {
+    $('#photo_view').css('display', 'flex');
+});
+$(document).on('click', '.backbtn', function() {
+    $('#photo_view').css('display', 'none');
+    $('#upload_room_photo').css('display', 'none');
+});
+$(document).on('click', '#uploadbtn', function() {
+    $('#upload_room_photo').css('display', 'flex');
+});
+$(document).on('click', '.room_update_btn', function() {
+    $('#edit_room_form').css('display', 'flex');
+});
