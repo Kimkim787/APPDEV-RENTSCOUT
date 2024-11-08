@@ -1,5 +1,7 @@
 $(document).ready(function() {
   request_bookmark_status();
+  display_verification_status();
+
   $('#heart_container').on('click', '#heart_sign', function(){
   //   console.log('clicked');
   //   $(this).toggleClass('heart-active');
@@ -11,7 +13,6 @@ $(document).ready(function() {
     }
     
   });
-
 
   $('.view_photo_btn').on('click', function() {
     $('#photo_container').empty();
@@ -101,6 +102,16 @@ $(document).ready(function() {
     })
   });
 
+  // CREATE VERIFICATION CLICK
+  $('#verification_status_box').on('click', '#verify_btn', function(){
+    create_verification();
+  })
+
+  // REMOVE VERIFICTION CLICK
+  $('#verification_status_box').on('click', '#pending_verification', function(){
+    delete_verification();
+  })
+
 
   function request_bookmark_status(return_status = false){
     console.log("Requesting bookamr status");
@@ -177,6 +188,90 @@ $(document).ready(function() {
         alert(`Error: ${xhr.responseText.error || error}`);
       }
     })
+  }
+
+  function display_verification_status(){
+    let box = $('#verification_status_box');
+    box.empty();
+    $.ajax({
+      url: '/building/request/verification_status/',
+      type: 'GET',
+      data: {
+        'buildingid': box.attr('value')
+      },
+      success: function(response){
+        console.log(response.verification_status)
+        if(response.verification_status === 'Not Verified'){
+          let button = $('<button></button>', {
+            text: 'Verify',
+            id: 'verify_btn'
+          })
+          box.append(button);
+
+        } else if (response.verification_status === 'Pending'){
+          let p = $('<p></p>', {
+            text: 'Pending',
+            id: 'pending_verification'
+          })
+          box.append(p);
+
+        } else if (response.verification_status === 'Verified'){
+          let img = $('<img/>', {
+            src: '/static/imgs/building/verified-icon-removebg-preview.png',
+            alt: 'Verification Badge',
+            id:  'verified'
+          })
+          console.log(img);
+          box.append(img);
+        }
+
+      }, 
+      error: function(xhr) {
+        console.error("Error:", xhr.responseJSON.error);
+      }
+    })
+  }
+
+  function create_verification(){
+    const box = $('#verification_status_box');
+    $.ajax({
+      url: '/building/create_verification/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+        'buildingid': box.attr('value')
+      },
+      success: function(){
+        alert('Verification has been sent.');
+
+        display_verification_status();
+
+      },
+      error: function(xhr) {
+        console.error("Error:", xhr.responseJSON.error);
+      }    
+  })
+  }
+
+  function delete_verification(){
+    const box = $('#verification_status_box');
+    $.ajax({
+      url: '/building/remove_verification/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+        'buildingid': box.attr('value')
+      },
+      success: function(){
+        alert('Verification request removed.');
+
+        display_verification_status();
+
+      },
+      error: function(xhr) {
+        console.error("Error:", xhr.responseJSON.error);
+      }    
+    });
   }
 });
 

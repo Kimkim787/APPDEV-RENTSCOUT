@@ -145,6 +145,11 @@ class BuildingReportForm(ModelForm):
         model = BuildingReport
         exclude = ('reportid', 'reporter', 'date_reported', )
 
+class VerificationForm(ModelForm):
+    class Meta:
+        model = Verification
+        fields = ('buildingid', )
+
 # trash
 class ScrapperFile(forms.Form):
     file = forms.FileField()

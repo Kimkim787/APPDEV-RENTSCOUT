@@ -9,7 +9,8 @@ from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm,
                     ScoutUserCreationForm, RoomForm, RoomImageForm, FeedBackForm,
                     LandlordUserCreationForm, PoliciesForm, HighlightsForm,
                     ScoutUserProfileForm, LandlordUserProfileForm,
-                    ScoutBookmarkForm, LandlordBookmarkForm, ScrapperFile, BuildingReportForm
+                    ScoutBookmarkForm, LandlordBookmarkForm, ScrapperFile, BuildingReportForm,
+                    VerificationForm, 
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -155,13 +156,6 @@ def building_info(request, pk):
     except:
         highlights = None
 
-    try:
-        verify = Verification.objects.get(buildingid = building)
-        verified_status = verify.status
-    except:
-        verified_status = 'Not Verified'
-
-
     rooms = Room.objects.filter(building_id = building)
     room_images = RoomImage.objects.all()
     policies = Policies.objects.filter(buildingid = building)
@@ -172,7 +166,7 @@ def building_info(request, pk):
 
     context = {'building':building, 'highlights': highlights, 'room_images': room_images,
                'rooms':rooms, 'policies':policies, 'roomform':roomform, 'feedbacks':feedbacks,
-               'feedbackform':feedbackForm, 'building_report_form': reportform, 'verification_status':verified_status
+               'feedbackform':feedbackForm, 'building_report_form': reportform,
             }
     
     return render(request, 'RentScout/building.html', context)
@@ -953,6 +947,58 @@ class delete_building_report(View):
         except Exception as e:
             return JsonResponse({'error': f'{e}'}, status = 500)
         
+class get_verification_status_view(View):
+    def get(self, request):
+        buildingid = request.GET.get('buildingid', '')
+        
+        if not buildingid:
+            return JsonResponse({"error": "Did not receive Building ID"}, status = 400)
+
+        building = Building.objects.get(buildingid = buildingid)
+
+        try:        
+            verify = Verification.objects.get(buildingid = building)
+            verified_status = verify.status
+        except:
+            verified_status = 'Not Verified'
+        
+        return JsonResponse({'verification_status': verified_status}, status = 200)
+
+class create_verification_view(View):
+    def post(self, request):
+        try:
+            form = VerificationForm(request.POST)
+            if form.is_valid():
+                new_verification = form.save(commit = False)
+                new_verification.status = 'Pending'
+                new_verification.save()
+                messages.success(request, 'Verification request has been sent')
+                return JsonResponse({'success': 'Verification request has been sent'}, status = 200)
+            else:
+                return JsonResponse({'error': 'Something went wrong with the form'}, status = 400)
+        except Exception as e:
+            messages.error(request, "Server Error")
+            return JsonResponse({'error': f'{e}'}, status = 500)
+
+class delete_verification(View):
+    def post(self, request):
+        buildingid = request.POST.get('buildingid')
+        if not buildingid:
+            return JsonResponse({"error": "Did not receive Building ID"}, status = 400)
+        try:
+            # user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
+            building = Building.objects.get(buildingid = buildingid)
+            verification = Verification.objects.get(buildingid = building)
+            print(verification)
+            verification.delete()
+            messages.success(request, 'Verification request removed')
+            return JsonResponse({'success': 'Verification request removed'}, status = 200)
+        except Building.DoesNotExist:
+            return JsonResponse({'error': 'Building Does Not Exist'}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+
+
 # SCRAPPER
 def building_file_scrapper(request):
     if request.method == 'POST':

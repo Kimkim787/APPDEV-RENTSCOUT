@@ -5,7 +5,8 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     request_amenity_status, create_amenity_view, update_amenity_view,
                     update_room, create_bookmark, get_bookmark_status, remove_bookmark,
                     get_buildings_bypage, create_building_report, get_all_reports,
-                    delete_building_view, delete_building_report
+                    delete_building_view, delete_building_report, get_verification_status_view,
+                    create_verification_view, delete_verification
                     
                     )
 from . import views
@@ -28,6 +29,7 @@ urlpatterns = [
     path('building/update_view/', building_edit_view.as_view()),
     path('building/edit/', views.building_edit, name='edit_building'),
     path('building/delete_view/', delete_building_view.as_view()),
+    path('building/request/verification_status/', get_verification_status_view.as_view()),
 
     # FEEDBACK
     path('building/feedback/', views.create_feedback, name='newfeedback'),
@@ -78,8 +80,8 @@ urlpatterns = [
 
     # VERIFICATION
     path('building/verification/', views.all_verification, name = 'verification_page'),
-
-    
+    path('building/create_verification/', create_verification_view.as_view()),
+    path('building/remove_verification/', delete_verification.as_view()),
     # SCRAPPERS
     path('scrapper/building/', views.building_file_scrapper, name='building_scrapper'),
 ]

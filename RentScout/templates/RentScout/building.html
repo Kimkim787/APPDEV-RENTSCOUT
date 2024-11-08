@@ -337,13 +337,10 @@
         
         <div class="fixedpage">
             <div class="bhousenamebox">
-                {% if verification_status == 'Not Verified' %}
-                <img src="{% static 'imgs/svgs/verify.svg' %}" alt="verification_status">
-                {% elif verification_status == 'Pending' %}
-
-                {% elif verification_status == Verified %}
-                <img src="{% static 'imgs/svgs/verify_check.svg' %}" alt="verification_status">
-                {% endif %}
+                <div id="verification_status_box" value="{{ building.buildingid }}">
+                    
+                </div>
+                
                 
                 <h2>{{ building.building_name }}</h2>
 
@@ -378,5 +375,5 @@
 
         <script src="{% static 'scripts/modal.js' %}?100"></script>
     </section>
-    <script src="{% static 'scripts/building.js' %}?104"></script>
+    <script src="{% static 'scripts/building.js' %}?106"></script>
     {% endblock bodycontent %}
