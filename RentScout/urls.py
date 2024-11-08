@@ -6,7 +6,7 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     update_room, create_bookmark, get_bookmark_status, remove_bookmark,
                     get_buildings_bypage, create_building_report, get_all_reports,
                     delete_building_view, delete_building_report, get_verification_status_view,
-                    create_verification_view, delete_verification
+                    create_verification_view, delete_verification, get_verification_requests
                     
                     )
 from . import views
@@ -68,7 +68,7 @@ urlpatterns = [
     path('user/bookmark/add/', create_bookmark.as_view(), name='add_bookmark'),
     path('user/bookmark/building/page/', get_bookmark_status.as_view()),
     path('user/bookmark/delete/', remove_bookmark.as_view()),
-
+    path('user/user_profile_admin_access/<int:userid>/', views.user_profile_admin_access, name='user_profile_admin_access'),
     # MAP 
     path('building/map/', views.go_map, name='map'),
     
@@ -82,6 +82,8 @@ urlpatterns = [
     path('building/verification/', views.all_verification, name = 'verification_page'),
     path('building/create_verification/', create_verification_view.as_view()),
     path('building/remove_verification/', delete_verification.as_view()),
+    path('building/request/verification_requests/', get_verification_requests.as_view()),
+    
     # SCRAPPERS
     path('scrapper/building/', views.building_file_scrapper, name='building_scrapper'),
 ]

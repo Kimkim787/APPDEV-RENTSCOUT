@@ -379,6 +379,15 @@ def user_profile(request):
         context = {'form': form, 'user_data': user_data}
     return render(request, 'RentScout/user_profile.html', context)
 
+# no login required
+def user_profile_admin_access(request, userid):
+    if isinstance(request.user, AdminUser):
+        user_data = ScoutUser_Landlord.objects.get(userid = request.user.userid)
+        context = {'user_data': user_data}
+        return render(request, 'RentScout/user_profile.html', context)
+    else:
+        return redirect(request.META.get('HTTP_REFERER'))
+    
 def update_user_profile(request):
     if request.method == 'POST':
         if isinstance(request.user, ScoutUser):
@@ -424,10 +433,11 @@ def all_verification(request):
 
 class get_all_reports(View):
     def get(self, request):
+        page = request.GET.get('page', 1)
         try:
             reports_all = BuildingReport.objects.all()
             paginator = Paginator(reports_all, 10)
-            report_page = paginator.get_page(1)
+            report_page = paginator.get_page(page)
             report_datas = [
                 {
                 'reportid': report.reportid,
@@ -454,8 +464,41 @@ class get_all_reports(View):
         except Exception as e:
             return JsonResponse({'error': f'{e}'})
         
-# class get_verification_requests(View):
-#     def get(self, request):
+class get_verification_requests(View):
+    def get(self, request):
+        page = request.GET.get('page', 1)
+        try:
+            verification_requests = Verification.objects.filter(status = 'Pending')
+            paginator = Paginator(verification_requests, 10)
+            current_page = paginator.get_page(page)
+            verificaton_datas = [
+                {
+                'verificationid': verification.verificationid,
+                'buildingid': verification.buildingid.buildingid,
+                'building_name': verification.buildingid.building_name,
+                'building_owner_email': verification.buildingid.building_owner.email,
+                'building_owner_id': verification.buildingid.building_owner.userid,
+                'building_description': verification.buildingid.details,
+                'date_requested': verification.date_requested,
+                'building_image': verification.buildingid.building_image.url
+                }
+                for verification in current_page
+            ]
+            print(verificaton_datas)
+            response_data = {
+                'verification_requests': verificaton_datas,
+                'total_pages': paginator.num_pages,
+                'current_page': current_page.number,
+                'has_next': current_page.has_next(),
+                'has_previous': current_page.has_previous(),
+            }
+            
+            return JsonResponse(response_data, status = 200)
+        except Verification.DoesNotExist:
+            return JsonResponse({'error': "Verification Does Not Exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+
 
 
 class get_buildings_bypage(View):
@@ -852,6 +895,11 @@ class get_bookmark_status(View):
                     else:
                         return JsonResponse({'success': 'Not Bookmarked',
                                              'buildingid': building_id}, status = 200)
+                
+                elif isinstance(request.user, AdminUser):
+                    return JsonResponse({'success': 'Not Bookmarked',
+                                            'buildingid': building_id}, status = 200)
+                
                 else:
                     return JsonResponse({'error': 'User is not a true user'}, status = 500)
                 
@@ -883,6 +931,9 @@ class create_bookmark(View):
                 return JsonResponse({'success': 'Saved to Bookmark'}, status = 200)
             else:
                 return JsonResponse({'error': 'Form invalid'}, status = 400)
+            
+        else:
+            return JsonResponse({'success': 'Admin Users cannot make bookmarks'}, status = 200)
 
 class remove_bookmark(View):
     def post(self, request):
