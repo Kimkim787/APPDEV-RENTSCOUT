@@ -4,7 +4,9 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm
 from .models import ( ScoutUser, ScoutUser_Landlord, Building, Highlights, 
                      Policies, Room, Feedback, RoomImage, 
-                     ScoutUserBookmark, LandlordUserBookmark, BuildingReport )
+                     ScoutUserBookmark, LandlordUserBookmark, BuildingReport,
+                     Verification,
+                    )
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -142,7 +144,6 @@ class BuildingReportForm(ModelForm):
     class Meta:
         model = BuildingReport
         exclude = ('reportid', 'reporter', 'date_reported', )
-
 
 # trash
 class ScrapperFile(forms.Form):

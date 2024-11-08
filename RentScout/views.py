@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
-                     ScoutUserBookmark, LandlordUserBookmark, AdminUser, BuildingReport
+                     ScoutUserBookmark, LandlordUserBookmark, AdminUser, BuildingReport,
+                     Verification
                     )
 
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
@@ -154,6 +155,13 @@ def building_info(request, pk):
     except:
         highlights = None
 
+    try:
+        verify = Verification.objects.get(buildingid = building)
+        verified_status = verify.status
+    except:
+        verified_status = 'Not Verified'
+
+
     rooms = Room.objects.filter(building_id = building)
     room_images = RoomImage.objects.all()
     policies = Policies.objects.filter(buildingid = building)
@@ -164,7 +172,7 @@ def building_info(request, pk):
 
     context = {'building':building, 'highlights': highlights, 'room_images': room_images,
                'rooms':rooms, 'policies':policies, 'roomform':roomform, 'feedbacks':feedbacks,
-               'feedbackform':feedbackForm, 'building_report_form': reportform, 
+               'feedbackform':feedbackForm, 'building_report_form': reportform, 'verification_status':verified_status
             }
     
     return render(request, 'RentScout/building.html', context)
@@ -416,6 +424,10 @@ def all_reports(request):
     context = {}
     return render(request, 'RentScout/admin/all_reports.html', context)
 
+def all_verification(request):
+    context = {}
+    return render(request, 'RentScout/admin/verification.html', context)
+
 class get_all_reports(View):
     def get(self, request):
         try:
@@ -448,6 +460,10 @@ class get_all_reports(View):
         except Exception as e:
             return JsonResponse({'error': f'{e}'})
         
+# class get_verification_requests(View):
+#     def get(self, request):
+
+
 class get_buildings_bypage(View):
     def get(self, request):
         page = request.GET.get('page', 1)

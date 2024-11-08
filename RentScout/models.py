@@ -259,3 +259,21 @@ class BuildingReport(models.Model):
 
     class Meta:
         ordering = ['date_reported']
+
+class Verification(models.Model):
+    NOT_VERIFIED = 'Not Verified'
+    PENDING = 'Pending'
+    VERIFIED = 'Verified'
+    status_choices = [
+        (NOT_VERIFIED, 'Not Verified'),
+        (PENDING, 'Pending'),
+        (VERIFIED, 'Verified'),
+    ]
+
+    verificationid = models.AutoField(primary_key=True)
+    buildingid = models.ForeignKey(Building, related_name = 'verify_building', on_delete = models.CASCADE)
+    status = models.CharField(max_length = 15, choices = status_choices, default=NOT_VERIFIED)
+    date_requested = models.DateTimeField(auto_now_add=True)
+
+    # REASON FOR DENYING THE VERIFICATION
+    deny_reason = models.TextField(null=True, blank=True)

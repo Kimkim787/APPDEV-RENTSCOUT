@@ -75,6 +75,11 @@ urlpatterns = [
     path('building/create_report/', create_building_report.as_view()),
     path('buildings/report/get_all/', get_all_reports.as_view()),
     path('building/reports/delete/', delete_building_report.as_view()),
+
+    # VERIFICATION
+    path('building/verification/', views.all_verification, name = 'verification_page'),
+
+    
     # SCRAPPERS
     path('scrapper/building/', views.building_file_scrapper, name='building_scrapper'),
 ]
