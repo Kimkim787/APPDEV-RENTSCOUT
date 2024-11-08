@@ -4,6 +4,9 @@
 {% load static %}
     <link rel="stylesheet" href="{% static 'css/edit_building.css' %}?9">
     <link rel="stylesheet" href="{% static 'css/image_upload.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     <script>
         const csrfToken = '{% csrf_token %}';
     </script>
@@ -15,86 +18,102 @@
 {% block bodycontent %}
     <section>
         <div id="left_bar">
-            <ul>    
-            {% for building in buildings %}
-                <li>
-                    <a href="{% url 'building_info' building.buildingid %}">{{ building.building_name }}
-                        <span class="fas fa-caret-down third"></span>
+            <ul class="leftbarbox">
+                {% for building in buildings %}
+                <div class="adiv">
+                    <a class="buildingname" href="javascript:void(0);">{{ building.building_name }}
+                        <img src="{% static 'imgs/editbuilding/down.png' %}" alt="">
                     </a>
-                    <ul class="edit_btn_list">
-                        <input type="hidden" class="building_id" value="{{ building.buildingid }}">
-                        <li>
-                            <button class="edit_btn" value="Edit Building">Edit Building</button>
-                        </li>
-                        <li>
-                            <button class="edit_btn" value="Amenities">Amenities</button>
-                        </li>
-                        <li>
-                            <button class="edit_btn" value="Policies">Policies</button>
-                        </li>
-                        <li>
-                            <button class="edit_btn" value="Rooms">Rooms</button>
-                        </li>
-                    </ul>
-                </li>
-            {% endfor %}
+                </div>
+                <ul class="hiddenbtns edit_btn_list">
+                    <input type="hidden" class="building_id" value="{{ building.buildingid }}">
+                    <li class="li">
+                        <div class="div"></div>
+                        <button class="edit_btn" value="Edit Building">Edit Building</button>
+                    </li>
+                    <li>
+                        <div class="div1"></div>
+                        <button class="edit_btn" value="Amenities">Amenities</button>
+                    </li>
+                    <li>
+                        <div class="div1"></div>
+                        <button class="edit_btn" value="Policies">Policies</button>
+                    </li>
+                    <li>
+                        <button class="edit_btn" value="Rooms">Rooms</button>
+                    </li>
+                </ul>
+                {% endfor %}
             </ul>
             
-        </div>
-
-        <div id="middle_bar">
-            <!-- ROOMS VIEW -->
-            <div id="room_view" class="mid_item hidden">
-                <div id="rooms_container"></div>
+            <div id="room_bar">
+                <!-- ROOMS VIEW -->
+                <div id="room_view" class="mid_item hidden">
+                    <div id="rooms_container"></div>
+                </div>
+                <!-- PHOTOS VIEW -->
+                <div id="photo_view" class="mid_item hidden">
+                    <div class="name_button">
+                        <h3>Photos of <span id='photo_name'></span></h3>
+                        <img class="backbtn" src="{% static 'imgs/building/back-button.png' %}" alt="back" >
+                    </div>
+                    
+                    
+                    <button id="uploadbtn" class="edit_btn" value="upload_room_photo">Upload Photo</button>
+                    <input type="hidden" id="roomid_holder">
+                    <ul id="photo_container">
+                        <!-- ROOM PHOTOS HERE -->
+                    </ul>
+                </div>
+                <h1 id="no_room_message" class="mid_item hidden">NO ROOMS FOUND</h1>
+    
             </div>
-
-            <!-- PHOTOS VIEW -->
-            <div id="photo_view" class="mid_item hidden">
-                <button class="backbtn">Back</button>
-                <h3>Photos of "<span id='photo_name'></span>"</h3>
-                <button class="edit_btn" value="upload_room_photo">Upload Photo</button>
-                <input type="hidden" id="roomid_holder">
-                <ul id="photo_container">
-                    <!-- ROOM PHOTOS HERE -->
-                </ul>
-            </div>
-
-            <h1 id="no_room_message" class="mid_item hidden">NO ROOMS FOUND</h1>
-
         </div>
 
         <div id="form_container">
             <div id="building_form" class="form_item hidden">
+                <h1>EDIT BUILDING</h1>
                 <form id="building_update_form" action="" method="POST">
                     {% csrf_token %}
                     <input type="hidden" id="building_id_holder" value="">
-                    <label for="building_name">Building Name:</label>
-                    <input type="text" id="bldg_name" name="{{ bldg_form.building_name.name }}" value="{{ form.building_name.value }}" required>
-            
-                    <label for="vacant">Vacant Rooms</label>
-                    <input type="number" id="bldg_vacant" name = "{{ bldg_form.rooms_vacant.name }}" value="{{ form.rooms_vacant.value }}" required>
-            
-                    <label for="zip_code">Zip Code:</label>
-                    <input type="number" id="bldg_zipcode" name="{{ bldg_form.zip_code.name }}" value="{{ form.zip_code.value }}" required>
-            
-                    <label for="street">Street</label>
-                    <input type="text" id="bldg_street" name = "{{ bldg_form.street.name }}" value="{{ form.street.value }}" required>
-            
-                    <label for="city">City</label>
-                    <input type="text" id="bldg_city" name = "{{ bldg_form.city.name }}" value="{{ form.city.value }}" required>
-            
-                    <label for="province">Province</label>
-                    <input type="text" id="bldg_province" name = "{{ bldg_form.province.name }}" value="{{ form.province.value }}" required>
-            
-                    <label for="country">Country</label>
-                    <input type="text" id="bldg_country" name = "{{ bldg_form.country.name }}" value="{{ form.country.value }}" required>
-            
-                    <label for="details">Details</label>
-                    <textarea id="bldg_desc" name="{{ bldg_form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
-                    
-                    <label for="coordinates">Coordinates</label>
-                    <input type="text" id="bldg_coords" name="{{ bldg_form.coordinates.name }}" value="{{ form.coordinates.value }}" required>
-            
+                    <div class="input_box">
+                        <div class="input_label_div">
+                            <label for="building_name">Building Name:</label>
+                            <input type="text" id="bldg_name" name="{{ bldg_form.building_name.name }}" value="{{ form.building_name.value }}" required>
+                        </div>
+                        <div class="input_label_div">
+                            <label for="vacant">Vacant Rooms</label>
+                            <input type="number" id="bldg_vacant" name = "{{ bldg_form.rooms_vacant.name }}" value="{{ form.rooms_vacant.value }}" required>
+                        </div>
+                        <div class="input_label_div">
+                            <label for="zip_code">Zip Code:</label>
+                            <input type="number" id="bldg_zipcode" name="{{ bldg_form.zip_code.name }}" value="{{ form.zip_code.value }}" required>
+                        </div>
+                        <div class="input_label_div">
+                            <label for="street">Street</label>
+                            <input type="text" id="bldg_street" name = "{{ bldg_form.street.name }}" value="{{ form.street.value }}" required>
+                        </div>
+                        <div class="input_label_div">
+                            <label for="city">City</label>
+                            <input type="text" id="bldg_city" name = "{{ bldg_form.city.name }}" value="{{ form.city.value }}" required>
+                        </div>
+                        <div class="input_label_div">
+                            <label for="province">Province</label>
+                            <input type="text" id="bldg_province" name = "{{ bldg_form.province.name }}" value="{{ form.province.value }}" required>
+                        </div>
+                        <div class="input_label_div">
+                            <label for="country">Country</label>
+                            <input type="text" id="bldg_country" name = "{{ bldg_form.country.name }}" value="{{ form.country.value }}" required>
+                        </div>
+                        <div class="input_label_div">
+                            <label for="coordinates">Coordinates</label>
+                            <input type="text" id="bldg_coords" name="{{ bldg_form.coordinates.name }}" value="{{ form.coordinates.value }}" required>
+                        </div>
+                        <div class="input_label_div">
+                            <label for="details">Details</label>
+                            <textarea id="bldg_desc" name="{{ bldg_form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
+                        </div>
+                    </div>
                     <input type="submit" value="Save">
                 </form>
             </div>
@@ -109,20 +128,21 @@
                     <div id="amenities_create_form" class="amenity_form_items">
                     </div>
                 </div>
-                    
             </div>
 
             <div id="policies_form" class="form_item hidden">
                 <h1>Policies</h1>
-                <button id="add_policy_btn" value="">Add new policy</button>
-                <ul id="policies_container">
-                </ul>
+                <div class="policies_div">
+                    <button id="add_policy_btn" value="">Add new policy</button>
+                    <ul id="policies_container">
+                    </ul>
+                </div>
             </div>
 
             <div id="upload_room_photo" class="form_item hidden">
                 <h1>Upload Room Photo</h1>
                 <div id="upload_photo_container">
-                    <button id="cancel_upload">Cancel Upload</button>
+                    {% comment %} <button id="cancel_upload">Cancel Upload</button> {% endcomment %}
                     {% comment %}<!-- Upload  -->{% endcomment %}
                     <form action="" method="POST" id="file-upload-form" class="uploader" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -167,7 +187,9 @@
             </div>
         </div>
     </section>
-
+    <script>
+        const deleteIconUrl = "{% static 'imgs/editbuilding/mark.png' %}";
+    </script>
     <script src="{% static 'scripts/edit_building.js' %}?17"></script>
     <script src="{% static 'scripts/image_upload.js' %}?8" ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
