@@ -464,43 +464,6 @@ class get_all_reports(View):
         except Exception as e:
             return JsonResponse({'error': f'{e}'})
         
-class get_verification_requests(View):
-    def get(self, request):
-        page = request.GET.get('page', 1)
-        try:
-            verification_requests = Verification.objects.filter(status = 'Pending')
-            paginator = Paginator(verification_requests, 10)
-            current_page = paginator.get_page(page)
-            verificaton_datas = [
-                {
-                'verificationid': verification.verificationid,
-                'buildingid': verification.buildingid.buildingid,
-                'building_name': verification.buildingid.building_name,
-                'building_owner_email': verification.buildingid.building_owner.email,
-                'building_owner_id': verification.buildingid.building_owner.userid,
-                'building_description': verification.buildingid.details,
-                'date_requested': verification.date_requested,
-                'building_image': verification.buildingid.building_image.url
-                }
-                for verification in current_page
-            ]
-            print(verificaton_datas)
-            response_data = {
-                'verification_requests': verificaton_datas,
-                'total_pages': paginator.num_pages,
-                'current_page': current_page.number,
-                'has_next': current_page.has_next(),
-                'has_previous': current_page.has_previous(),
-            }
-            
-            return JsonResponse(response_data, status = 200)
-        except Verification.DoesNotExist:
-            return JsonResponse({'error': "Verification Does Not Exist"}, status = 404)
-        except Exception as e:
-            return JsonResponse({'error': f'{e}'}, status = 500)
-
-
-
 class get_buildings_bypage(View):
     def get(self, request):
         page = request.GET.get('page', 1)
@@ -997,7 +960,46 @@ class delete_building_report(View):
             return JsonResponse({'error': 'Report Does Not Exist'}, status = 404)
         except Exception as e:
             return JsonResponse({'error': f'{e}'}, status = 500)
-        
+    
+
+# GETS ALL VERIFICATIONS FOR ADMIN
+class get_verification_requests(View):
+    def get(self, request):
+        page = request.GET.get('page', 1)
+        try:
+            verification_requests = Verification.objects.filter(status = 'Pending')
+            paginator = Paginator(verification_requests, 10)
+            current_page = paginator.get_page(page)
+            verificaton_datas = [
+                {
+                'verificationid': verification.verificationid,
+                'buildingid': verification.buildingid.buildingid,
+                'building_name': verification.buildingid.building_name,
+                'building_owner_email': verification.buildingid.building_owner.email,
+                'building_owner_id': verification.buildingid.building_owner.userid,
+                'building_coordinates': verification.buildingid.coordinates,
+                'building_description': verification.buildingid.details,
+                'date_requested': verification.date_requested,
+                'building_image': verification.buildingid.building_image.url
+                }
+                for verification in current_page
+            ]
+            response_data = {
+                'verification_requests': verificaton_datas,
+                'total_pages': paginator.num_pages,
+                'current_page': current_page.number,
+                'has_next': current_page.has_next(),
+                'has_previous': current_page.has_previous(),
+            }
+            
+            return JsonResponse(response_data, status = 200)
+        except Verification.DoesNotExist:
+            return JsonResponse({'error': "Verification Does Not Exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+
+
+# GET VERIFICATION STATUS FOR BUILDING 
 class get_verification_status_view(View):
     def get(self, request):
         buildingid = request.GET.get('buildingid', '')
@@ -1040,12 +1042,66 @@ class delete_verification(View):
             # user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
             building = Building.objects.get(buildingid = buildingid)
             verification = Verification.objects.get(buildingid = building)
-            print(verification)
             verification.delete()
             messages.success(request, 'Verification request removed')
             return JsonResponse({'success': 'Verification request removed'}, status = 200)
         except Building.DoesNotExist:
             return JsonResponse({'error': 'Building Does Not Exist'}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+
+# GET BUILDING INFO FOR DENY
+
+class deny_verification(View):
+    def get(self, request):
+        verificationid = request.GET.get('verificationid')
+        if not verificationid:
+            return JsonResponse({'error': 'Did not receive Verification ID'}, status = 400)
+        
+        try:
+            verification = Verification.objects.get(verificationid = verificationid)
+            
+            response_data = {
+                'building_name': verification.buildingid.building_name,
+                'building_owner': verification.buildingid.building_owner.email,
+            }
+            print('success')
+            return JsonResponse(response_data, status = 200)
+        except Verification.DoesNotExist:
+            return JsonResponse({'error': 'Building Does Not Exist'}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+    
+    def post(self, request):
+        verificationid = request.POST.get('verificationid')
+        if not verificationid:
+            return JsonResponse({"error": "Did not receive Building ID"}, status = 400)
+
+        try:
+            verification = Verification.objects.get(verificationid = verificationid)
+            verification.delete()
+            messages.success(request, 'Verification request removed')
+            return JsonResponse({'success': 'Verification request removed'}, status = 200)
+        
+        except Verification.DoesNotExist:
+            return JsonResponse({'error': 'Verification Does Not Exist'}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+
+class accept_verification(View):
+    def post(self, request):
+        verificationid = request.POST.get('verificationid')
+        if not verificationid:
+            return JsonResponse({"error": "Did not receive Building ID"}, status = 400)
+
+        try:
+            verification = Verification.objects.get(verificationid = verificationid)
+            verification.status = 'Verified'
+            verification.save()
+            messages.success(request, 'Verification accepted')
+            return JsonResponse({'success': 'Verification accepted'}, status = 200)
+        except Verification.DoesNotExist:
+            return JsonResponse({'error': 'Verification Does Not Exist'}, status = 404)
         except Exception as e:
             return JsonResponse({'error': f'{e}'}, status = 500)
 

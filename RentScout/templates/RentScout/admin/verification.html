@@ -7,9 +7,22 @@
 
 
 {% block bodycontent %}
+    {% csrf_token %}
     <div id="verifications_container">
 
     </div>
 
-    <script src="{% static 'scripts/verification.js' %}"></script>
+    ACCEPT VERIFICATION MODAL
+    <div id="verification_modal" class="hidden">
+        <h3>Reporting "<span id="building_name"></span>"</h3>
+        <p>Owned by: <span id="building_owner"></span></p>
+
+        <label for="reason">Reason of Denial:</label>
+        <textarea name="reason" id="deny_reason" cols="30" rows="10">
+        </textarea>
+        
+        <button id="save_deny">Deny</button>
+        <button id="cancel_deny">Cancel</button>
+    </div>
+    <script src="{% static 'scripts/verification.js' %}?1"></script>
 {% endblock %}
