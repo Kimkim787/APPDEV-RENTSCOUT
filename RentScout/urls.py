@@ -7,7 +7,7 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     get_buildings_bypage, create_building_report, get_all_reports,
                     delete_building_view, delete_building_report, get_verification_status_view,
                     create_verification_view, delete_verification, get_verification_requests,
-                    deny_verification, accept_verification
+                    deny_verification, accept_verification, create_room_view
                     
                     )
 from . import views
@@ -25,6 +25,7 @@ urlpatterns = [
 
     # BUILDINGS
     path('create_building/', views.create_building, name='new_building'),
+    path('edit_building/create_building/', views.create_building_edit_page, name='add_building'),
     path('building_info/<int:pk>/', views.building_info, name = 'building_info'),
     path('building/update/<str:pk>/', views.update_building, name='update_building'),
     path('building/update_view/', building_edit_view.as_view()),
@@ -38,6 +39,7 @@ urlpatterns = [
 
     # ROOMS
     path('room_create/<int:buildingID>', views.room_create, name='room_create'),
+    path('room/create_view/', create_room_view.as_view()),
     path('room/request/', get_room_data.as_view(), name='room_update'),
     path('room/get_rooms/', get_rooms.as_view(), name='get_rooms'),
     path('room_update/save/', views.room_update, name='room_save'),

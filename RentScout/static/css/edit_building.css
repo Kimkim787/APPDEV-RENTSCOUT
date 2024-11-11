@@ -12,13 +12,14 @@ section {
 #left_bar{
     height: 100%;
     display: flex;
+    flex-direction: column;
     width: fit-content;
     border-radius: 15px;
 }
 #left_bar .leftbarbox{
     width: 220px;
-    border-radius: 15px;
-    background-color: #000;
+    /* border-radius: 15px;     DOES NOTHING
+    background-color: #000; */
 }
 img[src*="down.png"] {
     filter: invert(1);
@@ -60,14 +61,15 @@ img[src*="down.png"] {
     opacity: 0;
     overflow: hidden;
     flex-direction: column;
-    transition: max-height 0.5s ease, opacity 0.5s ease;
+    transition: max-height 1s ease, opacity 1s ease;
 }
 .edit_btn_list.show {
     max-height: fit-content;
     opacity: 1;
 }
+
 #room_bar {
-    display: None;
+    display: flex;
     flex-direction: column;
     align-items: center;
     width: 280px;
@@ -80,7 +82,7 @@ img[src*="down.png"] {
     height: 100%;
 }
 #rooms_container{
-    display: None;
+        /* display: none; PLEASE DONT */
     flex-direction: column;
     height: fit-content;
     gap: 20px;
@@ -139,8 +141,7 @@ img[src*="down.png"] {
     height: 25px;
     
 }
-.room_photos{
-}
+
 #room_name{
     color: black;
 }
@@ -148,6 +149,7 @@ img[src*="down.png"] {
     display: flex;
     justify-content: space-between;
 }
+
 .form_item{
     display: flex;
 }
@@ -164,9 +166,6 @@ img[src*="down.png"] {
     background-position: center;
 }
 
-.hidden {
-    display: none;
-}
 #photo_container{
     display: flex;
     flex-direction: column;
@@ -210,7 +209,7 @@ img[src*="down.png"] {
     width: 100%;
 }
 #photo_view{
-    display: none;
+    /* display: none; PLEASE DONT */
     flex-direction: column;
     gap: 20px;
     overflow: auto;
@@ -242,10 +241,6 @@ img[src*="down.png"] {
     height: 16px;
     vertical-align: middle;
     margin-right: 5px; 
-}
-
-.hide{
-    display: none;
 }
 
 .hiddenbtns li{
@@ -301,7 +296,7 @@ img[src*="down.png"] {
 }
 
 #photo_view{
-    display: None;
+    /* display: none; PLEASE DONT */
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
@@ -326,7 +321,7 @@ img[src*="down.png"] {
     border-radius: 15px;
 }
 #building_form{
-    display: None;
+    /* display: none; */
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -388,7 +383,7 @@ img[src*="down.png"] {
 }
 
 #amenities_section{
-    display: None;
+    /* display: none; PLEASE DONT */
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -440,7 +435,7 @@ img[src*="down.png"] {
 }
 
 #policies_form{
-    display: None;
+    /* display: none; PLEASE DONT */
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -460,6 +455,7 @@ img[src*="down.png"] {
     color: white;
     border-radius: 5px;
 }
+
 #policies_form .policies_div{
     display: flex;
     flex-direction: column;
@@ -503,8 +499,7 @@ img[src*="down.png"] {
     justify-content: space-between;
     align-items: center;
 }
-#new_pol_form{
-}
+
 #policies_container li p{
     width: 65%;
     padding: 6px 5px;
@@ -544,7 +539,7 @@ img[src*="down.png"] {
 #upload_room_photo{
     height: 100%;
     width: 100%;
-    display: none;
+        /* display: none; PLEASE DONT */
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -579,7 +574,7 @@ img[src*="down.png"] {
 #edit_room_form{
     height: 100%;
     width: 100%;
-    display: none;
+        /* display: none; PLEASE DONT */
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -637,4 +632,16 @@ img[src*="down.png"] {
     border: none;
     padding: 8px;
     border-radius: 5px;
+}
+
+#new_room_form.form_item{
+    flex-direction: column;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.hide{
+    display: none;
 }

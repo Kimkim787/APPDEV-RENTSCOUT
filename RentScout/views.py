@@ -128,7 +128,8 @@ def create_building(request):
             newbuilding.building_owner = request.user
             newbuilding.save()
             return redirect('home')
-        print(form.errors)
+        else:
+            print(form.errors)
     context = {'form': form, 'page':page, }
     return render(request, 'RentScout/create_building.html', context)
 
@@ -184,6 +185,7 @@ def building_edit(request):
     try:
         buildings = Building.objects.filter(building_owner = request.user)
         photo_form = RoomImageForm()
+        building_form = BuildingForm()
         amenities_form = HighlightsForm()
     except ObjException as e:
         messages.error(request, f'{e}')
@@ -192,11 +194,27 @@ def building_edit(request):
     #     amenity = Highlights.objects.get(buildingid = buildings)
     # except:
     #     pass
-
+    print(buildings)
     context = {'buildings':buildings, 'photoform': photo_form, 'amenities_form':amenities_form,
+               'building_form': building_form, 
             #    'amenity': amenity, 
                }
     return render(request, 'RentScout/edit_building.html', context)
+
+def create_building_edit_page(request):
+    if not (isinstance(request.user, ScoutUser_Landlord)):
+        return redirect('edit_building')
+
+    if request.method == 'POST':
+        form = BuildingForm(request.POST, request.FILES)
+        if form.is_valid():
+            newbuilding = form.save(commit = False)
+            newbuilding.building_owner = request.user
+            newbuilding.save()
+            return redirect('edit_building')
+        else:
+            print(form.errors)
+    return redirect('edit_building')
 
 class building_edit_view(View):
     def get(self, request):
@@ -542,9 +560,34 @@ class get_buildings_bypage(View):
         except Exception as e:
             return JsonResponse({'error': f'{e}'}, status = 500)
 
+class create_room_view(View):
+    def post(self, request):
+        buildingid = request.POST.get('buildingid')
+        
+        if not buildingid:
+            return JsonResponse({'error': 'Requires Building ID'}, status = 400)
+        
+        try:
+            building = Building.objects.get(buildingid = buildingid)
+            room_form = RoomForm(request.POST)
+            print(room_form)
+            if room_form.is_valid():
+                new_room = room_form.save(commit=False)
+                new_room.building_id = building
+                new_room.save()
+                return JsonResponse({'success': 'New room created'}, status=200)
+            else:
+                print(room_form.errors)
+                return JsonResponse({'error': 'Form is invalid'}, status = 400)
+        except Building.DoesNotExist:
+            return JsonResponse({'error': 'Buildings Does Not Exist'}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+
 class get_rooms(View):
     def get(self,request):
         query = request.GET.get('building_id', '')
+        print(query)
         if query:
             try:
                 rooms = Room.objects.filter(building_id = query)
@@ -560,6 +603,9 @@ class get_rooms(View):
             except Room.DoesNotExist:
                 messages.error(request, 'Error 404: Rooms Not Found')
                 JsonResponse({'error': 'Rooms Not Found'}, status=404)
+            except Exception as e:
+                JsonResponse({'error': f'{e}'}, status = 500)
+
         else:
             messages.error(request, 'Error 405: Bad request')
             JsonResponse({'error': 'Bad request'}, status=405)

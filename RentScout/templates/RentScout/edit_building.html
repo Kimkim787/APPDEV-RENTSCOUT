@@ -2,7 +2,7 @@
 
 {% block stylecontent %}
 {% load static %}
-    <link rel="stylesheet" href="{% static 'css/edit_building.css' %}?9">
+    <link rel="stylesheet" href="{% static 'css/edit_building.css' %}?10">
     <link rel="stylesheet" href="{% static 'css/image_upload.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,57 +18,63 @@
 {% block bodycontent %}
     <section>
         <div id="left_bar">
+            <button id="add_building_btn">Add New Building</button>
             <ul class="leftbarbox">
-                {% for building in buildings %}
-                <div class="adiv">
-                    <a class="buildingname" href="javascript:void(0);">{{ building.building_name }}
-                        <img src="{% static 'imgs/editbuilding/down.png' %}" alt="">
-                    </a>
-                </div>
-                <ul class="hiddenbtns edit_btn_list">
-                    <input type="hidden" class="building_id" value="{{ building.buildingid }}">
-                    <li class="li">
-                        <div class="div"></div>
-                        <button class="edit_btn" value="Edit Building">Edit Building</button>
-                    </li>
-                    <li>
-                        <div class="div1"></div>
-                        <button class="edit_btn" value="Amenities">Amenities</button>
-                    </li>
-                    <li>
-                        <div class="div1"></div>
-                        <button class="edit_btn" value="Policies">Policies</button>
-                    </li>
-                    <li>
-                        <button class="edit_btn" value="Rooms">Rooms</button>
-                    </li>
-                </ul>
-                {% endfor %}
-            </ul>
-            
-            <div id="room_bar">
-                <!-- ROOMS VIEW -->
-                <div id="room_view" class="mid_item hidden">
-                    <div id="rooms_container"></div>
-                </div>
-                <!-- PHOTOS VIEW -->
-                <div id="photo_view" class="mid_item hidden">
-                    <div class="name_button">
-                        <h3>Photos of <span id='photo_name'></span></h3>
-                        <img class="backbtn" src="{% static 'imgs/building/back-button.png' %}" alt="back" >
+                {% if buildings|length == 0 %}
+                    <div class="adiv" style="margin-top: 50px;">
+                        <h3>NO BUILDING FOUND</h3>
                     </div>
-                    
-                    
-                    <button id="uploadbtn" class="edit_btn" value="upload_room_photo">Upload Photo</button>
-                    <input type="hidden" id="roomid_holder">
-                    <ul id="photo_container">
-                        <!-- ROOM PHOTOS HERE -->
+                {% else %}
+                    {% for building in buildings %}
+                    <div class="adiv">
+                        <a class="buildingname" href="javascript:void(0);">{{ building.building_name }}
+                            <img src="{% static 'imgs/editbuilding/down.png' %}" alt="">
+                        </a>
+                    </div>
+                    <ul class="hiddenbtns edit_btn_list">
+                        <input type="hidden" class="building_id" value="{{ building.buildingid }}">
+                        <li class="li">
+                            <div class="div"></div>
+                            <button class="edit_btn" value="Edit Building">Edit Building</button>
+                        </li>
+                        <li>
+                            <div class="div1"></div>
+                            <button class="edit_btn" value="Amenities">Amenities</button>
+                        </li>
+                        <li>
+                            <div class="div1"></div>
+                            <button class="edit_btn" value="Policies">Policies</button>
+                        </li>
+                        <li>
+                            <button class="edit_btn" value="Rooms">Rooms</button>
+                        </li>
                     </ul>
-                </div>
-    
-            </div>
+                    {% endfor %}
+                {% endif %}
+            </ul>
         </div>
 
+        <div id="room_bar" class="hidden"> <!--  -->
+            <button id="add_room_btn">Add New Room</button>
+            <div id="room_view" class="mid_item hidden">
+                
+                <div id="rooms_container"></div>
+                
+            </div>
+
+            <!-- PHOTOS VIEW -->
+            <div id="photo_view" class="mid_item hidden">
+                <button class="backbtn">Back</button>
+                <h3>Photos of "<span id='photo_name'></span>"</h3>
+                <button class="edit_btn" value="upload_room_photo">Upload Photo</button>
+                <input type="hidden" id="roomid_holder">
+                <ul id="photo_container">
+                    <!-- ROOM PHOTOS HERE -->
+                </ul>
+            </div>
+            <h1 id="no_room_message" class="mid_item hidden">NO ROOMS FOUND</h1>
+        </div>
+        
         <div id="form_container">
             <div id="building_form" class="form_item hidden">
                 <h1>EDIT BUILDING</h1>
@@ -184,12 +190,124 @@
             <div id="large_image_view" class="form_item hidden">
 
             </div>
+
+            <div id="new_building_form" class="form_item hidden">
+                <h1>NEW BUILDING FORM</h1>
+                <form action="{% url 'add_building' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <label for="building_name">Building Name:</label>
+                    <input type="text" name="{{ building_form.building_name.name }}" required>
+        
+                    <label for="vacant">Vacant Rooms</label>
+                    <input type="number" name = "{{ building_form.rooms_vacant.name }}" required>
+        
+                    <label for="zip_code">Zip Code:</label>
+                    <input type="number" name="{{ building_form.zip_code.name }}" required>
+        
+                    <label for="street">Street</label>
+                    <input type="text" name = "{{ building_form.street.name }}" required>
+        
+                    <label for="city">City</label>
+                    <input type="text" name = "{{ building_form.city.name }}" required>
+        
+                    <label for="province">Province</label>
+                    <input type="text" name = "{{ building_form.province.name }}" required>
+        
+                    <label for="country">Country</label>
+                    <input type="text" name = "{{ building_form.country.name }}" required>
+        
+                    <label for="details">Details</label>
+                    <textarea name="{{ building_form.details.name }}" id="" cols="30" rows="10"></textarea>
+        
+                    <label for="coordinates">Coordinates</label>
+                    <input type="text" name="{{ building_form.coordinates.name }}" required>
+        
+                    <label for="image">Image:</label>
+                    {{ building_form.building_image }}
+            
+                    <input type="submit" value="Submit">
+                </form>
+        
+            </div>
+
+            <div id="new_room_form" class="form_item hidden">
+                <h1>ADD NEW ROOM</h1>
+                <div id="room_form">
+                    <input type="hidden" id="room_id_holder">
+                    <div>
+                        <div>
+                            <label for="room_name">Room Name:</label>
+                            <input type="text" name="room_name" > 
+                        </div>
+                        <div>
+                            <label for="person_free">Person Available:</label>
+                            <input type="text" name="person_free" >
+                        </div>
+                        <div>
+                            <label for="current_male">Male resident:</label>
+                            <input type="text" name="current_male" />
+                        </div>
+                        <div>
+                            <label for="current_female">Female resident:</label>
+                            <input type="text" name="current_female" />
+                        </div>
+                        <div>
+                            <label for="price">Price:</label>
+                            <input type="text" name="price" />
+                        </div>
+                        <div>
+                            <label for="room_size">Room Size:</label>
+                            <input type="text" name="room_size" />
+                        </div>
+                    </div>
+                    <div>
+                        <p>Additional Info</p>
+                        <div>
+                            <label for="bed">Single bed:</label>
+                            <input type="text" name="bed" />
+                        </div>
+                        <div>
+                            <label for="double_deck">Double bed:</label>
+                            <input type="text" name="double_deck" />
+                        </div>
+                        <div>
+                            <label for="shower">Shower</label>
+                            <input type="checkbox" name="shower" />
+                        </div>
+                        <div>
+                            <label for="priv_bathroom">Private Bathroom</label>
+                            <input type="checkbox" name="priv_bathroom" />
+                        </div>
+                        <div>
+                            <label for="public_bathroom">Public Bathroom</label>
+                            <input type="checkbox" name="public_bathroom" />
+                        </div>
+                        <div>
+                            <label for="AC">Air Conditioned</label>
+                            <input type="checkbox" name="AC"/>
+                        </div>
+                        <div>
+                            <label for="wardrobe">Wardrobe</label>
+                            <input type="checkbox" name="wardrobe" />
+                        </div>
+                        <div>
+                            <label for="kitchen">Kitchen</label>
+                            <input type="checkbox" name="kitchen" />
+                        </div>
+                        <div>
+                            <label for="free_wifi">Free Wifi</label>
+                            <input type="checkbox" name="free_wifi" />
+                        </div>
+                    </div>
+                    <input id="addroomsave" type="submit" value="SAVE">
+                </div>
+            </div>
         </div>
     </section>
     <script>
         const deleteIconUrl = "{% static 'imgs/editbuilding/mark.png' %}";
     </script>
-    <script src="{% static 'scripts/edit_building.js' %}?17"></script>
+    <script src="{% static 'scripts/edit_building.js' %}?18"></script>
     <script src="{% static 'scripts/image_upload.js' %}?8" ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
