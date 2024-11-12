@@ -449,6 +449,9 @@ def all_verification(request):
     context = {}
     return render(request, 'RentScout/admin/verification.html', context)
 
+def bookmark_page(request):
+    return render(request, 'RentScout/bookmarks.html', {})
+
 class get_all_reports(View):
     def get(self, request):
         page = request.GET.get('page', 1)
@@ -482,7 +485,7 @@ class get_all_reports(View):
         except Exception as e:
             return JsonResponse({'error': f'{e}'})
         
-class get_buildings_bypage(View):
+class get_buildings_page(View):
     def get(self, request):
         page = request.GET.get('page', 1)
 
@@ -918,6 +921,100 @@ class get_bookmark_status(View):
                 return JsonResponse({'error': f'{e}'}, status = 500)
         else:
             return JsonResponse({'error': 'Did not get Building ID'}, status = 405)
+
+class get_bookmark_all(View):
+    def get(self, request):
+        page = request.GET.get('page', 1)
+        filter = request.GET.get('query', None)
+
+        if filter == '':
+            filter = None
+
+        if not page:
+            return JsonResponse({'error': 'Page Not Found'}, status = 404)
+        
+        try:
+            if isinstance(request.user, ScoutUser):
+                if filter == None:
+                    bookmarks = ScoutUserBookmark.objects.all()
+                else:
+                    try:
+                        filter_numeric = int(filter)
+                    except ValueError: 
+                        filter_numeric = None
+
+                        bookmarks = ScoutUserBookmark.objects.filter(
+                            Q(buildingid__building_name__icontains = filter) |
+                            (Q(buildingid__zip_code = filter_numeric) if filter_numeric is not None else Q()) |
+                            Q(buildingid__street__icontains = filter) |
+                            Q(buildingid__city__icontains = filter) |
+                            Q(buildingid__province__icontains = filter) |
+                            Q(buildingid__country__icontains = filter) |
+                            Q(owner__email__icontains = filter) |
+                            Q(owner__firstname__icontains = filter) |
+                            Q(owner__lastname__icontains = filter) |
+                            Q(owner__middlename__icontains = filter),
+                            owner = request.user
+                        )
+                        print(bookmarks)
+
+            elif isinstance(request.user, ScoutUser_Landlord):
+                user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
+                # if filter == None:
+                bookmarks = LandlordUserBookmark.objects.filter(owner = request.user)
+                # else:
+                #     try:
+                #         filter_numeric = int(filter)
+                #     except ValueError: 
+                #         filter_numeric = None
+
+                #         bookmarks = LandlordUserBookmark.objects.filter(
+                #             Q(buildingid__building_name__icontains = filter) |
+                #             (Q(buildingid__zip_code = filter_numeric) if filter_numeric is not None else Q()) |
+                #             Q(buildingid__street__icontains = filter) |
+                #             Q(buildingid__city__icontains = filter) |
+                #             Q(buildingid__province__icontains = filter) |
+                #             Q(buildingid__country__icontains = filter) |
+                #             Q(owner__email__icontains = filter) |
+                #             Q(owner__firstname__icontains = filter) |
+                #             Q(owner__lastname__icontains = filter) |
+                #             Q(owner__middlename__icontains = filter),
+                #             owner = request.user
+                #         )
+            elif isinstance(request.user, AdminUser):
+                return JsonResponse({'error': 'Admin Users cannot Bookmark'}, status = 400)
+            else:
+                return JsonResponse({'error': 'You need to Log in'}, status = 400)
+            
+            paginator = Paginator(bookmarks, 10)
+            current_page = paginator.get_page(page)
+            bookmark_data = [
+                {
+                    'building_id': building.buildingid.buildingid,
+                    'building_name': building.buildingid.building_name,
+                    'building_address': building.buildingid.complete_address(),
+                    'building_image': building.buildingid.building_image.url if building.buildingid.building_image else None 
+                }
+                for building in current_page
+            ]
+
+            response_data = {
+                'bookmarks': bookmark_data,
+                'total_pages': paginator.num_pages,
+                'current_page': current_page.number,
+                'has_next': current_page.has_next(),
+                'has_previous': current_page.has_previous(),
+            }
+            
+            print(response_data)
+
+            return JsonResponse(response_data, status = 200)
+        except ScoutUserBookmark.DoesNotExist:
+            return JsonResponse({'error': 'Scout Users Bookmarks Not Found'})
+        except LandlordUserBookmark.DoesNotExist:
+            return JsonResponse({'error': 'Landlord Users Bookmarks Not Found'}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
 
 class create_bookmark(View):
     def post(self, request):
