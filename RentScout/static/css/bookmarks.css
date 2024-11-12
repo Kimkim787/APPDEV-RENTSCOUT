@@ -1,0 +1,10 @@
+/* PALIHOG KOG DESIGN SAME SA HOME PAGE */
+
+.heart_sign {
+    width: 40px;
+    height: 40px;
+    background-image: url('../imgs/svgs/black_heart.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: background-image 2 ease;
+  }

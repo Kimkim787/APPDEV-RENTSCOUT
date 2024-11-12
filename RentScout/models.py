@@ -249,7 +249,9 @@ class ScoutUserBookmark(models.Model):
 class LandlordUserBookmark(models.Model):
     buildingid = models.ForeignKey(Building, related_name="landlord_bookmark_building", on_delete=models.CASCADE)
     owner = models.ForeignKey(ScoutUser_Landlord, related_name="landlord_bookmark_owner", on_delete=models.CASCADE)
-
+    class Meta:
+        ordering = ['buildingid__average_rating']
+    
 class BuildingReport(models.Model):
     reportid = models.AutoField(primary_key=True)
     buildingid = models.ForeignKey(Building, related_name = 'building_reported', on_delete = models.CASCADE)
@@ -258,7 +260,7 @@ class BuildingReport(models.Model):
     reason = models.CharField(max_length=250, null=False, blank=False, default="")
 
     class Meta:
-        ordering = ['date_reported']
+        ordering = ['buildingid__average_rating']
 
 class Verification(models.Model):
     NOT_VERIFIED = 'Not Verified'
