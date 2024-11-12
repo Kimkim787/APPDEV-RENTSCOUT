@@ -485,7 +485,7 @@ class get_all_reports(View):
         except Exception as e:
             return JsonResponse({'error': f'{e}'})
         
-class get_buildings_page(View):
+class get_buildings_bypage(View):
     def get(self, request):
         page = request.GET.get('page', 1)
 
