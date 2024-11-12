@@ -1040,65 +1040,6 @@ document.querySelectorAll(".buildingname").forEach((buildingName, index) => {
     });
 });
 
-// document.querySelectorAll(".edit_btn").forEach(button => {
-//     button.addEventListener("click", function() {
-//         const roomsContainer = document.getElementById("rooms_container");
-//         const no_room_message = document.getElementById("no_room_message");
-//         const photo_view = document.getElementById("photo_view");
-
-//         if (this.value === "Rooms") {
-//             document.getElementById("left_bar").style.gap = "30px";
-//             roomsContainer.style.display = "flex";
-//             document.getElementById("policies_form").style.display = "none";
-//             document.getElementById("room_bar").style.display = "flex";
-//             document.getElementById("building_form").style.display = "none";
-//             document.getElementById("amenities_section").style.display = "none";
-//             document.getElementById("photo_view").style.display = "none";
-//             document.getElementById("upload_room_photo").style.display = "None";
-//             document.getElementById("edit_room_form").style.display = "None";
-//         } else if(this.value === "Edit Building"){
-//             document.getElementById("policies_form").style.display = "none";
-//             document.getElementById("room_bar").style.display = "none";
-//             document.getElementById("building_form").style.display = "flex";
-//             document.getElementById("amenities_section").style.display = "none";
-//             document.getElementById("upload_room_photo").style.display = "None";
-//             document.getElementById("edit_room_form").style.display = "None";
-//         }else if(this.value === "Amenities"){
-//             document.getElementById("policies_form").style.display = "none";
-//             document.getElementById("room_bar").style.display = "None";
-//             document.getElementById("building_form").style.display = "none";
-//             document.getElementById("amenities_section").style.display = "flex";
-//             document.getElementById("upload_room_photo").style.display = "None";
-//             document.getElementById("edit_room_form").style.display = "None";
-//         }else if(this.value === "Policies"){
-//             document.getElementById("policies_form").style.display = "Flex";
-//             document.getElementById("room_bar").style.display = "None";
-//             document.getElementById("building_form").style.display = "none";
-//             document.getElementById("amenities_section").style.display = "none";
-//             document.getElementById("upload_room_photo").style.display = "None";
-//             document.getElementById("edit_room_form").style.display = "None";
-//         }else if(this.value === "upload_room_photo"){
-//             document.getElementById("policies_form").style.display = "none";
-//             document.getElementById("building_form").style.display = "none";
-//             document.getElementById("amenities_section").style.display = "none";
-//             document.getElementById("upload_room_photo").style.display = "Flex";
-//             document.getElementById("edit_room_form").style.display = "None";
-//         }else {
-//             document.getElementById("left_bar").style.gap = "0";
-//             roomsContainer.style.display = "None";
-//             photo_view.classList.add("hide");
-//             document.getElementById("building_form").style.display = "None";
-//             document.getElementById("amenities_section").style.display = "None";
-//             document.getElementById("photo_view").style.display = "None";
-//             document.getElementById("room_bar").style.display = "None";
-//             document.getElementById("policies_form").style.display = "None";
-//             document.getElementById("upload_room_photo").style.display = "None";
-//             document.getElementById("edit_room_form").style.display = "None";
-//             document.getElementById("edit_room_form").style.display = "None";
-//         }
-//     });
-// });
-
 document.addEventListener("DOMContentLoaded", () => {
     const firstAdivAnchor = document.querySelector(".adiv .buildingname");
     if (firstAdivAnchor) {
@@ -1106,17 +1047,3 @@ document.addEventListener("DOMContentLoaded", () => {
         firstAdivAnchor.style.borderTopRightRadius = "5px";
     }
 });
-
-// $(document).on('click', '.photo_btn', function() {
-//     $('#photo_view').css('display', 'flex');
-// });
-// $(document).on('click', '.backbtn', function() {
-//     $('#photo_view').css('display', 'none');
-//     $('#upload_room_photo').css('display', 'none');
-// });
-// $(document).on('click', '#uploadbtn', function() {
-//     $('#upload_room_photo').css('display', 'flex');
-// });
-// $(document).on('click', '.room_update_btn', function() {
-//     $('#edit_room_form').css('display', 'flex');
-// });

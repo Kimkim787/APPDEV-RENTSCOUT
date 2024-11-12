@@ -6,6 +6,7 @@
     justify-content: center;
     gap: 30px;
     align-items: center;
+    padding: 0px 0px 50px 0px;
 }
 .heropic{
     height: 240px;
@@ -54,15 +55,28 @@
 }
 
 /* ------- suggested buildings ---------- */
-
+#building_mainbox{
+    height: fit-content;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+/* #buildings_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+} */
 #buildings_container{
     height: fit-content;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     row-gap: 20px;
-    justify-content: space-between;
-    place-items: center;
-    width: 85%;
+    column-gap: 20px;
 }
 .buildingbox img{
     height: 180px;
@@ -70,19 +84,25 @@
 }
 
 .buildingbox{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     background-color: white;
-    padding: 25px;
+    padding: 20px 25px;
     width: fit-content;
 }
 .buildingbox a{
     text-decoration: none;
     color: black;
 }
-
+.name_heart_box{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 .building_address_container{
     width: 180px;
     text-overflow: ellipsis;
-
 }
 
 .building_address_container h6{
@@ -90,8 +110,8 @@
 }
 
 .heart_sign {
-    width: 40px;
-    height: 40px;
+    width: 25px;
+    height: 25px;
     background-image: url('../imgs/svgs/black_heart.svg');
     background-size: contain;
     background-repeat: no-repeat;
@@ -102,4 +122,133 @@
 animation: pulse 1s ease;
 background-image: url('../imgs/svgs/red_heart.svg');
 }
+  
+#paginator_container{
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px;
+    background-color: #f3ede5;
+    border-radius: 8px;
+}
+.page_numbers,
+#prev_btn,
+#next_btn{
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+.active_page {
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+}
+/* Footer Styling */
+.footer {
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+    padding: 2rem 0;
+  }
+  
+  .footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .footer-section {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .footer-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-section ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-section ul li {
+    margin: 0.5rem 0;
+  }
+  
+  .footer-section ul li a {
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .footer-section ul li a:hover {
+    text-decoration: underline;
+  }
+  
+  .footer-form {
+    display: flex;
+    margin-top: 1rem;
+  }
+  
+  .footer-form input[type="email"] {
+    padding: 0.5rem;
+    flex: 1;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+  }
+  
+  .footer-form button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #fff;
+    color: #000;
+    cursor: pointer;
+    border-radius: 0 4px 4px 0;
+  }
+  
+  .footer-form button:hover {
+    background-color: #ddd;
+  }
+  
+  .social-links {
+    margin-top: 1rem;
+  }
+  
+  .social-links a {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 1rem;
+  }
+  
+  .social-links img{
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    background-color: white;
+  }
+  
+  .footer-bottom {
+    border-top: 1px solid #333;
+    padding-top: 1rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .footer-links {
+    margin-top: 0.5rem;
+  }
+  
+  .footer-links a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 0.5rem;
+  }
+  
+  .footer-links a:hover {
+    text-decoration: underline;
+  }
   
