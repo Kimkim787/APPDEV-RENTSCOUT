@@ -27,18 +27,18 @@
             <li>
                 <a href="{% url 'home' %}">Home</a>
             </li>
-            <li>
+            {% comment %} <li>
                 <a href="{% url 'building_scrapper' %}">Building Scrapper</a>
-            </li>
+            </li> {% endcomment %}
             <li>
                 <a href="{% url 'user_profile' %}">Profile</a>
             </li>
             <li>
-                <a href="{% url 'edit_building' %}">Edit Buildings</a>
+                <a href="{% url 'edit_building' %}">Building</a>
             </li>
-            <li>
+            {% comment %} <li>
                 <a href="{% url 'new_building' %}">Create Building</a>
-            </li>
+            </li> {% endcomment %}
             <li>
                 <a href="{% url 'reports_page' %}">Reports</a>
             </li>

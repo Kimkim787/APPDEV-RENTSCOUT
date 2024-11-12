@@ -18,8 +18,10 @@
 {% block bodycontent %}
     <section>
         <div id="left_bar">
-            <button id="add_building_btn">Add New Building</button>
+            <button id="add_building_btn"> Create/Add Building</button>
+            <h3>Buildings</h3>
             <ul class="leftbarbox">
+                
                 {% if buildings|length == 0 %}
                     <div class="adiv" style="margin-top: 50px;">
                         <h3>NO BUILDING FOUND</h3>
@@ -54,7 +56,7 @@
             </ul>
         </div>
 
-        <div id="room_bar" class="hidden"> <!--  -->
+        <div id="room_bar" class="bar_room hidden"> <!--  -->
             <button id="add_room_btn">Add New Room</button>
             <div id="room_view" class="mid_item hidden">
                 
@@ -64,8 +66,10 @@
 
             <!-- PHOTOS VIEW -->
             <div id="photo_view" class="mid_item hidden">
-                <button class="backbtn">Back</button>
-                <h3>Photos of "<span id='photo_name'></span>"</h3>
+                <div class="name_button">
+                    <h3>Photos of <span id='photo_name'></span></h3>
+                    <img class="backbtn" src="{% static 'imgs/building/back-button.png' %}" alt="back" >
+                </div>
                 <button class="edit_btn" value="upload_room_photo">Upload Photo</button>
                 <input type="hidden" id="roomid_holder">
                 <ul id="photo_container">
@@ -193,39 +197,50 @@
 
             <div id="new_building_form" class="form_item hidden">
                 <h1>NEW BUILDING FORM</h1>
-                <form action="{% url 'add_building' %}" method="POST" enctype="multipart/form-data">
+                <form class="newbuildingform" action="{% url 'add_building' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <label for="building_name">Building Name:</label>
-                    <input type="text" name="{{ building_form.building_name.name }}" required>
-        
-                    <label for="vacant">Vacant Rooms</label>
-                    <input type="number" name = "{{ building_form.rooms_vacant.name }}" required>
-        
-                    <label for="zip_code">Zip Code:</label>
-                    <input type="number" name="{{ building_form.zip_code.name }}" required>
-        
-                    <label for="street">Street</label>
-                    <input type="text" name = "{{ building_form.street.name }}" required>
-        
-                    <label for="city">City</label>
-                    <input type="text" name = "{{ building_form.city.name }}" required>
-        
-                    <label for="province">Province</label>
-                    <input type="text" name = "{{ building_form.province.name }}" required>
-        
-                    <label for="country">Country</label>
-                    <input type="text" name = "{{ building_form.country.name }}" required>
-        
-                    <label for="details">Details</label>
-                    <textarea name="{{ building_form.details.name }}" id="" cols="30" rows="10"></textarea>
-        
-                    <label for="coordinates">Coordinates</label>
-                    <input type="text" name="{{ building_form.coordinates.name }}" required>
-        
-                    <label for="image">Image:</label>
-                    {{ building_form.building_image }}
-            
-                    <input type="submit" value="Submit">
+                    <div class="newbuilddiv">
+                        <label for="building_name">Building Name:</label>
+                        <input type="text" name="{{ building_form.building_name.name }}" required>
+                    </div>
+                    <div class="newbuilddiv">
+                        <label for="vacant">Vacant Rooms</label>
+                        <input type="number" name = "{{ building_form.rooms_vacant.name }}" required>
+                    </div>
+                    <div class="newbuilddiv">
+                        <label for="zip_code">Zip Code:</label>
+                        <input type="number" name="{{ building_form.zip_code.name }}" required>
+                    </div>
+                    <div class="newbuilddiv">
+                        <label for="street">Street</label>
+                        <input type="text" name = "{{ building_form.street.name }}" required>
+                    </div>
+                    <div class="newbuilddiv">
+                        <label for="city">City</label>
+                        <input type="text" name = "{{ building_form.city.name }}" required>
+                    </div>
+                    <div class="newbuilddiv">
+                        <label for="province">Province</label>
+                        <input type="text" name = "{{ building_form.province.name }}" required>
+                    </div>
+                    <div class="newbuilddiv">
+                        <label for="country">Country</label>
+                        <input type="text" name = "{{ building_form.country.name }}" required>
+                    </div>
+                    <div class="newbuilddiv">
+                        <label for="coordinates">Coordinates</label>
+                        <input type="text" name="{{ building_form.coordinates.name }}" required>
+                    </div>
+                    <div class="newbuilddiv">
+                        <label for="details">Details</label>
+                        <textarea name="{{ building_form.details.name }}" id="" cols="30" rows="10"></textarea>
+                    </div>
+                    <div class="newbuilddiv2">
+                        <input class="newbuildsubmit" type="submit" value="Submit">
+                        <div>
+                            {{ building_form.building_image }}
+                        </div>
+                    </div>
                 </form>
         
             </div>
@@ -234,7 +249,7 @@
                 <h1>ADD NEW ROOM</h1>
                 <div id="room_form">
                     <input type="hidden" id="room_id_holder">
-                    <div>
+                    <div class="newroominputs">
                         <div>
                             <label for="room_name">Room Name:</label>
                             <input type="text" name="room_name" > 
@@ -260,8 +275,8 @@
                             <input type="text" name="room_size" />
                         </div>
                     </div>
-                    <div>
-                        <p>Additional Info</p>
+                    <p>Additional Info</p>
+                    <div class="newroominputs">
                         <div>
                             <label for="bed">Single bed:</label>
                             <input type="text" name="bed" />
@@ -270,33 +285,35 @@
                             <label for="double_deck">Double bed:</label>
                             <input type="text" name="double_deck" />
                         </div>
+                    </div>
+                    <div class="newroomcheckbox">
                         <div>
-                            <label for="shower">Shower</label>
                             <input type="checkbox" name="shower" />
+                            <label for="shower">Shower</label>
                         </div>
                         <div>
-                            <label for="priv_bathroom">Private Bathroom</label>
                             <input type="checkbox" name="priv_bathroom" />
+                            <label for="priv_bathroom">Private Bathroom</label>
                         </div>
                         <div>
-                            <label for="public_bathroom">Public Bathroom</label>
                             <input type="checkbox" name="public_bathroom" />
+                            <label for="public_bathroom">Public Bathroom</label>
                         </div>
                         <div>
-                            <label for="AC">Air Conditioned</label>
                             <input type="checkbox" name="AC"/>
+                            <label for="AC">Air Conditioned</label>
                         </div>
                         <div>
-                            <label for="wardrobe">Wardrobe</label>
                             <input type="checkbox" name="wardrobe" />
+                            <label for="wardrobe">Wardrobe</label>
                         </div>
                         <div>
-                            <label for="kitchen">Kitchen</label>
                             <input type="checkbox" name="kitchen" />
+                            <label for="kitchen">Kitchen</label>
                         </div>
                         <div>
-                            <label for="free_wifi">Free Wifi</label>
                             <input type="checkbox" name="free_wifi" />
+                            <label for="free_wifi">Free Wifi</label>
                         </div>
                     </div>
                     <input id="addroomsave" type="submit" value="SAVE">

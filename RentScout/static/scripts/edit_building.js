@@ -2,6 +2,7 @@ $(document).ready(function(){
     $('#add_building_btn').on('click', function(){
         $('.form_item').addClass("hidden");
         $('#new_building_form').removeClass('hidden');
+        $('.bar_room').addClass('hidden');
     })
 
     // "SEE PHOTOS" BUTTON CLICKED
@@ -9,7 +10,6 @@ $(document).ready(function(){
         $('.form_item').addClass('hidden');
         $('#add_room_btn').addClass('hidden');
         show_room_photos($(this));
-        $('#upload_room_photo').removeClass('hidden');
         $('#edit_room_form').css('display', 'none');
     });
 
@@ -32,6 +32,7 @@ $(document).ready(function(){
     $('#add_room_btn').on('click', function(){
         $('#room_id_holder').attr('value', $(this).attr('value'));
         $('#new_room_form').removeClass('hidden');
+        $('#edit_room_form').addClass('hidden');
     })
 
     $('#addroomsave').on('click', function(){
@@ -149,11 +150,12 @@ $(document).ready(function(){
             console.log('clicked rrom');
             $('#room_bar').removeClass('hidden');
             request_rooms(btn_elem=$(this));
+            $('#add_room_btn').removeClass('hidden');
 
             // UPLOAD PHOTO BTN
         } else if ($(this).val() == 'upload_room_photo'){
             request_rooms(btn_elem=$(this));
-            $('#room_bar').removeClass('hidden');
+            $('.bar_room').removeClass('hidden');
             $('#upload_room_photo').removeClass('hidden');
         }
 
@@ -163,6 +165,7 @@ $(document).ready(function(){
     $('.backbtn').on('click', function(){
         $('#photo_view').toggleClass('hidden');
         $('#room_view').toggleClass('hidden');
+        $('#add_room_btn').toggleClass('hidden');
     });    
 
     // UPDATE BILDING GET FUNCTION
@@ -1099,8 +1102,8 @@ document.querySelectorAll(".buildingname").forEach((buildingName, index) => {
 document.addEventListener("DOMContentLoaded", () => {
     const firstAdivAnchor = document.querySelector(".adiv .buildingname");
     if (firstAdivAnchor) {
-        firstAdivAnchor.style.borderTopLeftRadius = "15px";
-        firstAdivAnchor.style.borderTopRightRadius = "15px";
+        firstAdivAnchor.style.borderTopLeftRadius = "5px";
+        firstAdivAnchor.style.borderTopRightRadius = "5px";
     }
 });
 
