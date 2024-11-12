@@ -15,11 +15,36 @@ section {
     flex-direction: column;
     width: fit-content;
     border-radius: 15px;
+    gap: 15px;
 }
 #left_bar .leftbarbox{
     width: 220px;
-    /* border-radius: 15px;     DOES NOTHING
-    background-color: #000; */
+    overflow: auto;
+}
+.leftbarbox::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.leftbarbox::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.leftbarbox::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.leftbarbox::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+#add_building_btn{
+    background-color: #000;
+    color: white;
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
 }
 img[src*="down.png"] {
     filter: invert(1);
@@ -35,10 +60,10 @@ img[src*="down.png"] {
     color: #fff;
     background-color: #000;
 }
-.adiv:first-of-type .buildingname {
+/* .adiv:first-of-type .buildingname {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-}
+} */
 
 .adiv{
     background-color: #f5f5f5;
@@ -72,12 +97,20 @@ img[src*="down.png"] {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 280px;
+    width: 520px;
     height: 100%;
     background-color: #f3ede5;
     border-radius: 20px;
+    padding: 15px 0px;
 }
-
+#add_room_btn{
+    background-color: #000;
+    color: white;
+    padding: 7px;
+    width: 90%;
+    border: none;
+    border-radius: 5px;
+}
 #room_view{
     height: 100%;
 }
@@ -210,6 +243,7 @@ img[src*="down.png"] {
 }
 #photo_view{
     /* display: none; PLEASE DONT */
+    display: flex;
     flex-direction: column;
     gap: 20px;
     overflow: auto;
@@ -634,10 +668,63 @@ img[src*="down.png"] {
     border-radius: 5px;
 }
 
-#new_room_form.form_item{
+#new_room_form{
+    display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    gap: 15px;
 }
-
+#room_form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 75%;
+    background-color: #f3ede5;
+    padding: 15px 20px;
+    gap: 10px;
+    border-radius: 15px;
+}
+.newroominputs{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+}
+.newroominputs div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.newroominputs div input{
+    border: none;
+    padding: 3px;
+    width: 50%;
+    background-color: #f5f5f5;
+}
+.newroomcheckbox{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 5px;
+}
+.newroomcheckbox div{
+    display: flex;
+    justify-content: space-between;
+    width: 140px;
+}
+#addroomsave{
+    background-color: #000;
+    color: white;
+    padding: 7px;
+    width: 60%;
+    border: none;
+    border-radius: 5px;
+}
 .hidden {
     display: none !important;
 }
@@ -645,3 +732,79 @@ img[src*="down.png"] {
 .hide{
     display: none;
 }
+
+#new_building_form{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#new_building_form h1{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+.newbuildingform{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    padding: 15px 20px;
+    width: 60%;
+    background-color: #f3ede5;
+    border-radius: 15px;
+}
+.newbuildingform .newbuilddiv{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    width: 100%;
+}
+.newbuildingform .newbuilddiv div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+.newbuildingform .newbuilddiv input[type="text"],
+.newbuildingform .newbuilddiv input[type="number"]{
+    padding: 6px;
+    width: 50%;
+    background-color: #f5f5f5;
+    border: none;
+}
+.newbuildingform div textarea{
+    height: 60px;
+    padding: 5px;
+    width: 50%;
+    background-color: #f5f5f5;
+    border: none;
+}
+.newbuildsubmit{
+    background-color: #000;
+    color: white;
+    border: none;
+    width: 40%;
+    padding: 7px;
+    border-radius: 5px;
+}
+.newbuilddiv2{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.newbuilddiv2 div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    background-color: #000;
+    color: white;
+    border-radius: 5px;
+}
+/* .newbuilddiv2 div label{
+    margin-right: 50px;
+} */

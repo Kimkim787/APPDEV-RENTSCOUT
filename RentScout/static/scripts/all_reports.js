@@ -77,6 +77,7 @@ $(document).ready(function(){
                     })
 
                     let image = $('<img>', {
+                        src: report.building_image,
                         alt: `Image of ${report.building_name}`,
                         class: 'report_images'
                     })

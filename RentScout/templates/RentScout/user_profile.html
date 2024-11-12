@@ -1,49 +1,63 @@
 {% extends 'index.html' %}
 
 {% block stylecontent %}
-
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/user_profile.css' %}">
 {% endblock stylecontent %}
 
 
 {% block bodycontent %}
+<section>
+    <h1>PROFILE INFORMATION</h1>
     <form id="user_profile_form" action="{% url 'update_user_profile' %}" method="POST">
         {% csrf_token %}
-        <label for="firstname">Firstname:</label>
-        <input type="text" name="firstname" value="{{ user_data.firstname }}" required>
-
-        <label for="lastname">Lastname:</label>
-        <input type="text" name="lastname" value="{{ user_data.lastname }}" required>
-
-        <label for="middlename">Middle Name:</label>
-        <input type="text" name="middlename" value="{{ user_data.middlename }}" required>
-
-        <label for="birthdate">Birthdate (yyyy-mm-dd):</label>
-        <input type="text" name="birthdate" value="{{ user_data.birthdate|date:'Y-m-d' }}" placeholder="yyyy-mm-dd" required>
-
-        <label for="gender">Gender:</label>
-        <select name="gender" id="">
-            <option value="Male" 
-                {% if user_data.gender == "Male" %}
+        <div>
+            <label for="firstname">Firstname:</label>
+            <input type="text" name="firstname" value="{{ user_data.firstname }}" required>
+        </div>
+        <div>
+            <label for="lastname">Lastname:</label>
+            <input type="text" name="lastname" value="{{ user_data.lastname }}" required>
+        </div>
+        <div>
+            <label for="middlename">Middle Name:</label>
+            <input type="text" name="middlename" value="{{ user_data.middlename }}" required>
+        </div>
+        <div>
+            <label for="birthdate">Birthdate (yyyy-mm-dd):</label>
+            <input type="text" name="birthdate" value="{{ user_data.birthdate|date:'Y-m-d' }}" placeholder="yyyy-mm-dd" required>
+        </div>
+        <div>
+            <label for="gender">Gender:</label>
+            <select name="gender" id="">
+                <option value="Male" 
+                    {% if user_data.gender == "Male" %}
+                    selected
+                    {% endif %}>Male</option>
+                <option value="Female"
+                {% if user_data.gender == "Female" %}
                 selected
-                {% endif %}>Male</option>
-            <option value="Female"
-            {% if user_data.gender == "Female" %}
-            selected
-            {% endif %}>Female</option>
-        </select>
-
-        <label for="barangay">Barangay:</label>
-        <input type="text" name="barangay" value="{{ user_data.barangay }}" >
-
-        <label for="province">Province:</label>
-        <input type="text" name="province" value="{{ user_data.province }}" >
-
-        <label for="city">City:</label>
-        <input type="text" name="city" value="{{ user_data.city }}" >
-
-        <label for="contact">Contact:</label>
-        <input type="text" name="contact" value="{{ user_data.contact }}" >
-
+                {% endif %}>Female</option>
+            </select>
+        </div>
+        <div>
+            <label for="barangay">Barangay:</label>
+            <input type="text" name="barangay" value="{{ user_data.barangay }}" >
+        </div>
+        <div>
+            <label for="province">Province:</label>
+            <input type="text" name="province" value="{{ user_data.province }}" >
+        </div>
+        <div>
+            <label for="city">City:</label>
+            <input type="text" name="city" value="{{ user_data.city }}" >
+        </div>
+        <div>
+            <label for="contact">Contact:</label>
+            <input type="text" name="contact" value="{{ user_data.contact }}" >
+        </div>
+        
         <input type="submit" value="Save">
     </form>
+</section>
 {% endblock %}
