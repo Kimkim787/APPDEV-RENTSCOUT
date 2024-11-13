@@ -1,0 +1,27 @@
+.building_name{
+    color: pink;
+}
+.owner_name{
+    color: red;
+}
+.building_description{
+    color: orange;
+}
+.view_user_profile_btn{
+    color: blue;
+}
+.view_building_btn{
+    color: black;
+}
+.view_map_btn{
+    color: yellow;
+}
+.center_div{
+    border: 1px solid black;
+}
+.verification_item{
+    border: 1px solid red;
+}
+.button_div{
+    border: 1px solid blue;
+}

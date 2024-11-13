@@ -2,14 +2,29 @@
 
 {% block stylecontent %}
 {% load static %}
-
+<link rel="stylesheet" href="{% static "css/reports.css" %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 {% endblock stylecontent %}
 
 
 {% block bodycontent %}
     {% csrf_token %}
-    <div id="reports_container">
+    <section>
+        <div class="right_div">
+            <h1>REPORTS</h1>
+        <div id="reports_container">
         
-    </div>
+        </div>
+        </div>
+        <div class="photo_view">
+            <h1>Photo full view</h1>
+            <div>
+                <img id="photo_view_img" class="selected_photo hidden" src="" alt="Selected Report Image">
+            </div>
+        </div>
+    </section>
+    
     <script src="{% static 'scripts/all_reports.js' %}"></script>
 {% endblock %}
