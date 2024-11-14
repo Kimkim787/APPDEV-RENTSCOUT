@@ -15,7 +15,7 @@
                     <!-- ari ang display sa selected picture -->
                 </div>
                 
-                <div class="selectpicbox">
+                <div class="selectpicbox2">
                     <img id="prev_btn" src="{% static 'imgs/building/previous.png' %}" alt="">
                     <ul id="photo_container" >
                         
@@ -129,7 +129,7 @@
                 <div class="title">
                     <h3>FEEDBACKS</h3>  
                 </div>
-                <form action="{% url 'newfeedback' %}" method="POST">
+                <form class="feedback_box" action="{% url 'newfeedback' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="{{ feedbackform.boardingid.name }}" value="{{ building.buildingid }}">
                     
@@ -330,9 +330,13 @@
                 <input type="hidden" name="{{ building_report_form.buildingid.name }}" value="{{ building.buildingid }}">
                 <h4>Reporting {{ building.building_name }}</h4>
                 <label for="reason">Please state your reason for the report:</label>
-                <textarea name="{{ building_report_form.reason.name }}" id="" cols="30" rows="10" placeholder="Limit of 250 characters"></textarea>
-                <button id="report_button">Report</button>
-                <button id="cancel_report_button">Cancel</button>
+                <div class="textarea_button_box">
+                    <textarea name="{{ building_report_form.reason.name }}" id="" cols="30" rows="10" placeholder="Limit of 250 characters"></textarea>
+                    <div>
+                        <button id="report_button">Report</button>
+                        <button id="cancel_report_button">Cancel</button>
+                    </div>
+                </div>
             </div>  
 
         </div>
@@ -344,7 +348,7 @@
                 </div>
                 
                 
-                <h2>{{ building.building_name }}</h2>
+                <h3>{{ building.building_name }}</h3>
 
                 <img src="{% static 'imgs/svgs/report.svg' %}" alt="report_image">
                 <!-- <input type="submit" value="🤍"> -->

@@ -1,10 +1,62 @@
 /* PALIHOG KOG DESIGN SAME SA HOME PAGE */
 
 .heart_sign {
-    width: 40px;
-    height: 40px;
-    background-image: url('../imgs/svgs/black_heart.svg');
+    width: 25px;
+    height: 25px;
+    background-image: url('../imgs/svgs/red_heart.svg');
     background-size: contain;
     background-repeat: no-repeat;
     transition: background-image 2 ease;
   }
+section{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 10px 0px;
+}
+section h1{
+  font-family: "Anton", sans-serif;
+  font-weight: 400;
+  font-size: xx-large;
+}
+.buildings{
+  height: fit-content;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  row-gap: 20px;
+  column-gap: 20px;
+  padding: 10px 0px;
+}
+.buildingbox{
+  display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: white;
+    padding: 20px 25px;
+    width: fit-content;
+}
+a img{
+  height: 180px;
+  width: 180px;
+}
+a{
+  text-decoration: none;
+}
+a h5{
+  color: black;
+}
+.name_heart_box{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.building_address_container{
+  width: 180px;
+  text-overflow: ellipsis;
+}
+.building_address_container a{
+  text-decoration: none;
+  color: black;
+}

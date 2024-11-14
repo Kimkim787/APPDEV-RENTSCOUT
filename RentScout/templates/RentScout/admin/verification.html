@@ -3,26 +3,37 @@
 {% block stylecontent %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/verification.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 {% endblock stylecontent %}
 
 
 {% block bodycontent %}
     {% csrf_token %}
-    <div id="verifications_container">
+    <section>
+        <div class="pending_box">
+            <h1>Pending</h1>
+            <div id="verifications_container">
 
-    </div>
-
-    ACCEPT VERIFICATION MODAL
-    <div id="verification_modal" class="hidden">
-        <h3>Reporting "<span id="building_name"></span>"</h3>
-        <p>Owned by: <span id="building_owner"></span></p>
-
-        <label for="reason">Reason of Denial:</label>
-        <textarea name="reason" id="deny_reason" cols="30" rows="10">
-        </textarea>
+            </div>
+        </div>
+        <div class="verification_box">
+            <h1>ACCEPT VERIFICATION MODAL</h1>
+            <div id="verification_modal" class="hidden">
+                <h3>Reporting "<span id="building_name">No building selected</span>"</h3>
+                <p>Owned by: <span id="building_owner"></span></p>
         
-        <button id="save_deny">Deny</button>
-        <button id="cancel_deny">Cancel</button>
-    </div>
+                <label for="reason">Reason of Denial:</label>
+                <textarea placeholder="Reason of denial here..." name="reason" id="deny_reason" cols="30" rows="10"></textarea>
+                <div class="deny_cancel_btn">
+                    <button id="save_deny">Deny</button>
+                    <button id="cancel_deny">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+    </section>
+    
     <script src="{% static 'scripts/verification.js' %}?1"></script>
 {% endblock %}

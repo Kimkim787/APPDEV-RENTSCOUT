@@ -30,9 +30,11 @@ $(document).ready(function(){
                         href: `/building_info/${bookmark.building_id}/`,
                     })
 
-                    let building_name = $('<h3></h3>', {
+                    let building_name = $('<h5></h5>', {
                         text: bookmark.building_name,
                     })
+
+                    let name_heart_box = $('<div></div>', { class: 'name_heart_box' });
                     
                     let heart_sign = $('<div></div>', {
                         class: 'heart_sign',
@@ -40,14 +42,15 @@ $(document).ready(function(){
                     })
 
                     div.append(anchor_tag2);
-                    anchor_tag.append(building_name);
+                    name_heart_box.append(building_name);
+                    name_heart_box.append(heart_sign);
                     anchor_tag.append(image);
-                    
+                    box.append(name_heart_box);
                     box.append(anchor_tag);
                     box.append(div);
-                    box.append(heart_sign);
                     
-                    $('section').append(box);
+                    
+                    $('.buildings').append(box);
                 })
             }, 
             error: function(){
