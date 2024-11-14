@@ -33,21 +33,28 @@
             <li>
                 <a href="{% url 'user_profile' %}">Profile</a>
             </li>
+
+            {% if request.user.usertype == 'Landlord' %}
             <li>
                 <a href="{% url 'edit_building' %}">Building</a>
+            </li>
+            {% endif %}
+            
+            <li>
+                <a href="{% url 'bookmark_page' %}">My Bookmarks</a>
             </li>
             {% comment %} <li>
                 <a href="{% url 'new_building' %}">Create Building</a>
             </li> {% endcomment %}
+
+            {% if request.user.is_staff %}
             <li>
                 <a href="{% url 'reports_page' %}">Reports</a>
             </li>
             <li>
                 <a href="{% url 'verification_page' %}">Verifications</a>
             </li>
-            <li>
-                <a href="{% url 'bookmark_page' %}">My Bookmarks</a>
-            </li>
+            {% endif %}
             <!-- <li>
                 <a href="https://www.google.com/maps/search/?api=1" target="_blank">
                     Open Google Maps

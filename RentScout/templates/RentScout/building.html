@@ -123,6 +123,8 @@
                     {% endfor %}
                 </ul>
             </div>
+            
+            {% if request.user.usertype == 'Landlord' %}
             <div class="feedbacksbox">
                 <div class="title">
                     <h3>FEEDBACKS</h3>  
@@ -191,7 +193,7 @@
                     </div>
                 {% endfor %}
             </div>
-            
+            {% endif %}
             <div class="modal hidden">
                 <form action="{% url 'room_create' building.buildingid %}" method="POST">
                     {% csrf_token %}
@@ -356,10 +358,10 @@
                 <p>{{ building.complete_address }}</p>
                 <p class="owner"><span>{{ building.building_owner }}</span> (Owner's email)</p>
                 <p><span>vacant room: </span>{{ building.rooms_vacant }}</p>
-                
+                <a href="{{ building.coordinates }}" target="_blank">View in Map</a>
                 {% if building.building_owner == request.user %}
                     <button id="add_new_room_btn">Add New Room</button>
-                    <a href="{{ building.coordinates }}" target="_blank">View in Map</a>
+                    
                     <a href="{% url 'update_building' building.buildingid %}">Update</a>
                 {% endif %}
             </div>

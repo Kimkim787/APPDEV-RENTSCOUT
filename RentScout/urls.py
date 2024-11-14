@@ -62,7 +62,7 @@ urlpatterns = [
     # AMENITIES
     path('building/amenity/create_new/', create_amenity_view.as_view()),
     path('building/amenity_request/', request_amenity_status.as_view()),
-    path('building/amenity/upcreate_reportdate/', update_amenity_view.as_view()),
+    path('building/amenity/update/', update_amenity_view.as_view()),
 
 
     # USERPROFILE

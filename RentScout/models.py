@@ -67,6 +67,7 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
     def fullname(self):
         return f'{self.firstname} {self.lastname}'
     
+    usertype = models.CharField(max_length = 10, default="Boarder", null=False, blank=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -113,6 +114,7 @@ class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
     city = models.CharField(max_length = 50, default = "", null=True)
     contact = models.CharField(max_length = 15, default="", null=True)
     
+    usertype = models.CharField(max_length = 10, default="Landlord", null=False, blank=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)

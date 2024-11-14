@@ -1,0 +1,41 @@
+building_name,zip_code,street,city,province,country,details,rooms_vacant,coordinates,average_rating,building_image
+Sunrise Apartments,12345,Sunset Blvd,Los Angeles,California,USA,"Enjoy the convenience of being close to the city's vibrant downtown, filled with shops, restaurants, and entertainment options within a short walk or drive.",10,34.0522° N,4.5,Screenshot_2024-10-31_012222_nV73Em3.png
+Ocean View Condos,54321,Seaside Ave,Miami,Florida,USA,"Situated directly on the beach, this property offers sandy shores and stunning ocean views just steps away. Wake up to breathtaking views of the nearby mountains, creating a scenic backdrop right outside your windows.",15,25.7617° N,4.2,Screenshot_2024-10-31_012222_nV73Em3.png
+Mountain Retreat,67890,Pine St,Denver,Colorado,USA,"Wake up to breathtaking views of the nearby mountains, creating a scenic backdrop right outside your windows.",5,39.7392° N,3.8,Screenshot_2024-10-31_012222_nV73Em3.png
+Riverside Complex,11223,Bridge Rd,Portland,Oregon,USA,"Located near a peaceful river, perfect for scenic walks, picnics, or outdoor activities like fishing and kayaking.",20,45.5051° N,4,Screenshot_2024-10-31_012222_nV73Em3.png
+City Center Plaza,33445,Main St,New York,New York,USA,"This property is at the center of it all, with prime access to bustling streets, major landmarks, and cultural attractions.",25,40.7128° N,4.7,Screenshot_2024-10-31_012222_nV73Em3.png
+Green Valley Estates,55678,Valley Dr,San Francisco,California,USA,Close to parks,18,37.7749° N,4.3,Screenshot_2024-10-31_012222_nV73Em3.png
+Lakeview Tower,22334,Lake Ave,Chicago,Illinois,USA,Lake view,12,41.8781° N,4.6,Screenshot_2024-10-31_012222_nV73Em3.png
+Parkside Residences,99012,Maple St,Seattle,Washington,USA,Next to park,16,47.6062° N,4.1,Screenshot_2024-10-31_012222_nV73Em3.png
+Sunnyvale Apartments,33456,Elm St,Austin,Texas,USA,Quiet neighborhood,20,30.2672° N,3.9,Screenshot_2024-10-31_012222_nV73Em3.png
+Horizon Towers,22445,Hill Rd,Las Vegas,Nevada,USA,City skyline view,30,36.1699° N,4.8,Screenshot_2024-10-31_012222_nV73Em3.png
+Rosewood Residences,12356,Oak St,San Diego,California,USA,Residential area,8,32.7157° N,4,Screenshot_2024-10-31_012222_nV73Em3.png
+Maplewood Apartments,78901,Birch St,Orlando,Florida,USA,Family friendly,10,28.5383° N,4.3,Screenshot_2024-10-31_012222_nV73Em3.png
+Brookside Condos,33467,River Rd,Columbus,Ohio,USA,Scenic river view,6,39.9612° N,4.4,Screenshot_2024-10-31_012222_nV73Em3.png
+Skylight Towers,66789,Star Ln,Dallas,Texas,USA,Skylight views,22,32.7767° N,4.6,Screenshot_2024-10-31_012222_nV73Em3.png
+Urban Oasis,99801,City Rd,Atlanta,Georgia,USA,Modern amenities,18,33.7490° N,4.1,Screenshot_2024-10-31_012222_nV73Em3.png
+Pine Ridge Apartments,12378,Pine Ridge Ln,Phoenix,Arizona,USA,Quiet suburban,14,33.4484° N,3.7,Screenshot_2024-10-31_012222_nV73Em3.png
+Coastal Breeze Condos,45567,Ocean Dr,San Diego,California,USA,Beach access,25,32.7157° N,4.2,Screenshot_2024-10-31_012222_nV73Em3.png
+Sunny Acres,56789,Sunny St,Nashville,Tennessee,USA,Spacious apartments,12,36.1627° N,4,Screenshot_2024-10-31_012222_nV73Em3.png
+Lakeshore Apartments,33489,Lakeshore Dr,Milwaukee,Wisconsin,USA,Lakeside property,10,43.0389° N,4.5,Screenshot_2024-10-31_012222_nV73Em3.png
+Cityview Residences,88790,Central Blvd,Boston,Massachusetts,USA,City views,15,42.3601° N,4.4,Screenshot_2024-10-31_012222_nV73Em3.png
+Riverbend Condos,11234,Riverbend St,St. Louis,Missouri,USA,Near river,20,38.6270° N,3.8,Screenshot_2024-10-31_012222_nV73Em3.png
+Grandview Apartments,66712,Grandview Blvd,Houston,Texas,USA,High-rise building,22,29.7604° N,4.6,Screenshot_2024-10-31_012222_nV73Em3.png
+Meadowland Villas,33490,Meadow Ln,Charlotte,North Carolina,USA,Near meadows,14,35.2271° N,4.2,Screenshot_2024-10-31_012222_nV73Em3.png
+Blue Skies Tower,55612,Blue Sky Rd,Las Vegas,Nevada,USA,Panoramic views,30,36.1699° N,4.9,Screenshot_2024-10-31_012222_nV73Em3.png
+Forest Glen Apartments,11245,Forest Dr,Detroit,Michigan,USA,Surrounded by greenery,12,42.3314° N,4.1,Screenshot_2024-10-31_012222_nV73Em3.png
+Seaview Residences,22467,Ocean Blvd,Miami,Florida,USA,Oceanfront view,18,25.7617° N,4.7,Screenshot_2024-10-31_012222_nV73Em3.png
+Highland Gardens,33412,Garden St,Denver,Colorado,USA,Garden view,15,39.7392° N,3.9,Screenshot_2024-10-31_012222_nV73Em3.png
+Sunset Villas,77890,Sunset Dr,Los Angeles,California,USA,Near beach,10,34.0522° N,4.2,Screenshot_2024-10-31_012222_nV73Em3.png
+The Outlook,99812,Outlook Ave,New York,New York,USA,Cityscape view,28,40.7128° N,4.8,Screenshot_2024-10-31_012222_nV73Em3.png
+Hillside Apartments,33478,Hillside Rd,San Francisco,California,USA,Hillside view,12,37.7749° N,4.3,Screenshot_2024-10-31_012222_nV73Em3.png
+Riverwalk Residences,22345,Riverwalk St,San Antonio,Texas,USA,River view,16,29.4241° N,4.1,Screenshot_2024-10-31_012222_nV73Em3.png
+Skyline Plaza,22345,Skyline Dr,Chicago,Illinois,USA,City views,25,41.8781° N,4.7,Screenshot_2024-10-31_012222_nV73Em3.png
+Sunnyhill Apartments,66723,Hilltop Rd,Phoenix,Arizona,USA,Hilltop location,10,33.4484° N,3.8,Screenshot_2024-10-31_012222_nV73Em3.png
+Elmwood Tower,99823,Elm St,Seattle,Washington,USA,High-rise,14,47.6062° N,4.6,Screenshot_2024-10-31_012222_nV73Em3.png
+Greenwood Residences,33456,Greenwood Ave,Portland,Oregon,USA,Near parks,22,45.5051° N,4.3,Screenshot_2024-10-31_012222_nV73Em3.png
+Shoreline Condos,55678,Shoreline Dr,Milwaukee,Wisconsin,USA,Lakefront property,18,43.0389° N,4.5,Screenshot_2024-10-31_012222_nV73Em3.png
+Brightside Apartments,11234,Brightside St,Charlotte,North Carolina,USA,Well-lit apartments,12,35.2271° N,4,Screenshot_2024-10-31_012222_nV73Em3.png
+Oakwood Villas,77845,Oakwood St,Columbus,Ohio,USA,Near oak forest,10,39.9612° N,4.4,Screenshot_2024-10-31_012222_nV73Em3.png
+Lakepoint Residences,33489,Lakepoint Rd,Nashville,Tennessee,USA,Lake views,15,36.1627° N,4.2,Screenshot_2024-10-31_012222_nV73Em3.png
+Cedarwood Tower,22345,Cedar St,Atlanta,Georgia,USA,Wooded surroundings,8,33.7490° N,4,Screenshot_2024-10-31_012222_nV73Em3.png
