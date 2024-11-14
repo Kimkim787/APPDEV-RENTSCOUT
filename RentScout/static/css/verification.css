@@ -1,13 +1,59 @@
-.building_name{
-    color: pink;
+section{
+    display: flex;
 }
+.pending_box h1{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+.pending_box{
+    display: flex;
+    flex-direction: column;
+    width: 65%;
+    padding: 20px;
+    height: 86.6vh;
+}
+#verifications_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+    height: 85%;
+    overflow: auto;
+    padding-right: 5px;
+}
+#verifications_container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#verifications_container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#verifications_container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#verifications_container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+.building_name,
 .owner_name{
-    color: red;
+    text-decoration: none;
+    font-size: 13px;
+    color: black;
 }
 .building_description{
-    color: orange;
+    width: 100%;
+    background-color: #f5f5f5;
+    height: 100%;
+    padding: 5px;
+    font-size: 12px;
 }
-.view_user_profile_btn{
+/* .view_user_profile_btn{
     color: blue;
 }
 .view_building_btn{
@@ -15,13 +61,86 @@
 }
 .view_map_btn{
     color: yellow;
-}
+} */
 .center_div{
-    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    gap: 2px;
 }
 .verification_item{
-    border: 1px solid red;
+    display: flex;
+    width: 100%;
+    padding: 10px;
+    border-radius: 7px;
+    background-color: #f3ede5;
+}
+
+.button_div2{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 10px;
 }
 .button_div{
-    border: 1px solid blue;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 0px 10px;
+}
+.button_div2 button,
+.button_div a{
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    padding: 9px 17px;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    font-size: 12px;
+}
+.button_div2 button:hover{
+    cursor: pointer;
+}
+.building_image{
+    height: 140px;
+    width: 20%;
+}
+.verification_box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 35%;
+}
+.verification_box h1{
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+}
+#verification_modal{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    padding: 15px;
+    gap: 8px;
+    background-color: #000;
+    color: white;
+    border-radius: 10px;
+}
+#deny_reason{
+    border: none;
+    border-radius: 10px;
+    padding: 6px;
+}
+.deny_cancel_btn{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.deny_cancel_btn button{
+    padding: 7px;
+    width: 30%;
+    border-radius: 5px;
+    border: none;
 }

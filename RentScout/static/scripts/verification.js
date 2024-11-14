@@ -50,6 +50,10 @@ $(document).ready(function(){
                         class: 'button_div',
                     })
 
+                    const button_div2 = $('<div></div>', {
+                        class: 'button_div2',
+                    })
+
                     const building_image = $('<img/>', {
                         class: 'building_image',
                         alt: 'image of ' + verification.building_name,
@@ -57,14 +61,14 @@ $(document).ready(function(){
                     })
 
                     const building_name = $('<a></a>', {
-                        text: verification.building_name,
+                        text: `Building: ${verification.building_name}`,
                         href: `/building_info/${verification.buildingid}`,
                         target: '_blank',
                         class: 'building_name'
                     })
 
                     const building_owner = $('<a></a>', {
-                        text: verification.building_owner_email,
+                        text: `Owner: ${verification.building_owner_email}`,
                         href: `/user/user_profile_admin_access/${verification.building_owner_id}`,
                         target: '_blank',
                         class: 'owner_name'
@@ -73,6 +77,10 @@ $(document).ready(function(){
                     const description = $('<p></p>', {
                         text: verification.building_description,
                         class: 'building_description',
+                    })
+
+                    const descriptiontxt = $('<h5></h5>', {
+                        text: 'Description'
                     })
 
                     // DESIGN LIKE BUTTON
@@ -112,17 +120,20 @@ $(document).ready(function(){
                     
                     center_div.append(building_name);
                     center_div.append(building_owner);
+                    center_div.append(descriptiontxt);
                     center_div.append(description);
+                    
 
                     button_div.append(view_profile);
                     button_div.append(view_building);
                     button_div.append(building_map);
-                    button_div.append(deny_btn);
-                    button_div.append(accept_btn);
+                    button_div2.append(deny_btn);
+                    button_div2.append(accept_btn);
                     
-                    verification_item_box.append(building_image);
+                    verification_item_box.append(button_div2);
                     verification_item_box.append(center_div);
                     verification_item_box.append(button_div);
+                    verification_item_box.append(building_image);
 
                     container.append(verification_item_box);
                 }) // end each
