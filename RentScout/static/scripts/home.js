@@ -72,7 +72,9 @@ $(document).ready(function(){
             },
             success: function (response) {
                 console.log(response);
-
+                if(response.building_datas.length < 1){
+                    SoloMessageFlow("No buildings found. Try another clue word", "error");
+                }
                 // Display buildings
                 $.each(response.building_datas, function (index, building) {
                     let box = $('<div></div>', { class: 'buildingbox' });
@@ -147,9 +149,10 @@ $(document).ready(function(){
 
                 number_pages.append(paginator_container);
             },
-            error: function () {
-                console.log("Error loading buildings");
-            }
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
+              }
         });
     }
 
@@ -165,10 +168,11 @@ $(document).ready(function(){
           },
           success: function(){
             $(btn).toggleClass('heart-active');
+            SoloMessageFlow("Successfully Bookmarked", "success");
           },
-          error: function(xhr, status, error){
-            console.log(error);
-            alert(`Error: ${xhr.responseText.error || error}`);
+          error: function(xhr, status, error) {
+            let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+            SoloMessageFlow(`${errorMessage}`, 'error');
           }
         });
       }
@@ -184,11 +188,12 @@ $(document).ready(function(){
             },
             success: function (){
                 $(btn).removeClass('heart-active')
+                SoloMessageFlow("Removed from Bookmark", "success");
             },
-            error: function(xhr, status, error){
-            console.log(error);
-            alert(`Error: ${xhr.responseText.error || error}`);
-            }
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
+              }
         })
     }
 

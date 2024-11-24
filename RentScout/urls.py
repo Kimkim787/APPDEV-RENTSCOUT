@@ -24,7 +24,7 @@ urlpatterns = [
     path('home_page/request/buildings/', get_buildings_bypage.as_view()),
 
     # BUILDINGS
-    path('create_building/', views.create_building, name='new_building'),
+    # path('create_building/', views.create_building, name='new_building'),
     path('edit_building/create_building/', views.create_building_edit_page, name='add_building'),
     path('building_info/<int:pk>/', views.building_info, name = 'building_info'),
     path('building/update/<str:pk>/', views.update_building, name='update_building'),
@@ -74,7 +74,7 @@ urlpatterns = [
     path('building/map/', views.go_map, name='map'),
     
     # REPORTS
-    path('building/reports/view', views.all_reports, name='reports_page'),
+    path('building/reports/view/', views.all_reports, name='reports_page'),
     path('building/create_report/', create_building_report.as_view()),
     path('buildings/report/get_all/', get_all_reports.as_view()),
     path('building/reports/delete/', delete_building_report.as_view()),

@@ -54,7 +54,7 @@ def scoutuser_signup(request):
                 return redirect('home')
             else:
                 print(form.errors)
-                messages.error(request, 'Please enter a valid email or password')
+                #error(request, 'Please enter a valid email or password')
         
         elif role == 'Landlord':
             form = LandlordUserCreationForm(request.POST)
@@ -104,35 +104,43 @@ def scoutuser_login(request):
                 return redirect('home')
             else:
                 print('Invalid email or password')
-                messages.error(request, 'Invalid email or password')
+                #error(request, 'Invalid email or password')
         else:
             print(form.errors)
-            messages.error(request, 'User does not exist')
+            #error(request, 'User does not exist')
 
     context = {'form': form}
     return render(request, 'RentScout/signin.html', context)
 
+@login_required(login_url = "signin")
 def scoutuser_logout(request):
     logout(request)
     return redirect('home')
 
 # HANDLES BUILDING CREATION
-def create_building(request):
-    page = "newbuilding"
-    form = BuildingForm()
-    if request.method == 'POST':
-        form = BuildingForm(request.POST, request.FILES)
-        print(form)
-        if form.is_valid():
-            newbuilding = form.save(commit = False)
-            newbuilding.building_owner = request.user
-            newbuilding.save()
-            return redirect('home')
-        else:
-            print(form.errors)
-    context = {'form': form, 'page':page, }
-    return render(request, 'RentScout/create_building.html', context)
+# @login_required(login_url = "signin")
+# def create_building(request):
 
+#     if not isinstance(request.user, ScoutUser_Landlord):
+#         #error(request, "Must be a landlord user to create Buildings")
+#         return redirect(request.META.get('HTTP_REFERER'))
+        
+#     page = "newbuilding"
+#     form = BuildingForm()
+#     if request.method == 'POST':
+#         form = BuildingForm(request.POST, request.FILES)
+#         print(form)
+#         if form.is_valid():
+#             newbuilding = form.save(commit = False)
+#             newbuilding.building_owner = request.user
+#             newbuilding.save()
+#             return redirect('home')
+#         else:
+#             print(form.errors)
+#     context = {'form': form, 'page':page, }
+#     return render(request, 'RentScout/create_building.html', context)
+
+@login_required(login_url = "signin")
 def update_building(request, pk):
     page = "update"
     building = Building.objects.get(buildingid = pk)
@@ -149,7 +157,7 @@ def update_building(request, pk):
     context = {'form': form, 'page':page, 'buildingid': building_id}
     return render(request, 'RentScout/create_building.html', context)
 
-@login_required
+@login_required(login_url = "signin")
 def building_info(request, pk):
     building = Building.objects.get(buildingid = pk)
     try:
@@ -164,23 +172,33 @@ def building_info(request, pk):
     roomform = RoomForm()
     reportform = BuildingReportForm()
     feedbackForm = FeedBackForm()
+    verification_status = "Not Verified"
+
+    try:
+        verification = Verification.objects.get(buildingid = building)
+        verification_status = verification.status
+    except Exception as e:
+        pass
 
     context = {'building':building, 'highlights': highlights, 'room_images': room_images,
                'rooms':rooms, 'policies':policies, 'roomform':roomform, 'feedbacks':feedbacks,
-               'feedbackform':feedbackForm, 'building_report_form': reportform,
+               'feedbackform':feedbackForm, 'building_report_form': reportform, 
+               'verification': verification_status,
             }
     
     return render(request, 'RentScout/building.html', context)
 
+@login_required(login_url = "signin")
 def building_del(request, pk):
     building = Building.objects.get(buildingid = pk)
     building.delete()
     return redirect('home')
 
+@login_required(login_url = "signin")
 def building_edit(request):
     # amenity = {}
     if not (isinstance(request.user, ScoutUser_Landlord)):
-        return redirect(request.META.get('HTTP_REFERER'))
+        return redirect('home')
 
     try:
         buildings = Building.objects.filter(building_owner = request.user)
@@ -201,6 +219,7 @@ def building_edit(request):
                }
     return render(request, 'RentScout/edit_building.html', context)
 
+@login_required(login_url = "signin")
 def create_building_edit_page(request):
     if not (isinstance(request.user, ScoutUser_Landlord)):
         return redirect('edit_building')
@@ -267,7 +286,7 @@ class delete_building_view(View):
 
             building = Building.objects.get(buildingid=buildingid)
             building.delete()
-            messages.success(request, 'Building successfully deleted')
+            #success(request, 'Building successfully deleted')
             return JsonResponse({'success': 'Building successfully deleted'}, status=200)
         
         except Building.DoesNotExist:
@@ -277,7 +296,8 @@ class delete_building_view(View):
         except Exception as e:
             print("Error:", e)
             return JsonResponse({'error': f'Unexpected error: {e}'}, status=500)
-        
+
+@login_required(login_url = "signin")
 def create_feedback(request):
     if request.method == 'POST':
         feedbackform = FeedBackForm(request.POST)
@@ -285,11 +305,13 @@ def create_feedback(request):
             newfeedback = feedbackform.save(commit = False)
             newfeedback.userid = request.user
             newfeedback.save()
-            messages.success(request, "Feedback sent")
+            #success(request, "Feedback sent")
+            messages.success(request, "Successfully sent your feedback")
             return redirect('building_info', newfeedback.boardingid.buildingid)
         else:
             messages.error(request, "Unable to save feedback")
-            
+
+@login_required(login_url = "signin")   
 def update_feedback(request, pk):
     if request.method == 'POST':
         print('update feedback POST')
@@ -305,11 +327,12 @@ def update_feedback(request, pk):
         else:
             messages.error(request, "Unable to update feedback")
             print(feedbackform.errors)
-
             return redirect('building_info', oldfeedback.boardingid.buildingid)
 
 
 # ROOM THINGS
+
+@login_required(login_url = "signin")
 def room_create(request, buildingID):
     building = Building.objects.get(buildingid = buildingID)
 
@@ -319,14 +342,15 @@ def room_create(request, buildingID):
             newroom = room.save(commit=False)
             newroom.building_id = building
             newroom.save()
+            messages.success(request, f"{newroom.room_name} has been successfully created")
         else:
             print(room.errors)
             print("failed to create room")
-            messages.error(request, "Failed to create room")
+            messages.error(request, "Please complete the form before saving")
     
     return redirect('building_info', building.buildingid )
 
-
+@login_required(login_url = "signin")
 def room_update(request):
     if request.method =='POST':
         room_id = request.POST.get('room_id')
@@ -336,14 +360,15 @@ def room_update(request):
            updated_room = tryroom.save(commit=False)
            updated_room.save()
            print('Successfully updated room', room.room_name)
-           messages.success(request, 'successfully updated room')
+           messages.success(request, 'Successfully updated room')
            return redirect('building_info', room.building_id.buildingid)
         else:
             print("Failed to update room", tryroom.errors)
-            messages.error(request, 'Failed to update room')
+            messages.error(request, 'Please complete the form before saving')
             return redirect('building_info', room.building_id.buildingid)
 
 # ROOM PHOTOS
+@login_required(login_url = "signin")
 def room_photo_upload(request):
     print('rooom photo upload')
     if request.method == 'POST':
@@ -355,6 +380,7 @@ def room_photo_upload(request):
             newphoto.save()
         return redirect('edit_building')
 
+@login_required(login_url = "signin")
 def room_edit_photo(request, pk):
     images = RoomImage.objects.filter(roomid = pk)
     rooms = Room.objects.filter(building_id__building_owner = request.user)
@@ -366,6 +392,7 @@ def room_edit_photo(request, pk):
                 'room_id': pk, }
     return render(request, 'RentScout/edit_room_photo.html', context)
 
+@login_required(login_url = "signin")
 def room_delete_photo(request):
     if request.method == 'POST':
         img_id = request.POST.get("img_id")
@@ -398,6 +425,7 @@ def user_profile(request):
     return render(request, 'RentScout/user_profile.html', context)
 
 # no login required
+@login_required(login_url = "signin")
 def user_profile_admin_access(request, userid):
     if isinstance(request.user, AdminUser):
         user_data = ScoutUser_Landlord.objects.get(userid = request.user.userid)
@@ -405,7 +433,8 @@ def user_profile_admin_access(request, userid):
         return render(request, 'RentScout/user_profile.html', context)
     else:
         return redirect(request.META.get('HTTP_REFERER'))
-    
+
+@login_required(login_url = "signin")    
 def update_user_profile(request):
     if request.method == 'POST':
         if isinstance(request.user, ScoutUser):
@@ -415,10 +444,10 @@ def update_user_profile(request):
             if tryForm.is_valid():
                 updatedForm = tryForm.save(commit=False)
                 updatedForm.save()
-                messages.success(request, 'Your profile has been updated')
+                #success(request, 'Your profile has been updated')
                 return redirect('user_profile')
             else:
-                messages.error(request, 'Form is invalid')
+                #error(request, 'Form is invalid')
                 return redirect('user_profile')
         
     elif isinstance(request.user, ScoutUser_Landlord):
@@ -428,11 +457,11 @@ def update_user_profile(request):
         if tryForm.is_valid():
             updatedForm = tryForm.save(commit=False)
             updatedForm.save()
-            messages.success(request, 'Your profile has been updated')
+            #success(request, 'Your profile has been updated')
             return redirect('user_profile')
         else:
             print(tryForm.errors)
-            messages.error(request, 'Form is invalid')
+            #error(request, 'Form is invalid')
             return redirect('user_profile')
                         
 def go_map(request):
@@ -440,15 +469,17 @@ def go_map(request):
     context = {}
     return render(request, 'RentScout/map.html', context)
 
-
+@login_required(login_url = "signin")
 def all_reports(request):
     context = {}
     return render(request, 'RentScout/admin/all_reports.html', context)
 
+@login_required(login_url = "signin")
 def all_verification(request):
     context = {}
     return render(request, 'RentScout/admin/verification.html', context)
 
+@login_required(login_url = "signin")
 def bookmark_page(request):
     return render(request, 'RentScout/bookmarks.html', {})
 
@@ -484,7 +515,7 @@ class get_all_reports(View):
             return JsonResponse({'error': "Building Reports Does Not Exist"}, status = 404)
         except Exception as e:
             return JsonResponse({'error': f'{e}'})
-        
+
 class get_buildings_bypage(View):
     def get(self, request):
         page = request.GET.get('page', 1)
@@ -604,13 +635,13 @@ class get_rooms(View):
                 return JsonResponse({"room_data":room_data })
             
             except Room.DoesNotExist:
-                messages.error(request, 'Error 404: Rooms Not Found')
+                #error(request, 'Error 404: Rooms Not Found')
                 JsonResponse({'error': 'Rooms Not Found'}, status=404)
             except Exception as e:
                 JsonResponse({'error': f'{e}'}, status = 500)
 
         else:
-            messages.error(request, 'Error 405: Bad request')
+            #error(request, 'Error 405: Bad request')
             JsonResponse({'error': 'Bad request'}, status=405)
 
 class get_room_data(View):
@@ -886,8 +917,9 @@ class get_bookmark_status(View):
                 print('has building id')
                 if isinstance(request.user, ScoutUser): 
                     print('an instance of scoutuser')
+                    user = ScoutUser.objects.get(userid = request.user.userid)
                     building = Building.objects.get(buildingid = building_id)
-                    bookmark = ScoutUserBookmark.objects.filter(owner=request.user, buildingid=building)
+                    bookmark = ScoutUserBookmark.objects.filter(owner=user, buildingid=building)
                     print(bookmark)
                     if bookmark:
                         return JsonResponse({'success': 'Already Bookmarked',
@@ -898,8 +930,9 @@ class get_bookmark_status(View):
                     
                 elif isinstance(request.user, ScoutUser_Landlord):  
                     print('an instance of landlord')
+                    user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
                     building = Building.objects.get(buildingid = building_id)
-                    bookmark = LandlordUserBookmark.objects.filter(owner=request.user, buildingid=building)
+                    bookmark = LandlordUserBookmark.objects.filter(owner=user, buildingid=building)
                     print(bookmark)
                     if bookmark:
                         return JsonResponse({'success': 'Already Bookmarked',
@@ -926,7 +959,6 @@ class get_bookmark_all(View):
     def get(self, request):
         page = request.GET.get('page', 1)
         filter = request.GET.get('query', None)
-
         if filter == '':
             filter = None
 
@@ -935,8 +967,10 @@ class get_bookmark_all(View):
         
         try:
             if isinstance(request.user, ScoutUser):
+                user = ScoutUser.objects.get(userid = request.user.userid)
+
                 if filter == None:
-                    bookmarks = ScoutUserBookmark.objects.all()
+                    bookmarks = ScoutUserBookmark.objects.filter(owner = user)
                 else:
                     try:
                         filter_numeric = int(filter)
@@ -954,33 +988,33 @@ class get_bookmark_all(View):
                             Q(owner__firstname__icontains = filter) |
                             Q(owner__lastname__icontains = filter) |
                             Q(owner__middlename__icontains = filter),
-                            owner = request.user
+                            owner = user
                         )
                         print(bookmarks)
 
             elif isinstance(request.user, ScoutUser_Landlord):
                 user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
-                # if filter == None:
-                bookmarks = LandlordUserBookmark.objects.filter(owner = request.user)
-                # else:
-                #     try:
-                #         filter_numeric = int(filter)
-                #     except ValueError: 
-                #         filter_numeric = None
+                if filter == None:
+                    bookmarks = LandlordUserBookmark.objects.filter(owner = user)
+                else:
+                    try:
+                        filter_numeric = int(filter)
+                    except ValueError: 
+                        filter_numeric = None
 
-                #         bookmarks = LandlordUserBookmark.objects.filter(
-                #             Q(buildingid__building_name__icontains = filter) |
-                #             (Q(buildingid__zip_code = filter_numeric) if filter_numeric is not None else Q()) |
-                #             Q(buildingid__street__icontains = filter) |
-                #             Q(buildingid__city__icontains = filter) |
-                #             Q(buildingid__province__icontains = filter) |
-                #             Q(buildingid__country__icontains = filter) |
-                #             Q(owner__email__icontains = filter) |
-                #             Q(owner__firstname__icontains = filter) |
-                #             Q(owner__lastname__icontains = filter) |
-                #             Q(owner__middlename__icontains = filter),
-                #             owner = request.user
-                #         )
+                        bookmarks = LandlordUserBookmark.objects.filter(
+                            Q(buildingid__building_name__icontains = filter) |
+                            (Q(buildingid__zip_code = filter_numeric) if filter_numeric is not None else Q()) |
+                            Q(buildingid__street__icontains = filter) |
+                            Q(buildingid__city__icontains = filter) |
+                            Q(buildingid__province__icontains = filter) |
+                            Q(buildingid__country__icontains = filter) |
+                            Q(owner__email__icontains = filter) |
+                            Q(owner__firstname__icontains = filter) |
+                            Q(owner__lastname__icontains = filter) |
+                            Q(owner__middlename__icontains = filter),
+                            owner = user
+                        )
             elif isinstance(request.user, AdminUser):
                 return JsonResponse({'error': 'Admin Users cannot Bookmark'}, status = 400)
             else:
@@ -1039,7 +1073,8 @@ class create_bookmark(View):
                 return JsonResponse({'error': 'Form invalid'}, status = 400)
             
         else:
-            return JsonResponse({'success': 'Admin Users cannot make bookmarks'}, status = 200)
+            #error(request, "Admin Users cannot make bookmarks")
+            return JsonResponse({'error': 'Admin Users cannot make bookmarks'}, status = 400)
 
 class remove_bookmark(View):
     def post(self, request):
@@ -1062,30 +1097,34 @@ class remove_bookmark(View):
 
 class create_building_report(View):
     def post(self, request):
+        print('posting')
         try:
             buildingid = request.POST.get('buildingid')
+            print(buildingid)
             user = ScoutUser.objects.get(userid = request.user.userid)
             building = Building.objects.get(buildingid = buildingid)
 
             form = BuildingReportForm(request.POST)
+            print(request.POST)
             if form.is_valid():
+                
                 new_report = form.save(commit=False)
                 new_report.buildingid = building
                 new_report.reporter = user
                 new_report.save()
                 print(new_report)
-                messages.success(request, "Report successfully sent")
-                return JsonResponse({'success': 'Report successfully sent'}, status = 200)
+                #success(request, "Report successfully sent")
+                return JsonResponse({'success': 'Thank you for your report. Our team will review the issue and take appropriate action'}, status = 200)
             else:
                 print(form.errors)
-                messages.error(request, 'Report Invalid')
-                return JsonResponse({'error': 'Form invalid'}, status = 405)
+                #error(request, 'Report Invalid')
+                return JsonResponse({'error': 'Please provide a reason for your report'}, status = 405)
         except ScoutUser.DoesNotExist:
             return JsonResponse({'error': 'User Does Not Exist'}, status = 404)
         except Building.DoesNotExist:
             return JsonResponse({'error': 'Building Does Not Exist'}, status = 404)
         except Exception as e:
-            return JsonResponse({'error': f'{e}'}, status = 500)
+            return JsonResponse({'error': "Form Not Allowed"}, status = 500)
 
 class delete_building_report(View):
     def post(self, request):
@@ -1097,7 +1136,7 @@ class delete_building_report(View):
         try:
             report = BuildingReport.objects.get(reportid = reportid)
             report.delete()
-            messages.success(request, 'Report successfully Denied')
+            #success(request, 'Report successfully Denied')
             return JsonResponse({'success': 'Report successfully Denied'}, status = 200)
         except BuildingReport.DoesNotExist:
             return JsonResponse({'error': 'Report Does Not Exist'}, status = 404)
@@ -1145,6 +1184,7 @@ class get_verification_requests(View):
 # GET VERIFICATION STATUS FOR BUILDING 
 class get_verification_status_view(View):
     def get(self, request):
+        
         buildingid = request.GET.get('buildingid', '')
         
         if not buildingid:
@@ -1162,18 +1202,28 @@ class get_verification_status_view(View):
 
 class create_verification_view(View):
     def post(self, request):
+
+        buildingid = request.POST.get('buildingid')
+        if not buildingid:
+            return JsonResponse({"error": "Did not receive Building ID"}, status = 400)
+        
+        building = Building.objects.get(buildingid = buildingid)
+        # CHECK IF LOGGED IN USER IS OWNER
+        if not building.building_owner == request.user:
+            return JsonResponse({"error": "Must be the owner of this building to request verification"}, status = 400)
+
         try:
             form = VerificationForm(request.POST)
             if form.is_valid():
                 new_verification = form.save(commit = False)
                 new_verification.status = 'Pending'
                 new_verification.save()
-                messages.success(request, 'Verification request has been sent')
+                #success(request, 'Verification request has been sent')
                 return JsonResponse({'success': 'Verification request has been sent'}, status = 200)
             else:
                 return JsonResponse({'error': 'Something went wrong with the form'}, status = 400)
         except Exception as e:
-            messages.error(request, "Server Error")
+            #error(request, "Server Error")
             return JsonResponse({'error': f'{e}'}, status = 500)
 
 class delete_verification(View):
@@ -1186,7 +1236,7 @@ class delete_verification(View):
             building = Building.objects.get(buildingid = buildingid)
             verification = Verification.objects.get(buildingid = building)
             verification.delete()
-            messages.success(request, 'Verification request removed')
+            #success(request, 'Verification request removed')
             return JsonResponse({'success': 'Verification request removed'}, status = 200)
         except Building.DoesNotExist:
             return JsonResponse({'error': 'Building Does Not Exist'}, status = 404)
@@ -1223,7 +1273,7 @@ class deny_verification(View):
         try:
             verification = Verification.objects.get(verificationid = verificationid)
             verification.delete()
-            messages.success(request, 'Verification request removed')
+            #success(request, 'Verification request removed')
             return JsonResponse({'success': 'Verification request removed'}, status = 200)
         
         except Verification.DoesNotExist:
@@ -1241,7 +1291,7 @@ class accept_verification(View):
             verification = Verification.objects.get(verificationid = verificationid)
             verification.status = 'Verified'
             verification.save()
-            messages.success(request, 'Verification accepted')
+            #success(request, 'Verification accepted')
             return JsonResponse({'success': 'Verification accepted'}, status = 200)
         except Verification.DoesNotExist:
             return JsonResponse({'error': 'Verification Does Not Exist'}, status = 404)
@@ -1283,10 +1333,10 @@ def building_file_scrapper(request):
                     
             except Exception as e:
 
-                messages.error(request, f"{e}")
+                #error(request, f"{e}")
                 return redirect('building_scrapper')
         else:
-                messages.error(request, "File Scrapper Invalid")
+                #error(request, "File Scrapper Invalid")
                 print(file.errors)
                 return redirect('building_scrapper')
     form = ScrapperFile()

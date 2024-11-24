@@ -6,6 +6,7 @@
     {% load static %}
     <script src="{% static 'scripts\jquery.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/navigation.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/index.css' %}">
     <title>RENTSCOUT</title>
     {% block stylecontent %}
     {% endblock stylecontent %}
@@ -40,9 +41,12 @@
             </li>
             {% endif %}
             
+            {% if not request.user.is_staff%}
             <li>
                 <a href="{% url 'bookmark_page' %}">My Bookmarks</a>
             </li>
+            {% endif %}
+
             {% comment %} <li>
                 <a href="{% url 'new_building' %}">Create Building</a>
             </li> {% endcomment %}
@@ -63,7 +67,11 @@
         </ul>
         <div>
             {% if request.user.is_authenticated %}
-                <h4>Hi! {{ request.user.email }}</h4>
+                {% if request.user.fullname %}
+                    <h4>Hi! {{ request.user.fullname }}</h4>
+                {% else %}
+                    <h4>Hi! {{ request.user.email }}</h4>
+                {% endif %}
                 <a href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'signin' %}">Signin</a>
@@ -77,10 +85,16 @@
     {% block bodycontent %}
     {% endblock %}
 
-    <div>
+    <div id="messages-container">
         {% for message in messages %}
-            <p>{{ message }}</p>
+            {% if 'success' in message.tags %}
+                <p class="message success_message">{{ message }}</p>
+            {% else %}
+                <p class="message error_message">{{ message }}</p>
+            {% endif %}
         {% endfor %}
     </div>
+
+    <script src="{% static 'scripts/index.js' %}"></script>
 </body>
 </html>

@@ -374,6 +374,7 @@ p span{
   border-radius: 5px;
   padding: 8px 20px;
 }
+
 #report_modal{
   display: flex;
   flex-direction: column;
@@ -385,9 +386,11 @@ p span{
   border-radius: 10px;
   border: 1px solid rgba(239, 239, 240);
 }
+
 #report_modal .textarea_button_box{
   width: 100%;
 }
+
 #report_modal .textarea_button_box textarea{
   width: 70%;
   height: 100px;
@@ -396,10 +399,15 @@ p span{
   background-color: #f5f5f5;
   padding: 5px;
 }
+
 #report_modal .textarea_button_box button{
   background-color: black;
   color: white;
   border: none;
   border-radius: 5px;
   padding: 8px 20px;
+}
+
+#report_modal.hidden{
+  display: none;
 }

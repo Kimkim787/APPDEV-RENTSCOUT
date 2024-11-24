@@ -2,7 +2,7 @@
 
 {% block stylecontent %}
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/building.css' %}?102">
+    <link rel="stylesheet" href="{% static 'css/building.css' %}?103">
     <link rel="stylesheet" href="{% static 'css/modal.css' %}?100">
 
 {% endblock stylecontent %}
@@ -67,7 +67,7 @@
                         <p>Available Space: {{ room.person_free }}</p>
                     </article>
                     {% if building.building_owner == request.user %}
-                        <button class="room_update_button" id="{{ room.roomid }}">Update Room</button>
+                        <button id="update_room" class="room_update_button" id="{{ room.roomid }}">Update Room</button>
                     {% endif %}
                 </div>
                 <div>
@@ -124,22 +124,24 @@
                 </ul>
             </div>
             
-            {% if request.user.usertype == 'Landlord' %}
+            
             <div class="feedbacksbox">
                 <div class="title">
                     <h3>FEEDBACKS</h3>  
                 </div>
-                <form class="feedback_box" action="{% url 'newfeedback' %}" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="{{ feedbackform.boardingid.name }}" value="{{ building.buildingid }}">
-                    
-                    {{ feedbackform.rating }}
-                    
-                    <label for="message">Message:</label>
-                    <textarea name="{{ feedbackform.message.name }}" id="" cols="30" rows="10" placeholder="Input message Here"></textarea>
-                    
-                    <input type="submit" value="Send">
-                </form>
+                {% if not request.user.usertype == 'Landlord' %}
+                    <form class="feedback_box" action="{% url 'newfeedback' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="{{ feedbackform.boardingid.name }}" value="{{ building.buildingid }}">
+                        
+                        {{ feedbackform.rating }}
+                        
+                        <label for="message">Message:</label>
+                        <textarea name="{{ feedbackform.message.name }}" id="" cols="30" rows="10" placeholder="Input message Here"></textarea>
+                        
+                        <input type="submit" value="Send">
+                    </form>
+                {% endif %}
                 {% for feedback in feedbacks %}
                     <div class="feedbacks">
                         <!-- NORMAL DISPLAY SA FEEDBACK -->
@@ -172,7 +174,9 @@
                             
                             <p>{{ feedback.message}}</p>
                             
+                            {% if feedback.userid == request.user %}
                             <button class="feedback_edit_btn">Edit</button>
+                            {% endif %}
                         </div>
 
                         <!-- INIG CLICK SA EDIT -->
@@ -193,7 +197,6 @@
                     </div>
                 {% endfor %}
             </div>
-            {% endif %}
             <div class="modal hidden">
                 <form action="{% url 'room_create' building.buildingid %}" method="POST">
                     {% csrf_token %}
@@ -326,13 +329,14 @@
             </div>
 
             <!-- REPORT MODAL -->
-            <div id="report_modal" class="model">
-                <input type="hidden" name="{{ building_report_form.buildingid.name }}" value="{{ building.buildingid }}">
+            <div id="report_modal" class="hidden">
+                <button id="close_report">X</button>
                 <h4>Reporting {{ building.building_name }}</h4>
                 <label for="reason">Please state your reason for the report:</label>
                 <div class="textarea_button_box">
                     <textarea name="{{ building_report_form.reason.name }}" id="" cols="30" rows="10" placeholder="Limit of 250 characters"></textarea>
                     <div>
+                        <input type="hidden" name="{{ building_report_form.buildingid.name }}" value="{{ building.buildingid }}">
                         <button id="report_button">Report</button>
                         <button id="cancel_report_button">Cancel</button>
                     </div>
@@ -346,11 +350,12 @@
                 <div id="verification_status_box" value="{{ building.buildingid }}">
                     
                 </div>
-                
-                
+
                 <h3>{{ building.building_name }}</h3>
 
+                {% if not request.user.usertype == 'Landlord' %}
                 <img src="{% static 'imgs/svgs/report.svg' %}" alt="report_image">
+                {% endif %}
                 <!-- <input type="submit" value="🤍"> -->
                 <div id="heart_container" value="{{ building.buildingid }}">
                     <!-- <div id="heart_sign" class="heart" value="{{ building.buildingid }}"></div> -->
@@ -381,5 +386,8 @@
 
         <script src="{% static 'scripts/modal.js' %}?100"></script>
     </section>
+    <script type="text/javascript">
+        const noImagePath = "{% static 'imgs/building/no_image.jpg' %}"
+    </script>
     <script src="{% static 'scripts/building.js' %}?106"></script>
     {% endblock bodycontent %}

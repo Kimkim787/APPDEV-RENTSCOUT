@@ -6,7 +6,6 @@
     background-image: url('../imgs/svgs/red_heart.svg');
     background-size: contain;
     background-repeat: no-repeat;
-    transition: background-image 2 ease;
   }
 section{
   display: flex;

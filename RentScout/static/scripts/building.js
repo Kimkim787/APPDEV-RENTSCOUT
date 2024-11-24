@@ -14,6 +14,7 @@ $(document).ready(function() {
     
   });
 
+  //  VIEW ROOM INFORMATION
   $('.view_photo_btn').on('click', function() {
     $('#photo_container').empty();
     let query = $(this).attr('id');
@@ -45,6 +46,9 @@ $(document).ready(function() {
         $('.view_room_imgs').first().css('opacity', '0.5');
         if (firstImageSrc) {
           $('.selectedpicbox').html(`<img src="${firstImageSrc}" alt="Selected room image" class="selected_image" style="opacity: 1;">`);
+        } else {
+          $('.selectedpicbox').html(`<img src="${noImagePath}" alt="Selected room image" class="selected_image" style="opacity: 1;">`);
+          
         }
 
         view_photo_modal.removeClass('hidden');
@@ -57,25 +61,29 @@ $(document).ready(function() {
         });
       },
       error: function(xhr, status, error) {
-        console.log(xhr.responseText);
-        alert(error, status);
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
       }
     });
   });
 
+  // INITIALIZE FIRST ROOM INFORMATION
   $('.view_photo_btn').first().trigger('click');
 
+  // NOT IMPLEMENTED
   $('#view_photo_close').on('click', function() {
     $('#photo_container').empty();
     changeViewStatus();
   });
 
+  // FEEDBACK EDIT BUTTON
   $('.feedback_edit_btn').on('click', function(){
     let parent = $(this).closest('.feedbackdisplay');
     parent.addClass('hidden');
     parent.next('.edit_comment_container').removeClass('hidden');
   });
 
+  // FEEDBACK CANCEL EDIT BUTTON
   $('.feedback_cancel_edit').on('click', function(){
     let parent = $(this).closest('.edit_comment_container');
     parent.addClass('hidden');
@@ -93,12 +101,17 @@ $(document).ready(function() {
         'buildingid': $(this).closest('div').find('input[name="buildingid"]').val(),
         'reason': $('textarea[name="reason"]').val(),
       },
-      success: function(reponse){
-        alert('successfuly reported');
+      success: function(response){
+        // SoloMessageFlow("Thank you for your report. Our team will review the issue and take appropriate action", 'success')
+        SoloMessageFlow(response.success);
+        closereport();
+    
       },
       error: function(xhr, status, error) {
-        console.error("AJAX Error: " + status + ": " + error);
-      }    
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+        $('textarea[name="reason"]').focus();
+      }
     })
   });
 
@@ -107,11 +120,27 @@ $(document).ready(function() {
     create_verification();
   })
 
-  // REMOVE VERIFICTION CLICK
+  // REMOVE VERIFICATION CLICK
   $('#verification_status_box').on('click', '#pending_verification', function(){
     delete_verification();
   })
 
+  // REPORT BUTTON CLICK
+  $('img[alt="report_image"]').on('click', function(){
+    $('#report_modal').removeClass("hidden");
+  })
+
+  // CLOSE REPORT BUTTON
+  $('#close_report').on("click", closereport )
+
+  // CANCEL REPORT BUTTON
+  $('#cancel_report_button').on('click', closereport )
+
+  function closereport(){
+    const report_modal = $("#report_modal");
+    $(report_modal).addClass('hidden');
+    $(report_modal).find('textarea[name="reason"]').val("");
+  }
 
   function request_bookmark_status(return_status = false){
     console.log("Requesting bookamr status");
@@ -162,12 +191,15 @@ $(document).ready(function() {
       success: function(){
         $(btn).toggleClass('heart-active');
         console.log('Success');
+        SoloMessageFlow("Successfully Bookmarked")
         request_bookmark_status();
       },
-      error: function(xhr, status, error){
-        console.log(error);
-        alert(`Error: ${xhr.responseText.error || error}`);
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+        request_bookmark_status();
       }
+
     });
   }
 
@@ -180,12 +212,13 @@ $(document).ready(function() {
         'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
         'building_id': building_id
       },
-      success: function (){
+      success: function (response){
+        SoloMessageFlow(response.success, 'success');
         request_bookmark_status();
       },
-      error: function(xhr, status, error){
-        console.log(error);
-        alert(`Error: ${xhr.responseText.error || error}`);
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
       }
     })
   }
@@ -203,7 +236,7 @@ $(document).ready(function() {
         console.log(response.verification_status)
         if(response.verification_status === 'Not Verified'){
           let button = $('<button></button>', {
-            text: 'Verify',
+            text: 'Not Verified',
             id: 'verify_btn'
           })
           box.append(button);
@@ -227,8 +260,12 @@ $(document).ready(function() {
 
       }, 
       error: function(xhr) {
-        console.error("Error:", xhr.responseJSON.error);
-      }
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+            alert(xhr.responseJSON.error); 
+        } else {
+            alert('An unexpected error occurred.');
+        }
+    }
     })
   }
 
@@ -241,15 +278,15 @@ $(document).ready(function() {
         'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
         'buildingid': box.attr('value')
       },
-      success: function(){
-        alert('Verification has been sent.');
+      success: function(response){
 
         display_verification_status();
-
+        SoloMessageFlow(`${response.success}`, "success");
       },
-      error: function(xhr) {
-        console.error("Error:", xhr.responseJSON.error);
-      }    
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+      }  
   })
   }
 
@@ -262,15 +299,16 @@ $(document).ready(function() {
         'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
         'buildingid': box.attr('value')
       },
-      success: function(){
-        alert('Verification request removed.');
+      success: function(response){
+        // alert('Verification request removed.');
 
         display_verification_status();
-
+        SoloMessageFlow(`${response.success}`, "success");
       },
-      error: function(xhr) {
-        console.error("Error:", xhr.responseJSON.error);
-      }    
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+      } 
     });
   }
 });

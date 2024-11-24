@@ -51,10 +51,15 @@ $(document).ready(function(){
                     
                     
                     $('.buildings').append(box);
+                    
                 })
             }, 
-            error: function(){
-
+            error: function(xhr) {
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    SoloMessageFlow(xhr.responseJSON.error, "error");
+                } else {
+                    SoloMessageFlow('An unexpected error occurred', "error");
+                }
             }
         })
     }
