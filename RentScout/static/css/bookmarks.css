@@ -10,10 +10,12 @@
 section{
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   background-color: #f5f5f5;
   padding: 10px 0px;
+  height: 86.6vh;
+  overflow: auto;
 }
 section h1{
   font-family: "Anton", sans-serif;
