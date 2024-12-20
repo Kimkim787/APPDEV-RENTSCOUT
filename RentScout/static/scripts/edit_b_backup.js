@@ -7,13 +7,12 @@ $(document).ready(function(){
 
     // "SEE PHOTOS" BUTTON CLICKED
     $('#rooms_container').on('click', '.photo_btn', function(){
-        let room_id = $(this).closest('.room_item').find('input[class="roomid_holder"]').val();
         $('.form_item').addClass('hidden');
         $('#add_room_btn').addClass('hidden');
         $('#edit_room_form').addClass('hidden');
         show_room_photos($(this));
         $('#upload_room_photo').removeClass('hidden');
-        $('#upload_roomid_holder').val(room_id);
+        
     });
 
     // Image clicked
@@ -56,11 +55,6 @@ $(document).ready(function(){
     $('#add_policy_btn').on('click', function(event){
         event.preventDefault();
         show_newpolicy_form();
-    });
-
-    // CERTIFICATE BUTTON
-    $('#add_certificate_btn').on('click', function(){
-        $('#upload_certificate').removeClass('hidden');
     });
 
     // AMENITIES CREATION BUTTON
@@ -152,8 +146,6 @@ $(document).ready(function(){
             $('#certificate_bar').removeClass('hidden');
             $('#upload_certificate').removeClass('hidden');
             $('#upload_buildingid_holder').val(building_id);
-            request_certificates($(this));
-
             // AMENITIES
         } else if( $(this).val() == 'Amenities'){
             $('#amenities_section').removeClass('hidden');
@@ -437,6 +429,108 @@ $(document).ready(function(){
         }); // ajax
     }
 
+    // UPLOAD PHOTO BTN CLICK
+    $('#upload_room_photo_btn').on('click', function () {
+        // Retrieve room ID from hidden input
+        const roomId = $('#upload_roomid_holder').val();
+        console.log('Room ID:', roomId);
+    
+        // Get file input element
+        const fileInput = document.getElementById('room-photo-upload');
+        if (!fileInput.files || fileInput.files.length === 0) {
+          alert('Please select a file');
+          return;
+        }
+    
+        // Create FormData from the form
+        const formData = new FormData($('#room-photo-upload-form')[0]);
+    
+        // Submit form data using Axios
+        axios
+          .post('/room/photo/upload/', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then(function (response) {
+            alert('Room photo upload successful!');
+            resetFileUploadRoomPhoto();
+          })
+          .catch(function (error) {
+            console.error(error);
+            alert(
+              `Error: ${
+                error.response?.data?.error || 'Room photo upload failed!'
+              }`
+            );
+          });
+      });
+    // $('#upload_room_photo_btn').on('click', function() {
+    //     // Retrieve the value from the hidden room ID input
+    //     let query = $(this).closest('#upload_photo_container').find('#upload_room_holder').val();
+        
+    //     // Get the file input element
+    //     let fileInput = document.getElementById('file-upload');
+        
+    //     // Check if a file is selected
+    //     if (!fileInput.files || fileInput.files.length === 0) {
+    //         alert('Please select a file');
+    //         return;
+    //     }
+    
+    //     // Create FormData object from the form
+    //     let formData = new FormData($('#file-upload-form')[0]);
+    
+    //     // Submit the form data via Axios
+    //     axios.post('/room_photo/upload/as_view', formData, {
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data',
+    //         },
+    //     })
+    //     .then(function(response) {
+    //         alert('Upload successful!');
+    //         show_room_photos(null, query);
+    //         resetFileUpload();
+    //     })
+    //     .catch(function(error) {
+    //         console.error(error);
+    //         alert(`Error: ${error.response.data.error || 'Upload failed!'}`);
+    //     });
+    // });
+    
+    // $('#upload_certificate_btn').on('click', function(){
+    //     // Retrieve the value from the hidden room ID input
+    //     let buildingid = $(this).closest('#upload_certificate_container').find('#upload_buildingid_holder').val();
+    //     console.log(buildingid);
+    //     // Get the file input element
+    //     let fileInput = $('#certificate-upload');
+        
+    //     // Check if a file is selected
+    //     if (!fileInput.files || fileInput.files.length === 0) {
+    //         alert('Please select a file');
+    //         return;
+    //     }
+    
+    //     // Create FormData object from the form
+    //     let formData = new FormData($('#certificate-upload-form')[0]);
+    
+    //     // Submit the form data via Axios
+    //     axios.post('/certificate/upload/', formData, {
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data',
+    //         },
+    //     })
+    //     .then(function(response) {
+    //         alert('Upload successful!');
+    //         // show_room_photos(null, query);
+    //         resetFileUpload2();
+    //     })
+    //     .catch(function(error) {
+    //         console.error(error);
+    //         alert(`Error: ${error.response.data.error || 'Upload failed!'}`);
+    //     });
+    // })
+
     $('#upload_certificate_btn').on('click', function () {
         // Retrieve building ID from hidden input
         const buildingId = $('#upload_buildingid_holder').val();
@@ -451,9 +545,7 @@ $(document).ready(function(){
     
         // Create FormData from the form
         const formData = new FormData($('#certificate-upload-form')[0]);
-        for (const [key, value] of formData.entries()) {
-            console.log(key + ": " + value);
-        }
+    
         // Submit form data using Axios
         axios
           .post('/certificate/upload/', formData, {
@@ -476,43 +568,40 @@ $(document).ready(function(){
     });
 
     $('#upload_room_photo_btn').on('click', function () {
-        // Retrieve room ID from hidden input
-        const roomId = $('#upload_roomid_holder').val();
-        console.log('Room ID:', roomId);
+    // Retrieve room ID from hidden input
+    const roomId = $('#upload_roomid_holder').val();
+    console.log('Room ID:', roomId);
 
-        // Get file input element
-        const fileInput = document.getElementById('room-photo-upload');
-        if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select a file');
-        return;
-        }
+    // Get file input element
+    const fileInput = document.getElementById('room-photo-upload');
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Please select a file');
+      return;
+    }
 
-        // Create FormData from the form
-        const formData = new FormData($('#room-photo-upload-form')[0]);
+    // Create FormData from the form
+    const formData = new FormData($('#room-photo-upload-form')[0]);
 
-        // Submit form data using Axios
-        axios
-        .post('/room_photo/upload/as_view/', formData, {
-            headers: {
-            'Content-Type': 'multipart/form-data',
-            },
-        })
-        .then(function (response) {
-            alert('Room photo upload successful!');
-            show_room_photos(null, roomId);
-            resetFileUploadRoomPhoto();
-
-        })
-        .catch(function (error) {
-            console.error(error);
-            alert(
-            `Error: ${
-                error.response?.data?.error || 'Room photo upload failed!'
-            }`
-            );
-        });
-    });
-
+    // Submit form data using Axios
+    axios
+      .post('/room/photo/upload/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(function (response) {
+        alert('Room photo upload successful!');
+        resetFileUploadRoomPhoto();
+      })
+      .catch(function (error) {
+        console.error(error);
+        alert(
+          `Error: ${
+            error.response?.data?.error || 'Room photo upload failed!'
+          }`
+        );
+      });
+  });
     // DELETE PHOTO_VIEW
     function fn_delete_room_photo(button){
         let query = $(button).siblings('input[name="img_id"]').val();
@@ -675,24 +764,6 @@ $(document).ready(function(){
                 }
             }
         });
-    }
-
-    function request_certificates(btn){
-        const buildingid = $(btn).closest('ul').find('input[class="building_id"]').val();
-        $.ajax({
-            url: '/certificates/get/',
-            type: 'GET',
-            data: {
-                'buildingid': buildingid
-            }, 
-            success: function(response){
-                console.log(response.certificates);
-            }, 
-            error: function(xhr, status, error) {
-                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
-                SoloMessageFlow(`${errorMessage}`, 'error');
-            }
-        })
     }
 
     function show_newpolicy_form(){
@@ -1132,3 +1203,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+
+// Handle form submission
+$(document).ready(function () {
+  $('#upload_room_photo_btn').on('click', function () {
+    // Retrieve room ID from hidden input
+    const roomId = $('#upload_room_holder').val();
+    console.log('Room ID:', roomId);
+
+    // Get file input element
+    const fileInput = document.getElementById('certificate-upload');
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Please select a file');
+      return;
+    }
+
+    // Create FormData from the form
+    const formData = new FormData($('#file-upload-form')[0]);
+
+    // Submit form data using Axios
+    axios
+      .post('/photo/upload/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(function (response) {
+        alert('Upload successful!');
+        resetFileUpload2();
+      })
+      .catch(function (error) {
+        console.error(error);
+        alert(`Error: ${error.response?.data?.error || 'Upload failed!'}`);
+      });
+  });
+});

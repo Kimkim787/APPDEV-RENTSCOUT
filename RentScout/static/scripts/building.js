@@ -1,3 +1,4 @@
+emailjs.init("Q_A-eXEwrvvQsFMYs");
 $(document).ready(function() {
   request_bookmark_status();
   display_verification_status();
@@ -16,8 +17,10 @@ $(document).ready(function() {
 
   //  VIEW ROOM INFORMATION
   $('.view_photo_btn').on('click', function() {
+    
     $('#photo_container').empty();
     let query = $(this).attr('id');
+
     $.ajax({
       url: '/room_photo/request/',
       data: {
@@ -65,6 +68,11 @@ $(document).ready(function() {
         SoloMessageFlow(`${errorMessage}`, 'error');
       }
     });
+
+    // SET REQUIRED INFO FOR ONLINE TRANSACTION/RESERVATION
+    $('#roomid').val(query);
+    get_reservation_status();
+    
   });
 
   // INITIALIZE FIRST ROOM INFORMATION
@@ -135,6 +143,37 @@ $(document).ready(function() {
 
   // CANCEL REPORT BUTTON
   $('#cancel_report_button').on('click', closereport )
+
+  // RESERVATION BUTTON
+  $('#request_reservation').on('click', function(){
+    // FOR TRANSITION PURPOSES
+    $('#waiting').removeClass('hidden');
+    $('#request_reservation').addClass('hidden');
+    request_reserve($(this));
+  } )
+
+  // CANCEL RESERVATION
+  $('#cancel_request_reservation').on('click', function(){
+    // $('#waiting').removeClass('hidden');
+    // $('#request_reservation').addClass('hidden');
+
+    $.ajax({
+      url: '/reservations/delete/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+        'roomid': $('#roomid').val()
+      },
+      success: function(response){
+        SoloMessageFlow(`${response.success}`);
+        get_reservation_status();
+      },
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+      }
+    })
+  })
 
   function closereport(){
     const report_modal = $("#report_modal");
@@ -256,6 +295,9 @@ $(document).ready(function() {
           })
           console.log(img);
           box.append(img);
+          $('#online_transaction_container').removeClass("hidden");
+        
+          get_reservation_status();
         }
 
       }, 
@@ -311,7 +353,100 @@ $(document).ready(function() {
       } 
     });
   }
-});
+
+  // SEND NOTIFICATION TO LANDLORD GMAIL
+  function request_reserve(btn){
+    const roomid = $('#roomid').attr('value');
+    $.ajax({
+      url: '/reservations/send_notification/',
+      type: 'GET',
+      data: {
+        'roomid': roomid,
+      },
+      success: function(response_data){
+        // IF AJAX SUCCESS SEND GMAIL TO LANDLORD
+        console.log(`Good day! ${response_data.boarder_name} requested a slot for room ${response_data.room_name}.`);
+        emailjs.send(response_data.public_key, response_data.template_key, {
+          receiver_email: response_data.landlord_email,
+          to_name: response_data.to_name,
+          anchor_tag: "http://127.0.0.1:8000/reservations/",
+          message: `Good day! ${response_data.boarder_name} requested a slot for room ${response_data.room_name}.`
+        }).then(
+          function(response) {
+            create_reservation(btn);
+            
+          },
+          function(error) {
+            console.error("Failed to send email.", error);
+            SoloMessageFlow('Failed to send email. Something\'s wrong with the server.', 'error')
+          }
+          );      
+        },
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+        $('#waiting').addClass('hidden');
+        $('#request_reservation').removeClass('hidden');
+  } 
+    })
+
+  }
+
+  // CREATE RESERVATION IN DATABASE
+  function create_reservation(){
+    console.log($('#roomid').attr('value'));
+    $.ajax({
+      url: '/reservations/create_reservation/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+        'roomid': $('#roomid').attr('value')
+      },
+      success: function(){
+        SoloMessageFlow("The owner has been notified. " +
+        "We\'ll send you a mail once the owner has accepted your request", 'success')
+        get_reservation_status();
+      },
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+      } 
+    })
+  }
+
+  function get_reservation_status(){
+    console.log($('#roomid').attr('value'));
+
+    // PREVENT RESERVATION STATUS IF NO ROOMS
+    if($('#roombox_item_container').children().length === 0){
+      return;
+    }
+
+    $.ajax({
+      url: '/reservations/get/reservation_status/',
+      type: 'GET',
+      data: {
+        'roomid': $('#roomid').attr('value')
+      },
+      success: function(response){
+        if(response.success === "True"){
+          $('#waiting').addClass('hidden');
+          $('#request_reservation').addClass('hidden');
+          $('#cancel_request_reservation').removeClass('hidden');
+        } else {
+          $('#waiting').addClass('hidden');
+          $('#request_reservation').removeClass('hidden');
+          $('#cancel_request_reservation').addClass('hidden');
+        }
+      },
+      error: function(xhr, status, error) {
+        // let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        // SoloMessageFlow(`${errorMessage}`, 'error');
+        return;
+      } 
+    })
+  }
+}); // Ready Function
 
 let view_photo_modal = $('#view_photo_modal');
 

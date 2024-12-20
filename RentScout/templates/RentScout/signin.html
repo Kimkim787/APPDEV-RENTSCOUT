@@ -41,6 +41,14 @@
         <div class="greetbox">
             <h1>Welcome to <br> <img src="{% static 'imgs/nav/logo22.png' %}" alt="Website logo" ></h1>
         </div>
+        {% for message in messages %}
+            {% if 'success' in message.tags %}
+                <p class="message success_message">{{ message }}</p>
+            {% else %}
+                <p class="message error_message">{{ message }}</p>
+            {% endif %}
+        {% endfor %}
+
     </section>
 </body>
 </html>

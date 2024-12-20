@@ -1,0 +1,35 @@
+section{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#buildings_container{
+    width: 20%;
+}
+#display_container{
+    width: 75%;
+}
+
+.building_items{
+    user-select: none;
+}
+
+#reservation_lists{
+    height: 50%;
+}
+
+.reservation_item{
+    width: 20%;
+    height: 40%;    
+    border: 2px solid black;
+    border-radius: 25px;
+
+}
+
+#buildings_container, #reservation_lists{
+    list-style-type: none;
+}
+.hidden{
+    display: none;
+}

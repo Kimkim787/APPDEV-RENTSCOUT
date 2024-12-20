@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
                      ScoutUserBookmark, LandlordUserBookmark, AdminUser, BuildingReport,
-                     Verification
+                     Verification, Reservation, Certificate, 
                     )
 
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
@@ -10,20 +10,20 @@ from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm,
                     LandlordUserCreationForm, PoliciesForm, HighlightsForm,
                     ScoutUserProfileForm, LandlordUserProfileForm,
                     ScoutBookmarkForm, LandlordBookmarkForm, ScrapperFile, BuildingReportForm,
-                    VerificationForm, 
+                    VerificationForm, ReservationForm, CertificateForm, 
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist as ObjException
 
 from django.views import View
-from django.db.models import Q
+from django.db.models import Q, Count, Case, When, Value, IntegerField
 from django.http import JsonResponse
 from django.contrib import messages
 from django.template.loader import render_to_string
 
 
-import logging, math, csv
+import logging, math, csv, qrcode, random, string
 from django.core.paginator import Paginator
 logger = logging.getLogger(__name__)
 
@@ -40,33 +40,36 @@ def get_user_backend(user):
 
 def scoutuser_signup(request):
     form = ScoutUserCreationForm()
+    try:
+        if request.method == "POST":
+            role = request.POST.get('role')
 
-    if request.method == "POST":
-        role = request.POST.get('role')
+            if role == 'Boarder':
+                form = ScoutUserCreationForm(request.POST)
 
-        if role == 'Boarder':
-            form = ScoutUserCreationForm(request.POST)
+                if form.is_valid():
+                    user = form.save()
+                    backend = get_user_backend(user)
+                    login(request, user, backend)
+                    return redirect('home')
+                else:
+                    print(form.errors)
+                    messages.error(request, 'Please enter a valid email or password')
+            
+            elif role == 'Landlord':
+                form = LandlordUserCreationForm(request.POST)
 
-            if form.is_valid():
-                user = form.save()
-                backend = get_user_backend(user)
-                login(request, user, backend)
-                return redirect('home')
+                if form.is_valid():
+                    user = form.save()
+                    backend = get_user_backend(user)
+                    login(request, user, backend)
+                    return redirect('home')
+                else:
+                    messages.error(request, 'Please enter a valid email or password')
             else:
-                print(form.errors)
-                #error(request, 'Please enter a valid email or password')
-        
-        elif role == 'Landlord':
-            form = LandlordUserCreationForm(request.POST)
-
-            if form.is_valid():
-                user = form.save()
-                backend = get_user_backend(user)
-                login(request, user, backend)
-                return redirect('home')
-            else:
-                messages.error(request, 'Please enter a valid email or password')
-
+                messages.error(request, "Please select user type")
+    except:
+        messages.error(request, "Server side error")
 
     context = {'form': form, }
     return render(request, 'RentScout/signup.html', context)
@@ -205,6 +208,7 @@ def building_edit(request):
         photo_form = RoomImageForm()
         building_form = BuildingForm()
         amenities_form = HighlightsForm()
+        certificate_form = CertificateForm()
     except ObjException as e:
         messages.error(request, f'{e}')
 
@@ -214,7 +218,7 @@ def building_edit(request):
     #     pass
     print(buildings)
     context = {'buildings':buildings, 'photoform': photo_form, 'amenities_form':amenities_form,
-               'building_form': building_form, 
+               'building_form': building_form, 'certificate_form': certificate_form
             #    'amenity': amenity, 
                }
     return render(request, 'RentScout/edit_building.html', context)
@@ -437,6 +441,9 @@ def user_profile_admin_access(request, userid):
 @login_required(login_url = "signin")    
 def update_user_profile(request):
     if request.method == 'POST':
+        if not request.POST.get('userid'):
+            messages.error(request, "Form invalid")
+
         if isinstance(request.user, ScoutUser):
             user = ScoutUser.objects.get(userid = request.user.userid)
             tryForm = ScoutUserProfileForm(request.POST, instance=user)
@@ -444,25 +451,25 @@ def update_user_profile(request):
             if tryForm.is_valid():
                 updatedForm = tryForm.save(commit=False)
                 updatedForm.save()
-                #success(request, 'Your profile has been updated')
+                messages.success(request, 'Your profile has been updated')
                 return redirect('user_profile')
             else:
-                #error(request, 'Form is invalid')
+                messages.error(request, 'Form is invalid')
                 return redirect('user_profile')
         
-    elif isinstance(request.user, ScoutUser_Landlord):
-        user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
-        tryForm = LandlordUserProfileForm(  request.POST, instance=user)
+        elif isinstance(request.user, ScoutUser_Landlord):
+            user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
+            tryForm = LandlordUserProfileForm(  request.POST, instance=user)
 
-        if tryForm.is_valid():
-            updatedForm = tryForm.save(commit=False)
-            updatedForm.save()
-            #success(request, 'Your profile has been updated')
-            return redirect('user_profile')
-        else:
-            print(tryForm.errors)
-            #error(request, 'Form is invalid')
-            return redirect('user_profile')
+            if tryForm.is_valid():
+                updatedForm = tryForm.save(commit=False)
+                updatedForm.save()
+                messages.success(request, 'Your profile has been updated')
+                return redirect('user_profile')
+            else:
+                print(tryForm.errors)
+                messages.error(request, 'Form is invalid')
+                return redirect('user_profile')
                         
 def go_map(request):
 
@@ -482,6 +489,20 @@ def all_verification(request):
 @login_required(login_url = "signin")
 def bookmark_page(request):
     return render(request, 'RentScout/bookmarks.html', {})
+
+@login_required(login_url = "signin")
+def reservation_page(request):
+    buildings = Building.objects.filter(building_owner = request.user).annotate( 
+                                        reservation_count = Count(
+                                            Case(
+                                                When(room_of_building__reserved_room__status="Pending", then=1),
+                                                output_field=IntegerField(),
+                                                )
+                                            )
+                                        )
+    
+    context = {'buildings':buildings}
+    return render(request, 'RentScout/reservations.html', context)
 
 class get_all_reports(View):
     def get(self, request):
@@ -657,7 +678,7 @@ class get_room_data(View):
                     'person_free': room.person_free,
                     'current_male': room.current_male,
                     'current_female': room.current_female,
-                    'price': room.price,
+                    # 'price': room.price,
                     'room_size': room.room_size,
                     'shower': room.shower,
                     'priv_bathroom': room.priv_bathroom,
@@ -742,6 +763,10 @@ class upload_room_photo_view(View):
         print("Processing Photo Upload")
         try:
             roomid = request.POST.get('roomid')
+            if not roomid:
+                messages.error(request, 'Error Room')
+                return JsonResponse({'message': 'Error Room'}, status = 404)
+            
             photoform = RoomImageForm(request.POST, request.FILES)
             room = Room.objects.get(roomid = roomid)
             if photoform.is_valid():
@@ -750,6 +775,9 @@ class upload_room_photo_view(View):
                 newphoto.roomid = room
                 newphoto.save()
                 return JsonResponse({'message': 'Photo uploaded'}, status = 200)
+            else:
+                print(photoform.errors)
+                return JsonResponse({'error': 'Error Photo form'}, status = 400)
         except Exception as e:
             return JsonResponse({'error', 'Error photo upload'}, status = 500)
 
@@ -909,6 +937,55 @@ class update_amenity_view(View):
         else:
             return JsonResponse({'error': 'Did not recieve Building ID'}, status = 400)
                 
+class upload_certificate_view(View):
+    def post(self, request):
+        try:
+            buildingid = request.POST.get('buildingid')
+            certificate_form = CertificateForm(request.POST, request.FILES)
+            building = Building.objects.get(buildingid = buildingid)
+            if certificate_form.is_valid():
+                print('valid photo form')
+                newcertificate = certificate_form.save(commit=False)
+                newcertificate.save()
+                return JsonResponse({'message': 'Certificate uploaded'}, status = 200)
+            else:
+                print(certificate_form.errors)
+                return JsonResponse({'error': "Form Invalid"}, status = 400)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+        
+class get_certificates_view(View):
+    def get(self, request):
+        try:
+            buildingid = request.GET.get('buildingid', None)
+            if not buildingid or buildingid is None:
+                return JsonResponse({'error': "Incomplete Request"}, status = 400)
+            
+            building = Building.objects.get(buildingid = buildingid)
+            certificates = Certificate.objects.filter(buildingid = building, buildingid__building_owner = request.user)
+            
+            cert_data = [
+                {
+                    'certificate_id': certificate.certificationid,
+                    'image': certificate.image,
+                    'certificate_name': certificate.certificate_name,
+                    'date': certificate.date_uploaded
+                }
+                for certificate in certificates
+            ]
+            response_data = {
+                'certificates': cert_data
+            }
+            return JsonResponse(response_data, status = 200)
+        
+        except Building.DoesNotExist:
+            return JsonResponse({'error': "Building Does Not Exist"}, status = 404)
+        except Certificate.DoesNotExist:
+            return JsonResponse({'error': "Certificate Does Not Exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status = 500)
+
+
 class get_bookmark_status(View):
     def get(self, request):
         building_id = request.GET.get('buildingid', '')
@@ -1244,7 +1321,6 @@ class delete_verification(View):
             return JsonResponse({'error': f'{e}'}, status = 500)
 
 # GET BUILDING INFO FOR DENY
-
 class deny_verification(View):
     def get(self, request):
         verificationid = request.GET.get('verificationid')
@@ -1297,6 +1373,267 @@ class accept_verification(View):
             return JsonResponse({'error': 'Verification Does Not Exist'}, status = 404)
         except Exception as e:
             return JsonResponse({'error': f'{e}'}, status = 500)
+
+#   RESERVATIONS
+class create_reservation(View):
+    def post(self, request):
+        try:
+            roomid = request.POST.get('roomid')
+            if not roomid:
+                messages.error(request, "Error Room")
+                return JsonResponse({"error": "Did not receive Room ID"}, status = 400)
+
+            if isinstance(request.user, ScoutUser):
+                form = ReservationForm(request.POST)
+                if form.is_valid(): 
+                    new_reservation = form.save(commit=False)
+                    new_reservation.userid = request.user
+                    new_reservation.save()
+                    return JsonResponse({'success': "Reservation has been made"}, status = 200)
+            else:
+                messages.error(request, "This user doesn't have permission to make a reservation")
+                return JsonResponse({'error': "User doesn't have permission to make reservation"}, status = 400)
+        except Exception as e:
+            messages.error(request, "Something went wrong with the server")
+            return JsonResponse({'error': f"{e}"})
+
+# GET STATUS OF RESERVATION (FOR BOARDER)        
+class get_reservation_instance(View):
+    def get(self, request):
+        try:
+            roomid = request.GET.get('roomid', None)
+            if not roomid or roomid is None:
+                messages.error(request, "Error Room reservation instance")
+                return JsonResponse({"error": "Did not receive Room ID"}, status = 400)
+            
+            room = Room.objects.get(roomid = roomid)
+
+            reservation = Reservation.objects.filter(
+                roomid = room,
+                userid = request.user,
+                status = 'Pending'
+            )
+
+            if reservation.exists():
+                return JsonResponse({'success': 'True'}, status = 200)
+            else:
+                return JsonResponse({'success': 'False'}, status = 200)
+        
+        except ObjException:
+            return JsonResponse({'success': 'False'}, status = 200)
+        except Reservation.MultipleObjectsReturned:
+            print("Multiple reservations found: Expected only one.")
+            return JsonResponse({'success': 'True'}, status = 200)
+        except Exception:
+            return JsonResponse({'success': "False"}, status = 200)
+
+
+# GET ALL PENDING RESERVATIONS # =============== SAKTO NA DIRI DAPITA
+class get_reservations_pending(View):
+    def get(self, request):
+        try:
+            buildingid = request.GET.get('buildingid', None)
+            status = request.GET.get('statusQ', 'Pending')
+            
+            if not status or status is None:
+                status = 'Pending'
+                
+            print(buildingid)
+            print(status)
+
+            if not buildingid or buildingid is None:
+                building = Building.objects.filter(building_owner = request.user)
+                
+                if building.count() > 1:
+                    return JsonResponse({'success': f"Select Required"}, status = 200)
+                else:
+                    # if only 1 building exist
+                    building = building.first()
+                    reservations = Reservation.objects.filter(
+                                        roomid__building_id = building, 
+                                        status = status
+                                    )
+                    reservation_record = [
+                        {
+                        'reservationid': resv.reservationid,
+                        'room_name': resv.roomid.room_name,
+                        'boarder_name': resv.userid.fullname(),
+                        'boarder_email': resv.userid.email,
+                        'boarder_contact': resv.userid.contact,
+                        'created': resv.created,
+                        }
+                            for resv in reservations
+                    ]
+                    print('result only 1')
+
+            else: # IF THERE IS BUILDINGID FOR FILTER
+                building = Building.objects.get(buildingid = buildingid)
+                reservations = Reservation.objects.filter(
+                                    roomid__building_id = building,
+                                    status = status
+                                )
+                
+                reservation_record = [
+                    {
+                    'reservationid': resv.reservationid,
+                    'room_name': resv.roomid.room_name,
+                    'boarder_name': resv.userid.fullname(),
+                    'boarder_email': resv.userid.email,
+                    'boarder_contact': resv.userid.contact,
+                    'created': resv.created.isoformat(),
+                    }
+                        for resv in reservations
+                ]
+                print('result many')
+            print(reservations)
+            response_data = {
+                'reservations': reservation_record,
+                'reservation_count': len(reservation_record),
+            }
+            return JsonResponse(response_data, status = 200)
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+
+class accept_reservation(View):
+    def post(self, request):
+        try:
+            reservationid = request.POST.get('reservationid')
+            print(reservationid)
+            if not reservationid:
+                return JsonResponse({"error": "Error Reservation"}, status = 404)
+            
+            reservation = Reservation.objects.get(reservationid = reservationid)
+            reservation.status = 'Accepted'
+            reservation.save()
+            return JsonResponse({'success': "Successfully accepted reservations"}, status = 200)
+        
+        except Reservation.DoesNotExist:
+            return JsonResponse({"error": "Reservation Does Not Exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+
+class delete_reservation(View):
+    def post(self, request):
+        try:
+            roomid = request.POST.get('roomid')
+            if not roomid:
+                messages.error(request, "Error Reservation ID")
+                return JsonResponse({"error": "Did not receive Building ID"}, status = 400)
+
+            reservation = Reservation.objects.filter(roomid = roomid, userid = request.user)
+            reservation.delete() 
+            return JsonResponse({'success': "Reservation Canceled"}, status = 200)
+        
+        except Reservation.DoesNotExist:
+            return JsonResponse({'error': "Reservation does not exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+
+# FOR GCASH QR CODE
+class generate_email_data(View):
+    def get(self, request):
+        try:
+            if not request.GET.get('roomid'):
+                return JsonResponse({'error': "Did not receive Room ID"}, status = 405)
+            else:
+                room = Room.objects.get(roomid = request.GET.get('roomid'))
+        
+            # if not request.GET.get('landlordid'):
+            #     return JsonResponse({'error': "Did not receive Landlord ID"}, status = 405)
+            # else:
+            #     landlord = ScoutUser_Landlord.objects.get(userid = request.GET.get('landlordid'))
+
+            public_key = "rentscout_bsit3b2023"
+            template_key = "rentscout_landlord2023"
+            
+            response_data = {
+                'landlord_email': room.building_id.building_owner.email,
+                'to_name': room.building_id.building_owner.fullname,
+                'boarder_name': request.user.get_fullname,
+                'public_key': public_key,
+                'template_key': template_key,
+                'room_name': room.room_name
+            }
+        except:
+            return JsonResponse({'error': "Server Error"}, status = 500)
+        
+        return JsonResponse(response_data, status = 200)
+
+class notify_boarder(View):
+    def get(self, request):
+        try:
+            reservationid = request.GET.get('reservationid', None)
+            if not reservationid or reservationid is None:
+                return JsonResponse({'error': "Error Reservation ID"}, status = 405)
+            
+            reservation = Reservation.objects.get(reservationid = reservationid)
+            public_key = "rentscout_bsit3b2023"
+            template_key = "rentscout_landlord2023"
+            
+            response_data = {
+                'roomid': reservation.roomid.roomid,
+                'buildingid': reservation.roomid.building_id.buildingid,
+                'public_key': public_key,
+                'template_key': template_key,
+                'to_email': reservation.userid.email,
+                'from_email': reservation.roomid.building_id.building_owner.email,
+                'to_name': reservation.userid.fullname(),
+                'message': f'Good day! Your request to "{ reservation.roomid.room_name }" has been accepted. You may now continue with the payment of 20% the original price as your down payment.'
+            }
+            
+            return JsonResponse(response_data, status = 200)
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+        
+        
+class generate_gcash_qr(View):
+    def get(self, request):
+        try:
+            payment_url = "upi://pay?pa=09062989789&pn=RecipientName&am=100.00&cu=INR"
+
+            qr = qrcode.QRCode(version=1, box_size=10, border=5)
+            qr.add_data(payment_url)
+            qr.make(fit=True)
+
+            img = qr.make_image(fill="black", back_color="white")
+            img.save("payment_qr_code.png")
+            return JsonResponse({ 'qrcode': img}, status = 200)
+        
+        except Exception as e:
+            return JsonResponse({'error': f"Couldn't generate qrcode."}, status = 500)
+         
+class generate_otp(View):
+    def get(self, request):
+        try:
+            random_string = ''.join(random.sample(string.ascii_letters + string.digits, 6))
+            public_key = "rentscout_bsit3b2023"
+            template_key = "rentscout_signup2023"
+            response = {
+                'otp': random_string,
+                'mail_keys': {
+                    'public_key': public_key,
+                    'template_key': template_key
+                }
+            }
+            return JsonResponse(response, status = 200)
+
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+        
+# KEYS FOR TEMPLATES USING MAILJS
+class get_mailjs_keys(View):
+    def get(self, request):
+        try: 
+            public_key = "rentscout_bsit3b2023"
+            template_key = "rentscout_signup2023"
+            response_data = {
+                'public_key': public_key,
+                'template_key': template_key
+            }
+
+            return JsonResponse(response_data, status = 200)
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
 
 
 # SCRAPPER

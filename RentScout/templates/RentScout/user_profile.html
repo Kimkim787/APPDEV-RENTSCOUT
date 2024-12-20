@@ -11,6 +11,7 @@
     <h1>PROFILE INFORMATION</h1>
     <form id="user_profile_form" action="{% url 'update_user_profile' %}" method="POST">
         {% csrf_token %}
+        <input type="hidden" name="userid" value="{{ request.user.userid }}">
         <div>
             <label for="firstname">Firstname:</label>
             <input type="text" name="firstname" value="{{ user_data.firstname }}" required>
@@ -57,6 +58,13 @@
             <input type="text" name="contact" value="{{ user_data.contact }}" >
         </div>
         
+        {% if request.user.usertype == 'Landlord' %}
+        <div>
+            <label for="gcash">Gcash Number:</label>
+            <input type="text" name="gcash" value="{{ user_data.gcash }}" >
+        </div>
+        {% endif %}
+
         <input type="submit" value="Save">
     </form>
 </section>

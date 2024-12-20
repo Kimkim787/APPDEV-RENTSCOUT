@@ -13,11 +13,13 @@
 
 /* Upload Demo */
 .uploader {
-  display: block;
+  display: flex;
   clear: both;
   margin: 0 auto;
   width: 100%;
   max-width: 600px;
+  flex-direction: column;
+  align-items: center;
 }
 
 .uploader label {
