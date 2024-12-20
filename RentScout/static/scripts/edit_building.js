@@ -190,6 +190,8 @@ $(document).ready(function(){
         $('#photo_view').toggleClass('hidden');
         $('#room_view').toggleClass('hidden');
         $('#add_room_btn').toggleClass('hidden');
+        $('#upload_room_photo').addClass('hidden');
+        $('#large_image_view').addClass('hidden');
     });    
 
     // UPDATE BILDING GET FUNCTION
@@ -675,6 +677,7 @@ $(document).ready(function(){
                 }
             }
         });
+        $('#edit_room_form').addClass('hidden');
     }
 
     function request_certificates(btn){
@@ -960,39 +963,47 @@ $(document).ready(function(){
                     amenity_container.empty();
                     
                     amenity_container.html(`
-                            <div class="checbox_div">
-                                <input type="checkbox" name="free_wifi" id="free_wifi" ${data.free_wifi ? 'checked' : ''}/>
+                        <div class="all_checkboxes_container">
+                            <div class="checkbox_div2">
                                 <label for="free_wifi">Free Wifi</label>
+                                <input type="checkbox" name="free_wifi" id="free_wifi" ${data.free_wifi ? 'checked' : ''}/>
                             </div>
-                            <div class="checbox_div">
-                                <input type="checkbox" name="shared_kitchen" id="shared_kitchen" ${data.shared_kitchen ? 'checked' : ''}/>
+                            <div class="checkbox_div2">
                                 <label for="shared_kitchen">Shared Kitchen</label>
+                                <input type="checkbox" name="shared_kitchen" id="shared_kitchen" ${data.shared_kitchen ? 'checked' : ''}/>
+                                
                             </div>
-                            <div class="checbox_div">
-                                <input type="checkbox" name="smoke_free" id="smoke_free" ${data.smoke_free ? 'checked' : ''}/>
+                            <div class="checkbox_div2">
                                 <label for="smoke_free">Smoke Free</label>
+                                <input type="checkbox" name="smoke_free" id="smoke_free" ${data.smoke_free ? 'checked' : ''}/>
+                                
                             </div>
-                            <div class="checbox_div">
-                                <input type="checkbox" name="janitor" id="janitor" ${data.janitor ? 'checked' : ''}/>
+                            <div class="checkbox_div2">
                                 <label for="janitor">Janitor</label>
+                                <input type="checkbox" name="janitor" id="janitor" ${data.janitor ? 'checked' : ''}/>
+                                
                             </div>
-                            <div class="checbox_div">
-                                <input type="checkbox" name="guard" id="guard" ${data.guard ? 'checked' : ''}/>
+                            <div class="checkbox_div2">
                                 <label for="guard">Guard</label>
+                                <input type="checkbox" name="guard" id="guard" ${data.guard ? 'checked' : ''}/>
+                                
                             </div>
-                            <div class="checbox_div">
-                                <input type="checkbox" name="waterbill" id="waterbill" ${data.waterbill ? 'checked' : ''}/>
+                            <div class="checkbox_div2">
                                 <label for="waterbill">Water Bill Included</label>
+                                <input type="checkbox" name="waterbill" id="waterbill" ${data.waterbill ? 'checked' : ''}/>
+                                
                             </div>
-                            <div class="checbox_div">
-                                <input type="checkbox" name="electricbill" id="electricbill" ${data.electricbill ? 'checked' : ''}/>
+                            <div class="checkbox_div2">
                                 <label for="electricbill">Electric Bill Included</label>
+                                <input type="checkbox" name="electricbill" id="electricbill" ${data.electricbill ? 'checked' : ''}/>
+                                
                             </div>
-                            <div class="checbox_div">
-                                <input type="checkbox" name="food" id="food" ${data.food ? 'checked' : ''}/>
+                            <div class="checkbox_div2">
                                 <label for="food">Food</label>
+                                <input type="checkbox" name="food" id="food" ${data.food ? 'checked' : ''}/>
+                                
                             </div>
-
+                        </div>
                             <button id="update_amenity_btn" value="${bldg_id}">Update</button>
                     `)
                     amenity_container.removeClass('hidden');
