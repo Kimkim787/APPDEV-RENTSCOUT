@@ -7,13 +7,12 @@ $(document).ready(function(){
 
     // "SEE PHOTOS" BUTTON CLICKED
     $('#rooms_container').on('click', '.photo_btn', function(){
-        let room_id = $(this).closest('.room_item').find('input[class="roomid_holder"]').val();
         $('.form_item').addClass('hidden');
         $('#add_room_btn').addClass('hidden');
         $('#edit_room_form').addClass('hidden');
         show_room_photos($(this));
         $('#upload_room_photo').removeClass('hidden');
-        $('#upload_roomid_holder').val(room_id);
+        
     });
 
     // Image clicked
@@ -56,11 +55,6 @@ $(document).ready(function(){
     $('#add_policy_btn').on('click', function(event){
         event.preventDefault();
         show_newpolicy_form();
-    });
-
-    // CERTIFICATE BUTTON
-    $('#add_certificate_btn').on('click', function(){
-        $('#upload_certificate').removeClass('hidden');
     });
 
     // AMENITIES CREATION BUTTON
@@ -152,8 +146,6 @@ $(document).ready(function(){
             $('#certificate_bar').removeClass('hidden');
             $('#upload_certificate').removeClass('hidden');
             $('#upload_buildingid_holder').val(building_id);
-            request_certificates($(this));
-
             // AMENITIES
         } else if( $(this).val() == 'Amenities'){
             $('#amenities_section').removeClass('hidden');
@@ -190,8 +182,6 @@ $(document).ready(function(){
         $('#photo_view').toggleClass('hidden');
         $('#room_view').toggleClass('hidden');
         $('#add_room_btn').toggleClass('hidden');
-        $('#upload_room_photo').addClass('hidden');
-        $('#large_image_view').addClass('hidden');
     });    
 
     // UPDATE BILDING GET FUNCTION
@@ -439,6 +429,108 @@ $(document).ready(function(){
         }); // ajax
     }
 
+    // UPLOAD PHOTO BTN CLICK
+    $('#upload_room_photo_btn').on('click', function () {
+        // Retrieve room ID from hidden input
+        const roomId = $('#upload_roomid_holder').val();
+        console.log('Room ID:', roomId);
+    
+        // Get file input element
+        const fileInput = document.getElementById('room-photo-upload');
+        if (!fileInput.files || fileInput.files.length === 0) {
+          alert('Please select a file');
+          return;
+        }
+    
+        // Create FormData from the form
+        const formData = new FormData($('#room-photo-upload-form')[0]);
+    
+        // Submit form data using Axios
+        axios
+          .post('/room/photo/upload/', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then(function (response) {
+            alert('Room photo upload successful!');
+            resetFileUploadRoomPhoto();
+          })
+          .catch(function (error) {
+            console.error(error);
+            alert(
+              `Error: ${
+                error.response?.data?.error || 'Room photo upload failed!'
+              }`
+            );
+          });
+      });
+    // $('#upload_room_photo_btn').on('click', function() {
+    //     // Retrieve the value from the hidden room ID input
+    //     let query = $(this).closest('#upload_photo_container').find('#upload_room_holder').val();
+        
+    //     // Get the file input element
+    //     let fileInput = document.getElementById('file-upload');
+        
+    //     // Check if a file is selected
+    //     if (!fileInput.files || fileInput.files.length === 0) {
+    //         alert('Please select a file');
+    //         return;
+    //     }
+    
+    //     // Create FormData object from the form
+    //     let formData = new FormData($('#file-upload-form')[0]);
+    
+    //     // Submit the form data via Axios
+    //     axios.post('/room_photo/upload/as_view', formData, {
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data',
+    //         },
+    //     })
+    //     .then(function(response) {
+    //         alert('Upload successful!');
+    //         show_room_photos(null, query);
+    //         resetFileUpload();
+    //     })
+    //     .catch(function(error) {
+    //         console.error(error);
+    //         alert(`Error: ${error.response.data.error || 'Upload failed!'}`);
+    //     });
+    // });
+    
+    // $('#upload_certificate_btn').on('click', function(){
+    //     // Retrieve the value from the hidden room ID input
+    //     let buildingid = $(this).closest('#upload_certificate_container').find('#upload_buildingid_holder').val();
+    //     console.log(buildingid);
+    //     // Get the file input element
+    //     let fileInput = $('#certificate-upload');
+        
+    //     // Check if a file is selected
+    //     if (!fileInput.files || fileInput.files.length === 0) {
+    //         alert('Please select a file');
+    //         return;
+    //     }
+    
+    //     // Create FormData object from the form
+    //     let formData = new FormData($('#certificate-upload-form')[0]);
+    
+    //     // Submit the form data via Axios
+    //     axios.post('/certificate/upload/', formData, {
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data',
+    //         },
+    //     })
+    //     .then(function(response) {
+    //         alert('Upload successful!');
+    //         // show_room_photos(null, query);
+    //         resetFileUpload2();
+    //     })
+    //     .catch(function(error) {
+    //         console.error(error);
+    //         alert(`Error: ${error.response.data.error || 'Upload failed!'}`);
+    //     });
+    // })
+
     $('#upload_certificate_btn').on('click', function () {
         // Retrieve building ID from hidden input
         const buildingId = $('#upload_buildingid_holder').val();
@@ -453,9 +545,7 @@ $(document).ready(function(){
     
         // Create FormData from the form
         const formData = new FormData($('#certificate-upload-form')[0]);
-        for (const [key, value] of formData.entries()) {
-            console.log(key + ": " + value);
-        }
+    
         // Submit form data using Axios
         axios
           .post('/certificate/upload/', formData, {
@@ -478,43 +568,40 @@ $(document).ready(function(){
     });
 
     $('#upload_room_photo_btn').on('click', function () {
-        // Retrieve room ID from hidden input
-        const roomId = $('#upload_roomid_holder').val();
-        console.log('Room ID:', roomId);
+    // Retrieve room ID from hidden input
+    const roomId = $('#upload_roomid_holder').val();
+    console.log('Room ID:', roomId);
 
-        // Get file input element
-        const fileInput = document.getElementById('room-photo-upload');
-        if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select a file');
-        return;
-        }
+    // Get file input element
+    const fileInput = document.getElementById('room-photo-upload');
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Please select a file');
+      return;
+    }
 
-        // Create FormData from the form
-        const formData = new FormData($('#room-photo-upload-form')[0]);
+    // Create FormData from the form
+    const formData = new FormData($('#room-photo-upload-form')[0]);
 
-        // Submit form data using Axios
-        axios
-        .post('/room_photo/upload/as_view/', formData, {
-            headers: {
-            'Content-Type': 'multipart/form-data',
-            },
-        })
-        .then(function (response) {
-            alert('Room photo upload successful!');
-            show_room_photos(null, roomId);
-            resetFileUploadRoomPhoto();
-
-        })
-        .catch(function (error) {
-            console.error(error);
-            alert(
-            `Error: ${
-                error.response?.data?.error || 'Room photo upload failed!'
-            }`
-            );
-        });
-    });
-
+    // Submit form data using Axios
+    axios
+      .post('/room/photo/upload/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(function (response) {
+        alert('Room photo upload successful!');
+        resetFileUploadRoomPhoto();
+      })
+      .catch(function (error) {
+        console.error(error);
+        alert(
+          `Error: ${
+            error.response?.data?.error || 'Room photo upload failed!'
+          }`
+        );
+      });
+  });
     // DELETE PHOTO_VIEW
     function fn_delete_room_photo(button){
         let query = $(button).siblings('input[name="img_id"]').val();
@@ -677,25 +764,6 @@ $(document).ready(function(){
                 }
             }
         });
-        $('#edit_room_form').addClass('hidden');
-    }
-
-    function request_certificates(btn){
-        const buildingid = $(btn).closest('ul').find('input[class="building_id"]').val();
-        $.ajax({
-            url: '/certificates/get/',
-            type: 'GET',
-            data: {
-                'buildingid': buildingid
-            }, 
-            success: function(response){
-                console.log(response.certificates);
-            }, 
-            error: function(xhr, status, error) {
-                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
-                SoloMessageFlow(`${errorMessage}`, 'error');
-            }
-        })
     }
 
     function show_newpolicy_form(){
@@ -963,47 +1031,39 @@ $(document).ready(function(){
                     amenity_container.empty();
                     
                     amenity_container.html(`
-                        <div class="all_checkboxes_container">
-                            <div class="checkbox_div2">
-                                <label for="free_wifi">Free Wifi</label>
+                            <div class="checbox_div">
                                 <input type="checkbox" name="free_wifi" id="free_wifi" ${data.free_wifi ? 'checked' : ''}/>
+                                <label for="free_wifi">Free Wifi</label>
                             </div>
-                            <div class="checkbox_div2">
-                                <label for="shared_kitchen">Shared Kitchen</label>
+                            <div class="checbox_div">
                                 <input type="checkbox" name="shared_kitchen" id="shared_kitchen" ${data.shared_kitchen ? 'checked' : ''}/>
-                                
+                                <label for="shared_kitchen">Shared Kitchen</label>
                             </div>
-                            <div class="checkbox_div2">
-                                <label for="smoke_free">Smoke Free</label>
+                            <div class="checbox_div">
                                 <input type="checkbox" name="smoke_free" id="smoke_free" ${data.smoke_free ? 'checked' : ''}/>
-                                
+                                <label for="smoke_free">Smoke Free</label>
                             </div>
-                            <div class="checkbox_div2">
-                                <label for="janitor">Janitor</label>
+                            <div class="checbox_div">
                                 <input type="checkbox" name="janitor" id="janitor" ${data.janitor ? 'checked' : ''}/>
-                                
+                                <label for="janitor">Janitor</label>
                             </div>
-                            <div class="checkbox_div2">
-                                <label for="guard">Guard</label>
+                            <div class="checbox_div">
                                 <input type="checkbox" name="guard" id="guard" ${data.guard ? 'checked' : ''}/>
-                                
+                                <label for="guard">Guard</label>
                             </div>
-                            <div class="checkbox_div2">
-                                <label for="waterbill">Water Bill Included</label>
+                            <div class="checbox_div">
                                 <input type="checkbox" name="waterbill" id="waterbill" ${data.waterbill ? 'checked' : ''}/>
-                                
+                                <label for="waterbill">Water Bill Included</label>
                             </div>
-                            <div class="checkbox_div2">
-                                <label for="electricbill">Electric Bill Included</label>
+                            <div class="checbox_div">
                                 <input type="checkbox" name="electricbill" id="electricbill" ${data.electricbill ? 'checked' : ''}/>
-                                
+                                <label for="electricbill">Electric Bill Included</label>
                             </div>
-                            <div class="checkbox_div2">
-                                <label for="food">Food</label>
+                            <div class="checbox_div">
                                 <input type="checkbox" name="food" id="food" ${data.food ? 'checked' : ''}/>
-                                
+                                <label for="food">Food</label>
                             </div>
-                        </div>
+
                             <button id="update_amenity_btn" value="${bldg_id}">Update</button>
                     `)
                     amenity_container.removeClass('hidden');
@@ -1143,3 +1203,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+
+// Handle form submission
+$(document).ready(function () {
+  $('#upload_room_photo_btn').on('click', function () {
+    // Retrieve room ID from hidden input
+    const roomId = $('#upload_room_holder').val();
+    console.log('Room ID:', roomId);
+
+    // Get file input element
+    const fileInput = document.getElementById('certificate-upload');
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Please select a file');
+      return;
+    }
+
+    // Create FormData from the form
+    const formData = new FormData($('#file-upload-form')[0]);
+
+    // Submit form data using Axios
+    axios
+      .post('/photo/upload/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(function (response) {
+        alert('Upload successful!');
+        resetFileUpload2();
+      })
+      .catch(function (error) {
+        console.error(error);
+        alert(`Error: ${error.response?.data?.error || 'Upload failed!'}`);
+      });
+  });
+});

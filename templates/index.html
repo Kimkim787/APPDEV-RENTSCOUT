@@ -28,36 +28,46 @@
             <li>
                 <a href="{% url 'home' %}">Home</a>
             </li>
-            {% comment %} <li>
-                <a href="{% url 'building_scrapper' %}">Building Scrapper</a>
-            </li> {% endcomment %}
-            <li>
-                <a href="{% url 'user_profile' %}">Profile</a>
-            </li>
+            {% comment %} 
+                <li>
+                    <a href="{% url 'building_scrapper' %}">Building Scrapper</a>
+                </li> 
+            {% endcomment %}
+
+            {% if not request.user.is_superuser %}
+                <li>
+                    <a href="{% url 'user_profile' %}">Profile</a>
+                </li>
+            {% endif %}
+                        
+            {% if not request.user.is_staff%}
+                <li>
+                    <a href="{% url 'bookmark_page' %}">My Bookmarks</a>
+                </li>
+            {% endif %}
 
             {% if request.user.usertype == 'Landlord' %}
-            <li>
-                <a href="{% url 'edit_building' %}">Building</a>
-            </li>
-            {% endif %}
-            
-            {% if not request.user.is_staff%}
-            <li>
-                <a href="{% url 'bookmark_page' %}">My Bookmarks</a>
-            </li>
+                <li>
+                    <a href="{% url 'edit_building' %}">Building</a>
+                </li>
+                <li>
+                    <a href="{% url 'reservations' %}">Reservations</a>
+                </li>
             {% endif %}
 
-            {% comment %} <li>
-                <a href="{% url 'new_building' %}">Create Building</a>
-            </li> {% endcomment %}
+            {% comment %} 
+                <li>
+                    <a href="{% url 'new_building' %}">Create Building</a>
+                </li> 
+            {% endcomment %}
 
             {% if request.user.is_staff %}
-            <li>
-                <a href="{% url 'reports_page' %}">Reports</a>
-            </li>
-            <li>
-                <a href="{% url 'verification_page' %}">Verifications</a>
-            </li>
+                <li>
+                    <a href="{% url 'reports_page' %}">Reports</a>
+                </li>
+                <li>
+                    <a href="{% url 'verification_page' %}">Verifications</a>
+                </li>
             {% endif %}
             <!-- <li>
                 <a href="https://www.google.com/maps/search/?api=1" target="_blank">

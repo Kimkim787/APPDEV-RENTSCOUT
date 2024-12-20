@@ -1,0 +1,37 @@
+{% extends 'index.html' %}
+
+{% block stylecontent %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/reservations.css' %}">
+{% endblock stylecontent %}
+
+
+{% block bodycontent %}
+<section>
+    {% csrf_token %}
+    <ul id="buildings_container">
+        {% for building in buildings %}
+            <li class="building_items" value="{{ building.buildingid }}">
+                {{ building.building_name }} ({{ building.reservation_count }})
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <div id="display_container">
+        <div id="filter_container">
+            <button id="res_pending">Pending</button>
+            <button id="res_accepted">Accepted</button>
+            <!-- <button id="res_declined">Declined</button> -->
+        </div>
+        <ul id="reservation_lists" class="hidden">
+            
+        </ul>
+        <h3 id="select_notice" class="hidden">Please Select a Building</h3>
+        <h3 id="empty_notice" class="hidden">No Reservations Found</h3>
+    </div>
+</section>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    <script src="{% static 'scripts/reservations.js' %}"></script>
+{% endblock %}

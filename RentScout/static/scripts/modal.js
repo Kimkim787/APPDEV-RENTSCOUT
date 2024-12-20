@@ -65,12 +65,12 @@ $(document).ready(function(){
     // })
 });    
 
-document.getElementById('add_new_room_btn').addEventListener('click', function() {
-    document.querySelector('.modal').classList.remove('hidden');
-});
+// document.getElementById('add_new_room_btn').addEventListener('click', function() {
+//     document.querySelector('.modal').classList.remove('hidden');
+// });
 
-document.getElementById('addroombackbtn').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.querySelector('.modal').classList.add('hidden');
-});
+// document.getElementById('addroombackbtn').addEventListener('click', function(e) {
+//     e.preventDefault();
+//     document.querySelector('.modal').classList.add('hidden');
+// });
 

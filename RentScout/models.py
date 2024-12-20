@@ -67,6 +67,10 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
     def fullname(self):
         return f'{self.firstname} {self.lastname}'
     
+    @property
+    def get_fullname(self):
+        return f"{self.firstname} {self.lastname}"
+
     usertype = models.CharField(max_length = 10, default="Boarder", null=False, blank=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -115,6 +119,8 @@ class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
     contact = models.CharField(max_length = 15, default="", null=True)
     
     usertype = models.CharField(max_length = 10, default="Landlord", null=False, blank=False)
+    gcash = models.CharField(max_length = 15, default="", null=True, blank = True)
+    
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -152,6 +158,7 @@ class Building(models.Model):
     buildingid = models.AutoField(primary_key=True)
     building_owner = models.ForeignKey(ScoutUser_Landlord, on_delete = models.CASCADE, null=False, blank=False)
     building_name = models.CharField(max_length = 250, default="")
+    price = models.PositiveIntegerField(default=100)
     zip_code = models.PositiveIntegerField(default=0, null=True, blank=True)
     street = models.CharField(max_length=75, blank=True, null=True)
     city = models.CharField(max_length=75, default="None")
@@ -162,7 +169,7 @@ class Building(models.Model):
     coordinates = models.CharField(max_length = 255, blank = False, null = False, default = "")
     building_image = models.FileField(upload_to = 'upload/building_imgs', blank = True, null = True)
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, null=True, blank=True)
-
+    gcash_qr = models.FileField(upload_to = 'upload/building_imgs/gcash', blank = True, null = True)
     def complete_address(self):
         return f"{self.zip_code}, {self.street}, {self.province}, {self.city}, {self.country}"
 
@@ -189,12 +196,11 @@ class Highlights(models.Model):
 
 class Room(models.Model):
     roomid = models.AutoField(primary_key=True)
-    building_id = models.ForeignKey(Building, on_delete=models.CASCADE)
+    building_id = models.ForeignKey(Building, related_name = "room_of_building", on_delete=models.CASCADE)
     room_name = models.CharField(max_length=250)
-    person_free = models.IntegerField(validators = [ MinValueValidator(1)])
+    person_free = models.IntegerField(validators = [ MinValueValidator(0)])
     current_male = models.IntegerField(default=0)
     current_female = models.IntegerField(default=0)
-    price = models.PositiveIntegerField(default=100)
     # --------------FURNITURES------------------
     room_size = models.CharField(max_length = 20) # get l&w then concat
     shower = models.BooleanField(default=False)
@@ -281,3 +287,30 @@ class Verification(models.Model):
 
     # REASON FOR DENYING THE VERIFICATION
     deny_reason = models.TextField(null=True, blank=True)
+
+class Reservation(models.Model):
+    ACCEPTED = 'Accepted'
+    PENDING = 'Pending'
+    DECLINED = 'Declined'
+    status_choices = [
+        (PENDING, 'Pending'),
+        (ACCEPTED, 'Accepted'),
+        (DECLINED, 'Declined'),
+    ]
+
+    reservationid = models.AutoField(primary_key = True)
+    roomid = models.ForeignKey(Room, related_name = 'reserved_room', on_delete = models.CASCADE, null = False, default=1)
+    userid = models.ForeignKey(ScoutUser, related_name = 'reservation_customer', on_delete=models.CASCADE, null = False)
+    status = models.CharField(max_length = 10, choices = status_choices, default = PENDING, null = False, blank = False)
+    created = models.DateTimeField(default=timezone.now)
+    last_updated = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        ordering = ['-created', '-last_updated']
+
+class Certificate(models.Model):
+    certificationid = models.AutoField(primary_key = True)
+    buildingid = models.ForeignKey(Building, related_name = 'certification', on_delete = models.CASCADE)
+    certificate_name = models.CharField(max_length = 100, null=False, blank=False, default="Certificate")
+    image = models.FileField(upload_to = 'upload/building_imgs/certifications')
+    date_uploaded = models.DateTimeField(auto_now_add = True)

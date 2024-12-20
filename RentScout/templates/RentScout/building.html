@@ -8,6 +8,8 @@
 {% endblock stylecontent %}
 {% block bodycontent %} 
     <section class="buildingbody">
+        <input type="hidden" id="buildingid" name="public_buildingid" value="{{ building.buildingid }}">
+        <input type="hidden" id="roomid" name="active_roomid">
         <div class="scrollpage">
             {% comment %} VIEW ROOM PHOTOS Modal {% endcomment %}
             <div id="view_photo_modal" >
@@ -52,7 +54,6 @@
                     <h3>Room</h3>
                     <article>
                         <p>{{ room.room_name }}</p>
-                        <p>Price: {{ room.price }}</p>
                     </article>
                     {% if building.building_owner == request.user %}
                     <a href="{% url 'edit_photo' room.roomid %}">Edit photos</a>
@@ -220,10 +221,10 @@
                             <label for="current_female">Female resident:</label>
                             <input type="text" name="{{ roomform.current_female.name }}" />
                         </div>
-                        <div>
+                        <!-- <div>
                             <label for="price">Price:</label>
                             <input type="text" name="{{ roomform.price.name }}" />
-                        </div>
+                        </div> -->
                         <div>
                             <label for="room_size">Room Size:</label>
                             <input type="text" name="{{ roomform.room_size.name }}" />
@@ -288,8 +289,8 @@
                     <label for="current_female">Female resident:</label>
                     <input type="text" name="{{ roomform.current_female.name }}" />
         
-                    <label for="price">Price:</label>
-                    <input type="text" name="{{ roomform.price.name }}" />
+                    <!-- <label for="price">Price:</label>
+                    <input type="text" name="{{ roomform.price.name }}" /> -->
         
                     <label for="room_size">Room Size:</label>
                     <input type="text" name="{{ roomform.room_size.name }}" />
@@ -373,10 +374,27 @@
                     
                     <a href="{% url 'update_building' building.buildingid %}">Update</a>
                 {% endif %}
+
+                {% if request.user.usertype == 'Boarder' %}
+                    <div id="online_transaction_container" class="hidden">
+                        <input type="hidden" name="roomid" id="roomidholder">
+                        
+                        <div id="qr_container" class="hidden">
+                            <button id="generate_qr">Generate QR Code</button>
+                        </div>
+
+                        <div id="reservation_container">
+                            <p id="waiting" class="hidden">Please Wait...</p>
+                            <button id="request_reservation"  class="hidden">Request Reservation</button>
+                            <button id="cancel_request_reservation" class="hidden">Cancel Reservation</button>
+                        </div>
+                    </div>
+                {% endif %}
+
             </div>
             <div class="roomsbox">
                 <h3>ROOMS</h3>
-                <div>
+                <div id="roombox_item_container">
                     {% for room in rooms %}
                     <p class="view_photo_btn" id="{{ room.roomid }}">{{ room.room_name }}</p>
                     {% endfor %}
@@ -386,6 +404,9 @@
 
         <script src="{% static 'scripts/modal.js' %}?100"></script>
     </section>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
     <script type="text/javascript">
         const noImagePath = "{% static 'imgs/building/no_image.jpg' %}"
     </script>

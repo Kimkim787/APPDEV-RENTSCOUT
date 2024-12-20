@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserChangeForm, UserCreationForm, Authenti
 from .models import ( ScoutUser, ScoutUser_Landlord, Building, Highlights, 
                      Policies, Room, Feedback, RoomImage, 
                      ScoutUserBookmark, LandlordUserBookmark, BuildingReport,
-                     Verification,
+                     Verification, Reservation, Certificate, 
                     )
 
 
@@ -75,12 +75,13 @@ class LandlordUserProfileForm(UserChangeForm):
         model = ScoutUser_Landlord
         fields = ('firstname', 'lastname', 'middlename',
                   'birthdate', 'gender', 'barangay', 
-                  'province', 'city', 'contact',)
+                  'province', 'city', 'contact', 'gcash', )
 
     barangay = forms.CharField(required=False)
     province = forms.CharField(required=False)
     city = forms.CharField(required=False)
     contact = forms.CharField(required=False)
+    gcash = forms.CharField(required = False)
 
 class UserLoginForm(AuthenticationForm):
     pass 
@@ -150,6 +151,17 @@ class VerificationForm(ModelForm):
         model = Verification
         fields = ('buildingid', )
 
+class ReservationForm(ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ('roomid', )
+
+class CertificateForm(ModelForm):
+    class Meta:
+        model = Certificate
+        fields = ('buildingid', 'certificate_name', 'image')
+
+
 # trash
 class ScrapperFile(forms.Form):
     file = forms.FileField()
@@ -158,7 +170,6 @@ class BuildingScrapper(ModelForm):
     class Meta:
         model = Building
         exclude = ('buildingid', 'building_owner')
-
 
     # def clean_file(self):
     #     uploaded_file = self.cleaned_data.get('file')

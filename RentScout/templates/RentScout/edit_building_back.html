@@ -167,38 +167,70 @@
             <div id="upload_room_photo" class="form_item hidden">
                 <h1>Upload Room Photo</h1>
                 <div id="upload_room_photo_container">
-                    <form action="" method="POST" id="room-photo-upload-form" class="uploader" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <!-- Hidden input for room ID -->
-                        <input type="hidden" id="upload_roomid_holder" name="{{ photoform.roomid.name }}" value="" />
-                        
-                        <!-- File input -->
-                        <input id="room-photo-upload" type="file" name="{{ photoform.room_img.name }}" accept="image/*" value="" />
-                        
-                        <label for="room-photo-upload" id="room-file-drag">
-                            <img id="room-image-preview" src="#" alt="Preview" class="hidden" />
-                            
-                            <div id="room-start">
-                                <i class="fa fa-download" aria-hidden="true"></i>
-                                <div>Select a file or drag here</div>
-                                <div id="room-notimage" class="hidden">Please select an image</div>
-                                <span id="room-file-upload-btn" class="btn btn-primary">Select a file</span>
-                            </div>
-                            
-                            <div id="room-response" class="hidden">
-                                <div id="room-messages"></div>
-                                <progress class="progress" id="room-file-progress" value="0">
-                                    <span>0</span>%
-                                </progress>
-                            </div>
-                        </label>
-                        
-                        <input id="upload_room_photo_btn" type="button" value="Submit" />
-                    </form>
+                  <form
+                    action=""
+                    method="POST"
+                    id="room-photo-upload-form"
+                    class="uploader"
+                    enctype="multipart/form-data"
+                  >
+                    {% csrf_token %}
+                    <!-- Hidden input for room ID -->
+                    <input
+                      type="hidden"
+                      id="upload_roomid_holder"
+                      name="{{ photoform.roomid.name }}"
+                      value=""
+                    />
+              
+                    <!-- File input -->
+                    <input
+                      id="room-photo-upload"
+                      type="file"
+                      name="{{ photoform.room_img.name }}"
+                      accept="image/*"
+                      value=""
+                    />
+                    <label for="room-photo-upload" id="room-file-drag">
+                      <img
+                        id="room-image-preview"
+                        src="#"
+                        alt="Preview"
+                        class="hidden"
+                      />
+              
+                      <div id="room-start">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                        <div>Select a file or drag here</div>
+                        <div id="room-notimage" class="hidden">Please select an image</div>
+                        <span
+                          id="room-file-upload-btn"
+                          class="btn btn-primary"
+                        >
+                          Select a file
+                        </span>
+                      </div>
+              
+                      <div id="room-response" class="hidden">
+                        <div id="room-messages"></div>
+                        <progress
+                          class="progress"
+                          id="room-file-progress"
+                          value="0"
+                        >
+                          <span>0</span>%
+                        </progress>
+                      </div>
+                    </label>
+                    <input
+                      id="upload_room_photo_btn"
+                      type="button"
+                      value="Submit"
+                    />
+                  </form>
                 </div>
             </div>
-                          
+              
             <div id="edit_room_form" class="form_item hidden">
                 <h1>EDIT ROOM FORM</h1>
                 <div id="edit_room_form_container">
@@ -341,40 +373,67 @@
 
             <div id="upload_certificate" class="form_item hidden">
                 <div id="upload_certificate_container">
-                    <form action="" method="POST" id="certificate-upload-form" class="uploader" enctype="multipart/form-data">
-                        {% csrf_token %}
-                    
-                        <!-- Hidden input for building ID -->
-                        <input type="hidden" id="upload_buildingid_holder" name="{{ certificate_form.buildingid.name }}" value="" />
-                    
-                        <!-- File input -->
-                        <h1>Upload Certificate</h1>
-                        <label for="certificate_name">Certificate Name:
-                            <input type="text" name="{{ certificate_form.certificate_name.name }}" required>
-                        </label>
-                        
-                        <input id="certificate-upload" type="file" name="{{ certificate_form.image.name }}" accept="image/*" value="" />
-                        
-                        <label for="certificate-upload" id="file-drag2">
-                            <img id="certificate-image" src="#" alt="Preview" class="hidden" />
-                    
-                            <div id="start2">
-                                <i class="fa fa-download" aria-hidden="true"></i>
-                                <div>Select a file or drag here</div>
-                                <div id="notimage2" class="hidden">Please select an image</div>
-                                <span id="certificate-upload-btn" class="btn btn-primary">Select a file</span>
-                            </div>
-                    
-                            <div id="response2" class="hidden">
-                                <div id="messages2"></div>
-                                <progress class="progress" id="file-progress2" value="0">
-                                    <span>0</span>%
-                                </progress>
-                            </div>
-                        </label>
-                    
-                        <input id="upload_certificate_btn" type="button" value="Submit" />
-                    </form>
+                <form
+                    action=""
+                    method="POST"
+                    id="certificate-upload-form"
+                    class="uploader"
+                    enctype="multipart/form-data"
+                >
+                    {% csrf_token %}
+                    <!-- Hidden input for building ID -->
+                    <input
+                    type="hidden"
+                    id="upload_buildingid_holder"
+                    name="{{ certificate_form.buildingid.name }}"
+                    value=""
+                    />
+            
+                    <!-- File input -->
+                    <input
+                    id="certificate-upload"
+                    type="file"
+                    name="{{ certificate_form.image.name }}"
+                    accept="image/*"
+                    value=""
+                    />
+                    <label for="certificate-upload" id="file-drag2">
+                    <img
+                        id="certificate-image"
+                        src="#"
+                        alt="Preview"
+                        class="hidden"
+                    />
+            
+                    <div id="start2">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                        <div>Select a file or drag here</div>
+                        <div id="notimage2" class="hidden">Please select an image</div>
+                        <span
+                        id="certificate-upload-btn"
+                        class="btn btn-primary"
+                        >
+                        Select a file
+                        </span>
+                    </div>
+            
+                    <div id="response2" class="hidden">
+                        <div id="messages2"></div>
+                        <progress
+                        class="progress"
+                        id="file-progress2"
+                        value="0"
+                        >
+                        <span>0</span>%
+                        </progress>
+                    </div>
+                    </label>
+                    <input
+                    id="upload_certificate_btn"
+                    type="button"
+                    value="Submit"
+                    />
+                </form>
                 </div>
             </div>
   
