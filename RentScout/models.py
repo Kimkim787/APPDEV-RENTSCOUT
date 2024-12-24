@@ -63,7 +63,8 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
     province = models.CharField(max_length = 50, default = "", null=True)
     city = models.CharField(max_length = 50, default = "", null=True)
     contact = models.CharField(max_length = 15, default="", null=True)
-    
+    profile_image = models.FileField(upload_to='upload/user_profiles', default = 'upload/user_profiles/user.png', null=True, blank=True)
+
     def fullname(self):
         return f'{self.firstname} {self.lastname}'
     
@@ -117,7 +118,8 @@ class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
     province = models.CharField(max_length = 50, default = "", null=True)
     city = models.CharField(max_length = 50, default = "", null=True)
     contact = models.CharField(max_length = 15, default="", null=True)
-    
+    profile_image = models.FileField(upload_to='upload/user_profiles', default = 'upload/user_profiles/user.png', null=True, blank=True)
+
     usertype = models.CharField(max_length = 10, default="Landlord", null=False, blank=False)
     gcash = models.CharField(max_length = 15, default="", null=True, blank = True)
     
@@ -150,8 +152,11 @@ class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-    @property
     def fullname(self):
+        return f'{self.firstname} {self.lastname}'
+
+    @property
+    def get_fullname(self):
         return f"{self.firstname} {self.lastname}"
     
 class Building(models.Model):
@@ -170,6 +175,8 @@ class Building(models.Model):
     building_image = models.FileField(upload_to = 'upload/building_imgs', blank = True, null = True)
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, null=True, blank=True)
     gcash_qr = models.FileField(upload_to = 'upload/building_imgs/gcash', blank = True, null = True)
+    
+    
     def complete_address(self):
         return f"{self.zip_code}, {self.street}, {self.province}, {self.city}, {self.country}"
 
@@ -314,3 +321,35 @@ class Certificate(models.Model):
     certificate_name = models.CharField(max_length = 100, null=False, blank=False, default="Certificate")
     image = models.FileField(upload_to = 'upload/building_imgs/certifications')
     date_uploaded = models.DateTimeField(auto_now_add = True)
+
+class Message(models.Model):
+    BOARDER = 'Boarder'
+    LANDLORD = 'Landlord'
+    sender_choices = [
+        (LANDLORD, 'Landlord'),
+        (BOARDER, 'Boarder')
+    ]
+    messageid = models.AutoField(primary_key = True)
+    sender = models.CharField(max_length = 10, choices = sender_choices, null=False, blank=True, default="Boarder")
+    message = models.TextField(blank=True, null=True, default="")
+    image = models.FileField(upload_to = 'upload/message', blank = True, null = True)
+    boarder = models.ForeignKey(ScoutUser, related_name = 'customer_message', on_delete=models.CASCADE)
+    landlord = models.ForeignKey(ScoutUser_Landlord, related_name = 'landlord_message', on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add = True)
+
+    class Meta:
+        ordering = ['date_created']
+
+class BoarderNotification(models.Model):
+    notificationid = models.AutoField(primary_key = True)
+    buildingid = models.ForeignKey(Building, related_name='boarder_notify_content', on_delete = models.CASCADE)
+    boarder = models.ForeignKey(ScoutUser, related_name = 'boarder_notify_recepient', on_delete = models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add = True)
+    status = models.BooleanField(default=False)
+
+class LandlordNotification(models.Model):
+    notificationid = models.AutoField(primary_key = True)
+    buildingid = models.ForeignKey(Building, related_name='landlord_notify_content', on_delete = models.CASCADE)
+    landlord = models.ForeignKey(ScoutUser_Landlord, related_name = 'landlord_notify_recepient', on_delete = models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add = True)
+    status = models.BooleanField(default=False)

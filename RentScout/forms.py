@@ -5,7 +5,8 @@ from django.contrib.auth.forms import UserChangeForm, UserCreationForm, Authenti
 from .models import ( ScoutUser, ScoutUser_Landlord, Building, Highlights, 
                      Policies, Room, Feedback, RoomImage, 
                      ScoutUserBookmark, LandlordUserBookmark, BuildingReport,
-                     Verification, Reservation, Certificate, 
+                     Verification, Reservation, Certificate, Message, BoarderNotification,
+                     LandlordNotification, 
                     )
 
 
@@ -161,6 +162,20 @@ class CertificateForm(ModelForm):
         model = Certificate
         fields = ('buildingid', 'certificate_name', 'image')
 
+# class MessageForm(ModelForm):
+#     class Meta:
+#         model = Message
+#         fields = ('message', )
+
+class BoarderNotificationForm(ModelForm):
+    class Meta:
+        model = BoarderNotification
+        fields = ('buildingid', 'boarder')
+
+class LandlordNotificationForm(ModelForm):
+    class Meta:
+        model = LandlordNotification
+        fields = ('buildingid', 'landlord')
 
 # trash
 class ScrapperFile(forms.Form):

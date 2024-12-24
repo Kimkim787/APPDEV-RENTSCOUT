@@ -24,6 +24,9 @@ $(document).ready(function(){
 
   $('#reservation_lists').on('click', '.accept_btns', accept_reservation);
 
+  $('#reservation_lists').on('click', '.decline_btns', decline_reservation);
+
+  $('#reservation_lists').on('click', '.delete_btns', delete_reservation_byid);
 
   function request_reservations(buildingid=null, statusQ = null){
     $('#select_notice').addClass('hidden');
@@ -69,24 +72,32 @@ $(document).ready(function(){
               text: `${item.room_name}`
             })
 
-            let accept_btn = $('<button></button>', {
-              class: 'accept_btns',
+            if(statusQ == 'Accepted'){
+              let accept_btn = $('<button></button>', {
+                class: 'accept_btns',
+                value: `${item.reservationid}`,
+                text: 'Accept'
+              })
+            }
+
+            console.log(statusQ)
+            let decline_btn = $('<button></button>', {
               value: `${item.reservationid}`,
-              text: 'Accept'
             })
 
-            let decline_btn = $('<button></button>', {
-              class: 'decline_btns',
-              value: `${item.reservationid}`,
-              text: 'Decline'
-            })
+            if (statusQ == 'Declined') {
+              decline_btn.addClass('delete_btns').text('Delete');
+            } else {
+              decline_btn.addClass('decline_btns').text('Decline');
+            }
+            
 
             li.append(name);
             li.append(date_requested);
             li.append(room);
-            li.append(accept_btn);
+            statusQ == 'Accepted' && li.append(accept_btn);
             li.append(decline_btn);
-
+            
             $('#reservation_lists').append(li);
 
           })
@@ -139,7 +150,7 @@ $(document).ready(function(){
             SoloMessageFlow('Failed to send email. Something\'s wrong with the server.', 'error')
           }
           );      
-
+        
       },
       error: function(xhr, status, error) {
         let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
@@ -178,16 +189,16 @@ $(document).ready(function(){
     })
   }
 
-  function delete_reservation(){
+  function decline_reservation(){
     $.ajax({
-      url: '',
+      url: '/reservations/decline/',
       type: 'POST',
       data: {
         'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
         'reservationid': $(this).attr('value')
       },
       success: function(response){
-
+        SoloMessageFlow(response.success);
       },
       error: function(xhr, status, error) {
         let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
@@ -195,5 +206,43 @@ $(document).ready(function(){
       }
     })
   }
+
+  function decline_reservation(){
+    $.ajax({
+      url: '/reservations/decline/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+        'reservationid': $(this).attr('value')
+      },
+      success: function(response){
+        SoloMessageFlow(response.success);
+      },
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+      }
+    })
+  }
+
+  function delete_reservation_byid(){
+    $.ajax({
+      url: '/reservations/delete_byid/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+        'reservationid': $(this).attr('value')
+      },
+      success: function(response){
+        SoloMessageFlow(response.success);
+      },
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+      }
+    })
+  }
+
+  
   // function request_building_reservations(build)
 })

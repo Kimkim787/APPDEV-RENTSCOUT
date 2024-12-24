@@ -102,9 +102,68 @@
             {% else %}
                 <p class="message error_message">{{ message }}</p>
             {% endif %}
+            <p class="message error_message">SAMPLE SAMPLE SAMPLE</p>
         {% endfor %}
     </div>
 
+    <div id="messaging_container">
+
+        <!-- INBOX MESSAGING -->
+        <div id="inbox" class="hidden">
+            <div id="inbox_head">
+                <h4>Message Inbox</h4>
+                <button id="message_close_btn">X</button>
+            </div>
+            <ul id="inbox_container">
+
+            </ul>
+        </div>
+
+        <!-- MESSAGE CONVERSATION -->
+        <div id="message_convo" class="hidden">
+            <input type="hidden" name="userid" id="receiverid">
+            <div id="convo_head">
+                <img src="{% static 'imgs/boy.png' %}" alt="User Image" id="user_image">
+                <h4>Username</h4>
+                <img src="{% static 'imgs/return.png' %}" alt="back_btn" id="message_back_btn">
+            </div>
+
+            <div id="convo_body">
+                <!-- <p id="view_more_message" value="1">View More Message</p> -->
+                <ul id="convo_list">
+
+                </ul>
+                <div id="image_preview_container"></div>
+            </div>
+
+            <div id="convo_footer">
+                <img src="{% static 'imgs/megaphone.png' %}" alt="megaphone" title="Notify Landlord">
+                <!-- <input type="file" name="image" class="hidden" id="attach_input"> -->
+                <input type="file" name="images" class="hidden" id="attach_input" accept="image/*" multiple>
+                <label for="image" id="label_holder">
+                    <img src="{% static 'imgs/photo.png' %}" alt="Upload Photo" title="Upload Photo" id="attach_photo">
+                </label>
+                
+                
+                <div id="send_convo_form">
+                    {% csrf_token %}
+                    <textarea name="message" id="chat_message" cols="30" rows="10" placeholder="Enter Chat Here"></textarea>
+                    <button id="send_convo_btn">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHAT HEAD KUNUHAY -->
+        <div id="bubble">
+            <img id="message-bubble" src="{% static 'imgs/mail.png' %}" alt="Mail Image">
+        </div>
+    </div>
+
     <script src="{% static 'scripts/index.js' %}"></script>
+    <script src="{% static 'scripts/messaging.js' %}"></script>
+
+    {% block last_scripts %}
+
+    {% endblock last_scripts %}
 </body>
 </html>

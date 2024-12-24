@@ -11,7 +11,9 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     generate_gcash_qr, generate_email_data, generate_otp, get_mailjs_keys,
                     create_reservation, get_reservation_instance, delete_reservation,
                     get_reservations_pending, accept_reservation, notify_boarder,
-                    upload_certificate_view, get_certificates_view
+                    upload_certificate_view, get_certificates_view, decline_reservation,
+                    delete_reservation_byid, get_messages, request_userid, request_building_userid,
+                    create_message, get_inbox,
                     
                     )
 from . import views
@@ -49,6 +51,8 @@ urlpatterns = [
     path('reservations/get/pending/reservations/', get_reservations_pending.as_view()),
     path('reservations/accept/', accept_reservation.as_view()),
     path('reservations/get/mailjs_keys/', notify_boarder.as_view()),
+    path('reservations/decline/', decline_reservation.as_view()),
+    path('reservations/delete_byid/', delete_reservation_byid.as_view()),
 
     # FEEDBACK
     path('building/feedback/', views.create_feedback, name='newfeedback'),
@@ -114,6 +118,13 @@ urlpatterns = [
     # CERTIFICATES
     path('certificate/upload/', upload_certificate_view.as_view()),
     path('certificates/get/', get_certificates_view.as_view()),
+
+    # MESSAGES
+    path('inbox/get_inbox/', get_inbox.as_view()),
+    path('messages/building/get_owner_id/', request_building_userid.as_view()),
+    path('messages/get_user/', request_userid.as_view()),
+    path('messages/request/', get_messages.as_view()),
+    path('messages/send_message/', create_message.as_view()),
 
     # SCRAPPERS
     path('scrapper/building/', views.building_file_scrapper, name='building_scrapper'),

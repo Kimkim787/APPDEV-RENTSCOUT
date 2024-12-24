@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
                      ScoutUserBookmark, LandlordUserBookmark, AdminUser, BuildingReport,
-                     Verification, Reservation, Certificate, 
+                     Verification, Reservation, Certificate, Message
                     )
 
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist as ObjException
 
 from django.views import View
-from django.db.models import Q, Count, Case, When, Value, IntegerField
+from django.db.models import Q, Count, Case, When, Value, IntegerField, OuterRef, Subquery
 from django.http import JsonResponse
 from django.contrib import messages
 from django.template.loader import render_to_string
@@ -25,6 +25,9 @@ from django.template.loader import render_to_string
 
 import logging, math, csv, qrcode, random, string
 from django.core.paginator import Paginator
+from django.utils import timezone
+from datetime import datetime, timedelta
+
 logger = logging.getLogger(__name__)
 
 def get_user_backend(user):
@@ -49,6 +52,11 @@ def scoutuser_signup(request):
 
                 if form.is_valid():
                     user = form.save()
+                    if user.gender == "Female":
+                        user.profile_image = 'girl.png'
+                    else:
+                        user.profile_image = 'boy.png'
+                        
                     backend = get_user_backend(user)
                     login(request, user, backend)
                     return redirect('home')
@@ -61,6 +69,11 @@ def scoutuser_signup(request):
 
                 if form.is_valid():
                     user = form.save()
+                    if user.gender == "Female":
+                        user.profile_image = 'girl.png'
+                    else:
+                        user.profile_image = 'boy.png'
+
                     backend = get_user_backend(user)
                     login(request, user, backend)
                     return redirect('home')
@@ -1220,6 +1233,11 @@ class delete_building_report(View):
         except Exception as e:
             return JsonResponse({'error': f'{e}'}, status = 500)
     
+# class create_boarder_notification(View):
+#     def post(self, request):
+        
+
+
 
 # GETS ALL VERIFICATIONS FOR ADMIN
 class get_verification_requests(View):
@@ -1409,15 +1427,33 @@ class get_reservation_instance(View):
             room = Room.objects.get(roomid = roomid)
 
             reservation = Reservation.objects.filter(
+                Q(status = "Pending") | 
+                Q(status = "Accepted"),
                 roomid = room,
                 userid = request.user,
-                status = 'Pending'
+            ).order_by(
+                Case(
+                    When(status="Accepted", then=Value(1)),
+                    When(status="Pending", then=Value(2)),
+                    default=Value(3),
+                    output_field=IntegerField(),
+                )
             )
 
+            first_reservation = reservation.first()
+            
             if reservation.exists():
-                return JsonResponse({'success': 'True'}, status = 200)
+                response_data = {
+                    'success': bool(first_reservation),
+                    'status': first_reservation.status
+                }
+                return JsonResponse(response_data, status = 200)
             else:
-                return JsonResponse({'success': 'False'}, status = 200)
+                response_data = {
+                    'success': 'False',
+                }
+                print(response_data)
+                return JsonResponse(response_data, status = 200)
         
         except ObjException:
             return JsonResponse({'success': 'False'}, status = 200)
@@ -1457,7 +1493,7 @@ class get_reservations_pending(View):
                         {
                         'reservationid': resv.reservationid,
                         'room_name': resv.roomid.room_name,
-                        'boarder_name': resv.userid.fullname(),
+                        'boarder_name': resv.userid.get_fullname,
                         'boarder_email': resv.userid.email,
                         'boarder_contact': resv.userid.contact,
                         'created': resv.created,
@@ -1477,7 +1513,7 @@ class get_reservations_pending(View):
                     {
                     'reservationid': resv.reservationid,
                     'room_name': resv.roomid.room_name,
-                    'boarder_name': resv.userid.fullname(),
+                    'boarder_name': resv.userid.get_fullname,
                     'boarder_email': resv.userid.email,
                     'boarder_contact': resv.userid.contact,
                     'created': resv.created.isoformat(),
@@ -1512,7 +1548,24 @@ class accept_reservation(View):
         except Exception as e:
             return JsonResponse({'error': f"{e}"}, status = 500)
 
-class delete_reservation(View):
+class decline_reservation(View):
+    def post(self, request):
+        try:
+            reservationid = request.POST.get('reservationid')
+            
+            if not reservationid:
+                return JsonResponse({'error': "Error Reservation"}, status = 404)
+            
+            reservation = Reservation.objects.get(reservationid = reservationid)
+            reservation.status = 'Declined'
+            reservation.save()
+            
+            return JsonResponse({'success': 'Reservation Successfuly Declined'}, status = 200)
+        
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status = 500)
+
+class delete_reservation(View): # DELETE RESERVATION BY ROOMID
     def post(self, request):
         try:
             roomid = request.POST.get('roomid')
@@ -1528,6 +1581,267 @@ class delete_reservation(View):
             return JsonResponse({'error': "Reservation does not exist"}, status = 404)
         except Exception as e:
             return JsonResponse({'error': f"{e}"}, status = 500)
+
+class delete_reservation_byid(View):
+    def post(self, request):
+        try:
+            reservationid = request.POST.get('reservationid')
+            if not reservationid:
+                return JsonResponse({"error": "Error Reservation"}, status = 404)
+            
+            reservation = Reservation.objects.get(reservationid = reservationid)
+            reservation.delete()
+
+            return JsonResponse({'success': "Successfully deleted reservation"}, status = 200)
+        
+        except Reservation.DoesNotExist:
+            return JsonResponse({"error": "Reservation Does Not Exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+
+latest_message = Message.objects.filter(
+    boarder=OuterRef('boarder'),
+    landlord=OuterRef('landlord')
+).order_by('-date_created')
+
+
+class get_inbox(View):
+    def get(self, request):
+        try:
+            page = request.GET.get('page', 1)
+
+            # if isinstance(request.user, ScoutUser):
+            #     messages = Message.objects.filter(boarder = request.user)
+                
+            # elif isinstance(request.user, ScoutUser_Landlord):
+            #     messages = Message.objects.filter(landlord = request.user)
+
+            if isinstance(request.user, ScoutUser):
+                messages = Message.objects.filter(
+                    boarder=request.user,
+                    messageid=Subquery(latest_message.values('messageid')[:1])
+                )
+                
+            elif isinstance(request.user, ScoutUser_Landlord):
+                messages = Message.objects.filter(
+                    landlord=request.user,
+                    messageid=Subquery(latest_message.values('messageid')[:1])
+                )
+
+            paginator = Paginator(messages, 8)
+
+            # if page is None:
+            #     page = paginator.num_pages
+
+            current_page = paginator.get_page(page)
+
+            inboxes = [
+                {
+                    'receiver_id': inbox.landlord.userid
+                        if request.user.usertype == 'Boarder'
+                        else inbox.boarder.userid,
+
+                    'user_profile': inbox.landlord.profile_image.url
+                        if request.user.usertype == 'Boarder'
+                        else inbox.boarder.profile_image.url,
+
+                    'receiver_name': inbox.landlord.get_fullname
+                        if request.user.usertype == 'Boarder'
+                        else inbox.boarder.get_fullname,
+
+                    'last_message': truncate_message(inbox.message, 40),
+
+                    'sender': inbox.sender,
+
+                    'me': request.user.usertype
+                }
+                for inbox in current_page
+            ]
+
+            print(inboxes)
+            response_data = {
+                'inbox_list': inboxes,
+            }
+            return JsonResponse(response_data, status = 200)
+        except Exception as e:
+            return JsonResponse({'error': f'{e}'}, status = 500)
+
+class get_messages(View):
+    def get(self, request):
+        try:
+            receiverid = request.GET.get('receiverid', None)
+            page = request.GET.get('page', None)
+            print('unedited_page:', receiverid)
+
+            if not receiverid or receiverid is None:
+                return JsonResponse({'error': "Incomplete Request"}, status = 400)
+            
+            if isinstance(request.user, ScoutUser):
+                receiver = ScoutUser_Landlord.objects.get(userid = receiverid)
+                messages = Message.objects.filter(boarder = request.user, landlord = receiver).order_by('-date_created')
+                boarder_profile = request.user.profile_image.url if request.user.profile_image else '/static/default.png'
+                landlord_profile = receiver.profile_image.url if receiver.profile_image else '/static/default.png'
+
+            elif isinstance(request.user, ScoutUser_Landlord):
+                receiver = ScoutUser.objects.get(userid = receiverid)
+                messages = Message.objects.filter(boarder = request.user, landlord = receiver).order_by('-date_created')
+                boarder_profile = receiver.profile_image.url if receiver.profile_image else '/static/default.png'
+                landlord_profile = request.user.profile_image.url if request.user.profile_image else '/static/default.png'
+                
+            # PAGINATOR
+            paginator = Paginator(messages, 10)
+
+            if not page or page is None:
+                page = 1 # paginator.num_pages
+
+            print('page:', page)
+            load_page = paginator.get_page(page)
+            print(load_page)
+
+            print(boarder_profile)
+            print(landlord_profile)
+            message_list = [
+                {
+                    'sender': message.sender,
+                    'message': message.message,
+                    'time_sent': (# MESSAGE DATE TIME FORMAT
+                        message.date_created.strftime('%H:%M')
+                        if timezone.now() - message.date_created < timedelta(days=1)
+                        else message.date_created.strftime('%A %H:%M')
+                        if timezone.now() - message.date_created < timedelta(weeks=1)
+                        else message.date_created.strftime('%Y-%m-%d %H:%M')
+                    ),
+                    'image': message.image.url if message.image and message.image.url else None
+                }
+                for message in load_page
+            ]
+            print("messagelist", message_list)
+
+            response_data = {
+                'message_list': message_list,
+                'has_next': load_page.has_next(),
+                'next_page': load_page.number + 1,
+                'boarder_profile': boarder_profile,
+                'landlord_profile': landlord_profile
+            }
+            
+            return JsonResponse(response_data, status = 200)
+
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+
+class request_building_userid(View): # GET USERID FROM BUILDING
+    def get(self, request):
+        try:
+            buildingid = request.GET.get('buildingid')
+            if not buildingid:
+                return JsonResponse({'error': 'Incomplete Request'}, status = 400)
+            
+            building = Building.objects.get(buildingid = buildingid)
+            response_data = {
+                'success': building.building_owner.userid,
+                'profile_image': building.building_owner.profile_image.url,
+                'receiver_name': building.building_owner.get_fullname
+            }
+            return JsonResponse(response_data, status = 200)
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+        
+class request_userid(View):
+    def get(self, request):
+        try:
+            receiverid = request.GET.get('receiver_id', None)
+            if not receiverid or receiverid is None:
+                return JsonResponse({'error': 'Incomplete Request'}, status = 400)
+            
+            if isinstance(request.user, ScoutUser):
+                user = ScoutUser_Landlord.objects.get(userid = receiverid)
+
+            elif isinstance(request.user, ScoutUser_Landlord):
+                user = ScoutUser.objects.get(userid = receiverid)
+
+            response_data = {
+                'success': user.userid,
+                'profile_image': user.profile_image.url,
+                'receiver_name': user.get_fullname
+            }
+            return JsonResponse(response_data, status = 200)
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status = 500)
+        
+# CREATE MESSAGE VIA BOARDING HOUSE PAGE
+class create_message(View):
+    def post(self, request):
+        try:
+            images = request.FILES.getlist('images')
+            message = request.POST.get('message')
+            receiverid = request.POST.get('receiverid')
+            print(images,message,receiverid)
+
+            if (not message and not images) or not receiverid:
+                return JsonResponse({'error': 'Empty Messages'}, status = 400)
+            
+            if isinstance(request.user, ScoutUser):
+                landlord = ScoutUser_Landlord.objects.get(userid = receiverid)
+                boarder = request.user
+                
+                boarder_profile = request.user.profile_image.url if request.user.profile_image else '/static/default.png'
+                landlord_profile = landlord.profile_image.url if landlord.profile_image else '/static/default.png'
+
+            elif isinstance(request.user, ScoutUser_Landlord):
+                landlord = request.user
+                boarder = ScoutUser.objects.get(userid = receiverid)
+                
+                boarder_profile = boarder.profile_image.url if boarder.profile_image else '/static/default.png'
+                landlord_profile = request.user.profile_image.url if request.user.profile_image else '/static/default.png'
+                
+
+            new_message_list = []
+            if message:
+                new_message = Message.objects.create(
+                    sender = request.user.usertype,
+                    message = message,
+                    boarder = boarder,
+                    landlord = landlord
+                )
+                new_message_list.append(new_message)
+
+            if images:
+                for image in images:
+                    new_image = Message.objects.create(
+                    sender = request.user.usertype,
+                    image = image,
+                    boarder = boarder,
+                    landlord = landlord
+                    )
+                    new_message_list.append(new_image)
+
+            response_data = {
+                'success': 'Message Sent',
+                'message_list': [
+                        {
+                            'sender': msg.sender,
+                            'message': msg.message,
+                            'image': msg.image.url if msg.image else None,
+                            'time_sent': msg.date_created.strftime('%H:%M'),
+                            'boarder_profile': boarder_profile,
+                            'landlord_profile': landlord_profile
+                        } 
+                        for msg in new_message_list
+                    ]
+            }
+
+            return JsonResponse(response_data, status = 200)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'error': f"{e}"}, status = 500)
+
+
+# DO NOT REMOVE
+def truncate_message(message, limit=50):
+    if len(message) <= limit:
+        return message
+    return ' '.join(message[:limit].split(' ')[:-1]) + '...'
 
 # FOR GCASH QR CODE
 class generate_email_data(View):
@@ -1548,7 +1862,7 @@ class generate_email_data(View):
             
             response_data = {
                 'landlord_email': room.building_id.building_owner.email,
-                'to_name': room.building_id.building_owner.fullname,
+                'to_name': room.building_id.building_owner.get_fullname,
                 'boarder_name': request.user.get_fullname,
                 'public_key': public_key,
                 'template_key': template_key,
@@ -1577,7 +1891,7 @@ class notify_boarder(View):
                 'template_key': template_key,
                 'to_email': reservation.userid.email,
                 'from_email': reservation.roomid.building_id.building_owner.email,
-                'to_name': reservation.userid.fullname(),
+                'to_name': reservation.userid.get_fullname,
                 'message': f'Good day! Your request to "{ reservation.roomid.room_name }" has been accepted. You may now continue with the payment of 20% the original price as your down payment.'
             }
             

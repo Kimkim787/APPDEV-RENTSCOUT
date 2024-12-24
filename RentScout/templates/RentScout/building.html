@@ -369,6 +369,12 @@
                 <p class="owner"><span>{{ building.building_owner }}</span> (Owner's email)</p>
                 <p><span>vacant room: </span>{{ building.rooms_vacant }}</p>
                 <a href="{{ building.coordinates }}" target="_blank">View in Map</a>
+
+                <div id="send_message" value="">
+                    <img src="{% static 'imgs/send_mail.png' %}" alt="Send Mail">
+                    <p>Send Message</p>
+                </div>
+
                 {% if building.building_owner == request.user %}
                     <button id="add_new_room_btn">Add New Room</button>
                     
@@ -388,6 +394,7 @@
                             <button id="request_reservation"  class="hidden">Request Reservation</button>
                             <button id="cancel_request_reservation" class="hidden">Cancel Reservation</button>
                         </div>
+                        
                     </div>
                 {% endif %}
 
@@ -410,5 +417,9 @@
     <script type="text/javascript">
         const noImagePath = "{% static 'imgs/building/no_image.jpg' %}"
     </script>
-    <script src="{% static 'scripts/building.js' %}?106"></script>
     {% endblock bodycontent %}
+
+{% block last_scripts %}
+    <script src="{% static 'scripts/building.js' %}?106"></script>
+
+{% endblock last_scripts %}

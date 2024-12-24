@@ -175,6 +175,30 @@ $(document).ready(function() {
     })
   })
 
+  // POP UP MESSAGE
+  $('#send_message').on('click', function(){
+    // console.log($('#buildingid').val());
+    $.ajax({
+      url: '/messages/building/get_owner_id/',
+      type: 'GET',
+      data: {
+        'buildingid': $('#buildingid').val(),
+      },
+      success: function(response){
+        console.log(response);
+        $('#convo_head').find('h4').text(response.receiver_name);
+        $('#receiverid').val(response.success);
+        $('#user_image').attr('src', `${response.profile_image}`);
+        get_message(response.success);
+
+      }, 
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+      }
+    })
+  });
+
   function closereport(){
     const report_modal = $("#report_modal");
     $(report_modal).addClass('hidden');
@@ -211,8 +235,9 @@ $(document).ready(function() {
 
         heart_container.append(heart);
       },
-      error: function(xhr, status, error){
-        alert(`Error: ${xhr.responseText.error || error}`);
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow("Error on bookmark status", 'error');
       }
     })
   }
@@ -429,11 +454,21 @@ $(document).ready(function() {
         'roomid': $('#roomid').attr('value')
       },
       success: function(response){
-        if(response.success === "True"){
+        console.log('reservation request');
+        console.log(response);
+        //  
+        if(response.success == true && response.status == 'Pending'){
+          console.log('Pending');
           $('#waiting').addClass('hidden');
           $('#request_reservation').addClass('hidden');
           $('#cancel_request_reservation').removeClass('hidden');
+        // 
+        } else if (response.success == true && response.status == 'Accepted') {
+          console.log('accepted');
+          $('#qr_container').removeClass('hidden');
+        
         } else {
+          console.log('none');
           $('#waiting').addClass('hidden');
           $('#request_reservation').removeClass('hidden');
           $('#cancel_request_reservation').addClass('hidden');
@@ -442,10 +477,12 @@ $(document).ready(function() {
       error: function(xhr, status, error) {
         // let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
         // SoloMessageFlow(`${errorMessage}`, 'error');
+        console.log(errorMessage)
         return;
       } 
     })
   }
+
 }); // Ready Function
 
 let view_photo_modal = $('#view_photo_modal');

@@ -408,6 +408,33 @@ p span{
   padding: 8px 20px;
 }
 
+#send_message{
+  position: relative;
+  border: 1.8px solid black;
+  background-color: #f4f4f4;
+  border-radius: 7px;
+  width: 100%;
+  height: 35px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  user-select: none;
+}
+
+#send_message img{
+  position: static;
+  height: 100%;
+  margin-right: 5px;
+  color: white;
+  user-select: none;
+}
+
+#send_message p{
+  user-select: none;
+  cursor:default;
+}
+
 #report_modal.hidden{
   display: none;
 }
