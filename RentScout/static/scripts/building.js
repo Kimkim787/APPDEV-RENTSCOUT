@@ -199,6 +199,70 @@ $(document).ready(function() {
     })
   });
 
+  // DISPLAY QRCODE FOR DOWNPAYMENT
+  $('#generate_qr').on('click', function(){
+    $('#qr_modal').removeClass('hidden');
+  })
+
+  // DISPLAY PAYMENT FORM
+  $('#send_payment_receipt').on('click', function(){
+    $('#send_payment').removeClass('hidden');
+  })
+
+  // CLOSE QRCODE FOR PAYMENT
+  $('#qr_close_btn').on('click', function(){
+    $('#qr_modal').addClass('hidden');
+  })
+
+  // PRELOAD PAYMENT IMAGE
+  $('#payment_img').on('change', function(event) {
+    const previewDiv = $('#receipt_preview');
+    const file = event.target.files[0];
+
+    if (file && file.type.startsWith('image/')) {
+      console.log('IMage File');
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            previewDiv.html(`<img src="${e.target.result}" alt="Preview Image">`);
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        previewDiv.html('<span>Invalid image file</span>');
+    }
+});
+
+  // SSEND PAYMENT FORM
+  $('#send_payment_btn').on('click', function(){
+    $('#send_payment').addClass('hidden');
+    const formData = new FormData();
+    const image = $('#payment_img')[0].files[0];
+    const referal = $('#referralid').val();
+    const roomid = $('#roomid').val();
+    const token = $('input[name="csrfmiddlewaretoken"]').val();
+
+    formData.append('csrfmiddlewaretoken', token)
+    formData.append('payment_img', image);
+    formData.append('referralid', referal);
+    formData.append('roomid_holder', roomid);
+
+    $.ajax({
+      url: '/payment/send/',
+      type: 'POST',
+      data: formData,
+      contentType: false,
+      processData: false,
+      success: function(){
+        SoloMessageFlow('Payment Sent');
+      },
+      error: function(xhr, status, error) {
+        // let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow("Error Sending Payment", 'error');
+      }
+    })
+  })
+
   function closereport(){
     const report_modal = $("#report_modal");
     $(report_modal).addClass('hidden');
@@ -461,16 +525,22 @@ $(document).ready(function() {
           console.log('Pending');
           $('#waiting').addClass('hidden');
           $('#request_reservation').addClass('hidden');
+          $('#qr_container').addClass('hidden');
           $('#cancel_request_reservation').removeClass('hidden');
+          $('#qr_container').addClass('hidden');
         // 
         } else if (response.success == true && response.status == 'Accepted') {
           console.log('accepted');
+          $('#waiting').addClass('hidden');
+          $('#request_reservation').addClass('hidden');
+          $('#cancel_request_reservation').addClass('hidden');
           $('#qr_container').removeClass('hidden');
         
         } else {
           console.log('none');
           $('#waiting').addClass('hidden');
           $('#request_reservation').removeClass('hidden');
+          $('#qr_container').addClass('hidden');
           $('#cancel_request_reservation').addClass('hidden');
         }
       },

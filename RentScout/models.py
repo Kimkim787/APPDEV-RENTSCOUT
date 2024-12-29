@@ -299,14 +299,16 @@ class Reservation(models.Model):
     ACCEPTED = 'Accepted'
     PENDING = 'Pending'
     DECLINED = 'Declined'
+    PAYED = 'Payed'
     status_choices = [
         (PENDING, 'Pending'),
         (ACCEPTED, 'Accepted'),
         (DECLINED, 'Declined'),
+        (PAYED, 'Payed')
     ]
 
     reservationid = models.AutoField(primary_key = True)
-    roomid = models.ForeignKey(Room, related_name = 'reserved_room', on_delete = models.CASCADE, null = False, default=1)
+    roomid = models.ForeignKey(Room, related_name = 'reserved_room', on_delete = models.CASCADE) #, null = False, default=1
     userid = models.ForeignKey(ScoutUser, related_name = 'reservation_customer', on_delete=models.CASCADE, null = False)
     status = models.CharField(max_length = 10, choices = status_choices, default = PENDING, null = False, blank = False)
     created = models.DateTimeField(default=timezone.now)
@@ -353,3 +355,26 @@ class LandlordNotification(models.Model):
     landlord = models.ForeignKey(ScoutUser_Landlord, related_name = 'landlord_notify_recepient', on_delete = models.CASCADE)
     date_created = models.DateTimeField(auto_now_add = True)
     status = models.BooleanField(default=False)
+
+class Payment(models.Model):
+    ACCEPTED = 'Accepted'
+    PENDING = 'Pending'
+    DECLINED = 'Declined'
+    HIDDEN = 'Hidden'
+    payment_choices = [
+        (PENDING, 'Pending'),
+        (ACCEPTED, 'Accepted'),
+        (DECLINED, 'Declined'),
+        (HIDDEN, 'Hidden')
+    ]
+
+    paymentid = models.AutoField(primary_key = True)
+    referralid = models.CharField(max_length = 60, blank=False, null=False, default="")
+    payment_img = models.FileField(upload_to = 'upload/payments', blank=False, null=False, default='upload/payments/gcash_receipt.jpg')
+    roomid = models.ForeignKey(Room, related_name = 'room_payed', on_delete = models.CASCADE)
+    boarder = models.ForeignKey(ScoutUser, related_name = 'payment_sender', on_delete = models.CASCADE)
+    status = models.CharField(max_length = 10, choices = payment_choices, default = PENDING)
+    date_sent = models.DateTimeField(auto_now_add = True)
+
+    class Meta:
+        ordering = ['date_sent']

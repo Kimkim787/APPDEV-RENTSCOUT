@@ -8,12 +8,13 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     delete_building_view, delete_building_report, get_verification_status_view,
                     create_verification_view, delete_verification, get_verification_requests,
                     deny_verification, accept_verification, create_room_view, get_bookmark_all,
-                    generate_gcash_qr, generate_email_data, generate_otp, get_mailjs_keys,
+                    send_payment, generate_email_data, generate_otp, get_mailjs_keys,
                     create_reservation, get_reservation_instance, delete_reservation,
                     get_reservations_pending, accept_reservation, notify_boarder,
                     upload_certificate_view, get_certificates_view, decline_reservation,
                     delete_reservation_byid, get_messages, request_userid, request_building_userid,
-                    create_message, get_inbox,
+                    create_message, get_inbox, filter_payment, accept_payment, decline_payment,
+                    hide_payment, 
                     
                     )
 from . import views
@@ -44,7 +45,6 @@ urlpatterns = [
     # RESERVATIONS
     path('reservations/', views.reservation_page, name = 'reservations'),
     path('reservations/send_notification/', generate_email_data.as_view()),
-    path('reservations/online_transaction/gcash/', generate_gcash_qr.as_view()),
     path('reservations/create_reservation/', create_reservation.as_view()),
     path('reservations/get/reservation_status/', get_reservation_instance.as_view()),
     path('reservations/delete/', delete_reservation.as_view()),
@@ -126,6 +126,12 @@ urlpatterns = [
     path('messages/request/', get_messages.as_view()),
     path('messages/send_message/', create_message.as_view()),
 
+    #PAYMENTS
+    path('payment/send/', send_payment.as_view()),
+    path('payment/filter/', filter_payment.as_view()),
+    path('payment/accept/', accept_payment.as_view()),
+    path('payment/decline/', decline_payment.as_view()),
+    path('payment/hide/', hide_payment.as_view()),
     # SCRAPPERS
     path('scrapper/building/', views.building_file_scrapper, name='building_scrapper'),
 ]

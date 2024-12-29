@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
                      Feedback, RoomImage, ScoutUser_Landlord, AdminUser,
                      ScoutUserBookmark, LandlordUserBookmark, BuildingReport,
-                     Verification, Reservation, Message
+                     Verification, Reservation, Message, Payment
                      )   
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
                     RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin,
@@ -16,7 +16,7 @@ class AdminUserAdmin(admin.ModelAdmin):
 class ScoutUserAdmin(admin.ModelAdmin):
     list_display = ['userid', 'email', 'firstname', 'lastname',
                     'middlename', 'gender', 'birthdate', 
-                    'barangay', 'province', 'city', 'contact']
+                    'barangay', 'province', 'city', 'contact', 'profile_image']
     form = ScoutUserCreationForm
 
 # Use 'password' as a read-only field to avoid exposing it directly
@@ -25,7 +25,7 @@ class ScoutUserAdmin(admin.ModelAdmin):
 class ScoutUser_LandlordAdmin(admin.ModelAdmin):
     list_display = ['userid', 'email', 'firstname', 'lastname',
                     'middlename', 'gender', 'birthdate',
-                    'barangay', 'province', 'city', 'contact']
+                    'barangay', 'province', 'city', 'contact', 'profile_image']
 
     form = LandlordUserCreationForm
 
@@ -90,3 +90,4 @@ admin.site.register(BuildingReport, BuildingReportAdmin)
 admin.site.register(Verification)
 admin.site.register(Reservation)
 admin.site.register(Message)
+admin.site.register(Payment)

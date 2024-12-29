@@ -370,11 +370,13 @@
                 <p><span>vacant room: </span>{{ building.rooms_vacant }}</p>
                 <a href="{{ building.coordinates }}" target="_blank">View in Map</a>
 
+                {% if request.user.usertype == 'Boarder' %}
                 <div id="send_message" value="">
                     <img src="{% static 'imgs/send_mail.png' %}" alt="Send Mail">
                     <p>Send Message</p>
                 </div>
-
+                {% endif %}
+                
                 {% if building.building_owner == request.user %}
                     <button id="add_new_room_btn">Add New Room</button>
                     
@@ -387,6 +389,7 @@
                         
                         <div id="qr_container" class="hidden">
                             <button id="generate_qr">Generate QR Code</button>
+                            <button id="send_payment_receipt">Send Receipt</button>
                         </div>
 
                         <div id="reservation_container">
@@ -409,8 +412,30 @@
             </div>
         </div>
 
-        <script src="{% static 'scripts/modal.js' %}?100"></script>
-    </section>
+        <div class="modal hidden" id="qr_modal">
+            <img src="{{ qr_code }}" alt="qr_modal" id="qr_img">
+            <img src="{% static 'imgs/remove.png' %}" alt="close_btn" id="qr_close_btn">
+        </div>
+
+        <div id="send_payment" class="modal hidden">
+            <div id="payment_form">
+                <div id="receipt_preview">
+                    <span>Select an Image</span>
+                </div>
+                <label for="qr_gcash">Receipt Image</label>
+                <input type="file" name="payment_img" id="payment_img" accept = 'image/*' required>
+                <br>
+                <label for="referal">Referal Number:</label>
+                <input type="text" name="referralid" id="referralid" placeholder="Referel Number" required>
+                <div id="payment_btn_box">
+                    <button id="send_payment_btn">Send</button>
+                    <button id="cancel_payment_btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </section>    
+    <script src="{% static 'scripts/modal.js' %}?100"></script>
+    
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
     </script>

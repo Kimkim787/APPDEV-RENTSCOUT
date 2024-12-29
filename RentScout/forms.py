@@ -6,7 +6,7 @@ from .models import ( ScoutUser, ScoutUser_Landlord, Building, Highlights,
                      Policies, Room, Feedback, RoomImage, 
                      ScoutUserBookmark, LandlordUserBookmark, BuildingReport,
                      Verification, Reservation, Certificate, Message, BoarderNotification,
-                     LandlordNotification, 
+                     LandlordNotification, Payment, 
                     )
 
 
@@ -176,6 +176,17 @@ class LandlordNotificationForm(ModelForm):
     class Meta:
         model = LandlordNotification
         fields = ('buildingid', 'landlord')
+
+class PaymentForm(ModelForm):
+    class Meta:
+        model = Payment
+        fields = ('referralid', 'payment_img',)
+
+
+
+
+
+
 
 # trash
 class ScrapperFile(forms.Form):

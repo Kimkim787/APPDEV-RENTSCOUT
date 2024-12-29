@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    setInterval(get_inbox_data, 5000);
+    // setInterval(get_inbox_data, 5000);
 
     $('#bubble').on('click', function(){
         $('#inbox').toggleClass('hidden');
@@ -212,7 +212,7 @@ $(document).ready(function(){
                     }
                 })
 
-                SoloMessageFlow('Message Sent');
+                SoloMessageFlow(response.success);
 
                 // AUTO SCROLL DOWN
                 const convo_body = $('#convo_list').get(0);
@@ -373,11 +373,12 @@ $(document).ready(function(){
 
                     message = '';
                     if(data.sender == data.me){
-                        message = `You: ${data.last_message}`;
+                        message = `You: ${data.last_message.length > 0 ? data.last_message: "Sent an attachment"}`;
                     } else {
-                        message = `${data.receiver_name.split(' ')[0]}: ${data.last_message}`;
+                        message = `${data.receiver_name.split(' ')[0]}: ${data.last_message.length > 0 ? data.last_message : "Sent an attachment"}`;
                     }
 
+                    
                     message = $('<p></p>', {
                         text: message,
                         class: 'last_message'
@@ -420,7 +421,7 @@ $(document).ready(function(){
 }); /// ready function
 
 function get_message(receiverid, page = null){
-    console.log("get message called");
+    console.log(receiverid);
     $('#message_convo').removeClass('hidden');
     $.ajax({
       url: '/messages/request/',

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .models import (ScoutUser, Building, Highlights, Room, 
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
                      ScoutUserBookmark, LandlordUserBookmark, AdminUser, BuildingReport,
-                     Verification, Reservation, Certificate, Message
+                     Verification, Reservation, Certificate, Message, Payment, 
                     )
 
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
@@ -10,11 +10,12 @@ from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm,
                     LandlordUserCreationForm, PoliciesForm, HighlightsForm,
                     ScoutUserProfileForm, LandlordUserProfileForm,
                     ScoutBookmarkForm, LandlordBookmarkForm, ScrapperFile, BuildingReportForm,
-                    VerificationForm, ReservationForm, CertificateForm, 
+                    VerificationForm, ReservationForm, CertificateForm, PaymentForm,
+
                     )
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist as ObjException
+from django.core.exceptions import ObjectDoesNotExist as ObjException, ValidationError
 
 from django.views import View
 from django.db.models import Q, Count, Case, When, Value, IntegerField, OuterRef, Subquery
@@ -27,6 +28,7 @@ import logging, math, csv, qrcode, random, string
 from django.core.paginator import Paginator
 from django.utils import timezone
 from datetime import datetime, timedelta
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -189,6 +191,7 @@ def building_info(request, pk):
     reportform = BuildingReportForm()
     feedbackForm = FeedBackForm()
     verification_status = "Not Verified"
+    qr_code = building.gcash_qr.url if building.gcash_qr else ''
 
     try:
         verification = Verification.objects.get(buildingid = building)
@@ -199,7 +202,7 @@ def building_info(request, pk):
     context = {'building':building, 'highlights': highlights, 'room_images': room_images,
                'rooms':rooms, 'policies':policies, 'roomform':roomform, 'feedbacks':feedbacks,
                'feedbackform':feedbackForm, 'building_report_form': reportform, 
-               'verification': verification_status,
+               'verification': verification_status, 'qr_code': qr_code,
             }
     
     return render(request, 'RentScout/building.html', context)
@@ -1257,7 +1260,7 @@ class get_verification_requests(View):
                 'building_coordinates': verification.buildingid.coordinates,
                 'building_description': verification.buildingid.details,
                 'date_requested': verification.date_requested,
-                'building_image': verification.buildingid.building_image.url
+                'building_image': verification.buildingid.building_image.url if verification.buildingid.building_image else ''
                 }
                 for verification in current_page
             ]
@@ -1420,6 +1423,7 @@ class get_reservation_instance(View):
     def get(self, request):
         try:
             roomid = request.GET.get('roomid', None)
+            print(roomid)
             if not roomid or roomid is None:
                 messages.error(request, "Error Room reservation instance")
                 return JsonResponse({"error": "Did not receive Room ID"}, status = 400)
@@ -1439,7 +1443,9 @@ class get_reservation_instance(View):
                     output_field=IntegerField(),
                 )
             )
-
+            
+            print(reservation)
+            
             first_reservation = reservation.first()
             
             if reservation.exists():
@@ -1539,9 +1545,22 @@ class accept_reservation(View):
                 return JsonResponse({"error": "Error Reservation"}, status = 404)
             
             reservation = Reservation.objects.get(reservationid = reservationid)
-            reservation.status = 'Accepted'
-            reservation.save()
-            return JsonResponse({'success': "Successfully accepted reservations"}, status = 200)
+
+            roomid = reservation.roomid 
+
+            reserved_list = list(Reservation.objects.filter(
+                Q(status = "Accepted"),
+                roomid = roomid
+            ))
+            print(reserved_list)
+            reserved_count = reserved_list.count(0)
+            
+            if reserved_count < reservation.roomid.person_free:
+                reservation.status = 'Accepted'
+                reservation.save()
+                return JsonResponse({'success': "Successfully accepted reservations"}, status = 200)
+            else:
+                return JsonResponse({'error': "Cannot accept reservation more than the slot available"}, status = 200)
         
         except Reservation.DoesNotExist:
             return JsonResponse({"error": "Reservation Does Not Exist"}, status = 404)
@@ -1607,6 +1626,9 @@ latest_message = Message.objects.filter(
 
 class get_inbox(View):
     def get(self, request):
+        if isinstance(request.user, AdminUser):
+            return JsonResponse({'success': 'User is admin'}, status = 200)
+
         try:
             page = request.GET.get('page', 1)
 
@@ -1623,6 +1645,7 @@ class get_inbox(View):
                 )
                 
             elif isinstance(request.user, ScoutUser_Landlord):
+                print('landlorduser')
                 messages = Message.objects.filter(
                     landlord=request.user,
                     messageid=Subquery(latest_message.values('messageid')[:1])
@@ -1673,20 +1696,23 @@ class get_messages(View):
             page = request.GET.get('page', None)
             print('unedited_page:', receiverid)
 
+            messages = ''
             if not receiverid or receiverid is None:
                 return JsonResponse({'error': "Incomplete Request"}, status = 400)
             
             if isinstance(request.user, ScoutUser):
                 receiver = ScoutUser_Landlord.objects.get(userid = receiverid)
                 messages = Message.objects.filter(boarder = request.user, landlord = receiver).order_by('-date_created')
-                boarder_profile = request.user.profile_image.url if request.user.profile_image else '/static/default.png'
-                landlord_profile = receiver.profile_image.url if receiver.profile_image else '/static/default.png'
+                boarder_profile = request.user.profile_image.url if request.user.profile_image else '/media/upload/user_profiles/user.png'
+                print("User is Boarder")
+                print(boarder_profile)
+                landlord_profile = receiver.profile_image.url if receiver.profile_image else '/media/upload/user_profiles/user.png'
 
             elif isinstance(request.user, ScoutUser_Landlord):
                 receiver = ScoutUser.objects.get(userid = receiverid)
-                messages = Message.objects.filter(boarder = request.user, landlord = receiver).order_by('-date_created')
-                boarder_profile = receiver.profile_image.url if receiver.profile_image else '/static/default.png'
-                landlord_profile = request.user.profile_image.url if request.user.profile_image else '/static/default.png'
+                messages = Message.objects.filter(boarder = receiver, landlord = request.user).order_by('-date_created')
+                boarder_profile = receiver.profile_image.url if receiver.profile_image else '/media/upload/user_profiles/user.png'
+                landlord_profile = request.user.profile_image.url if request.user.profile_image else '/media/upload/user_profiles/user.png'
                 
             # PAGINATOR
             paginator = Paginator(messages, 10)
@@ -1806,18 +1832,25 @@ class create_message(View):
                 )
                 new_message_list.append(new_message)
 
+
+            success_msg = 'Message Sent'
+
             if images:
                 for image in images:
-                    new_image = Message.objects.create(
-                    sender = request.user.usertype,
-                    image = image,
-                    boarder = boarder,
-                    landlord = landlord
-                    )
-                    new_message_list.append(new_image)
-
+                    try:
+                        img = Image.open(image)
+                        img.verify()
+                        new_image = Message.objects.create(
+                        sender = request.user.usertype,
+                        image = image,
+                        boarder = boarder,
+                        landlord = landlord
+                        )
+                        new_message_list.append(new_image)
+                    except (IOError, ValidationError):
+                        success_msg = 'Skipped files that are not valid Images'
             response_data = {
-                'success': 'Message Sent',
+                'success': success_msg,
                 'message_list': [
                         {
                             'sender': msg.sender,
@@ -1900,22 +1933,132 @@ class notify_boarder(View):
             return JsonResponse({'error': f"{e}"}, status = 500)
         
         
-class generate_gcash_qr(View):
+class send_payment(View):
+    def post(self, request):
+        try:
+            boarder = request.user
+            roomid = request.POST.get('roomid_holder')
+
+            if not roomid:
+                return JsonResponse({'error': 'Form invalid'}, status = 405)
+            
+            room = Room.objects.get(roomid = roomid)
+            landlord = room.building_id.building_owner
+            newmessage = Message.objects.create(
+                sender = "Boarder",
+                message = f"{request.user.get_fullname} has sent his payment to {room.room_name}. Referal Code: {request.POST.get('referralid')}.",
+                boarder = request.user,
+                landlord = landlord
+            )
+            newmessage.save()
+
+            form = PaymentForm(request.POST)
+            if form.is_valid():
+                payment = form.save(commit = False)
+                payment.roomid = room
+                payment.boarder = boarder
+                payment.save()
+                return JsonResponse({'success': 'Payment sent'}, status = 200)
+            else:
+                print(form.errors)
+                return JsonResponse({'error': "Form invalid or incomplete"}, status = 405)
+        except Exception as e:
+            print("Payment Error: ", f'{e}') # ayaw e delete
+            return JsonResponse({'error': 'Internal Server Error'}, status = 500)
+
+class filter_payment(View):
     def get(self, request):
         try:
-            payment_url = "upi://pay?pa=09062989789&pn=RecipientName&am=100.00&cu=INR"
+            buildingid = request.GET.get('buildingid', None)
+            statusQ = request.GET.get('statusQ', None)
+            if (not buildingid or buildingid is None) or (not statusQ or statusQ is None):
+                return JsonResponse({'error': 'Bad Request'}, status = 405)
+            
+            building = Building.objects.get(buildingid = buildingid)
+            rooms = Room.objects.filter(building_id = building)
 
-            qr = qrcode.QRCode(version=1, box_size=10, border=5)
-            qr.add_data(payment_url)
-            qr.make(fit=True)
+            payments = Payment.objects.filter(
+                status = statusQ,
+                roomid__in = rooms
+            )
 
-            img = qr.make_image(fill="black", back_color="white")
-            img.save("payment_qr_code.png")
-            return JsonResponse({ 'qrcode': img}, status = 200)
+            data_list = [
+                {
+                    'paymentid': data.paymentid,
+                    'referal_code': data.referralid,
+                    'payment_img': data.payment_img.url if data.payment_img else '',
+                    'roomid': data.roomid.roomid,
+                    'boarder': data.boarder.get_fullname,
+                    'date': data.date_sent.strftime('%B %d, %Y')
+                }
+                for data in payments
+            ]
+
+            response_data = {
+                'payments_list': data_list,
+
+            }
         
+            return JsonResponse(response_data, status = 200)
         except Exception as e:
-            return JsonResponse({'error': f"Couldn't generate qrcode."}, status = 500)
-         
+            print(f"Error: {e}")
+            return JsonResponse({'error': "Server Error"}, status = 500)
+
+class accept_payment(View):
+    def post(self, request):
+        paymentid = request.POST.get('paymentid')
+
+        if not paymentid:
+            return JsonResponse({'error': 'Bad Request'}, status = 405)
+
+        try:
+            payment = Payment.objects.get(paymentid = paymentid)
+            payment.status = payment.ACCEPTED
+            payment.save()
+
+            return JsonResponse({'success': "Payment accepted"}, status = 200)
+        except Exception as e:
+            print(f"Payment Error: {e}")
+            return JsonResponse({'error': "Server error"}, status = 500)
+
+class decline_payment(View):
+    def post(self, request):
+        paymentid = request.POST.get('paymentid')
+
+        if not paymentid:
+            return JsonResponse({'error': 'Bad Request'}, status = 405)
+
+        try:
+            payment = Payment.objects.get(paymentid = paymentid)
+            payment.status = payment.DECLINED
+            payment.save()
+
+            return JsonResponse({'success': "Payment accepted"}, status = 200)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'error': "Server error"}, status = 500)
+
+class hide_payment(View):
+    def post(self, request):
+        paymentid = request.POST.get('paymentid')
+
+        if not paymentid:
+            return JsonResponse({'error': 'Bad Request'}, status = 405)
+
+        try:
+            payment = Payment.objects.get(paymentid = paymentid)
+            payment.status = payment.HIDDEN
+            payment.save()
+            
+            return JsonResponse({'success': "Payment accepted"}, status = 200)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'error': "Server error"}, status = 500)
+
+
+
+
+
 class generate_otp(View):
     def get(self, request):
         try:
