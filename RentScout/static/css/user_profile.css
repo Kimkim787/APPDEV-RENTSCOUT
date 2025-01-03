@@ -18,13 +18,13 @@ section{
     background-color: #f3ede5;
     border-radius: 15px;
 }
-#user_profile_form div{
+.input_container{
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-#user_profile_form div input{
+.input_container input{
     background-color: #f5f5f5;
     width: 45%;
     padding: 6px;
@@ -44,4 +44,26 @@ input[type="submit"]{
     width: 40%;
     border: none;
     border-radius: 5px;
+}
+
+#profile_img_container{
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+#profile_img{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+#upload_btn{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30%;
+    padding: 5px;
+    border-radius: 100%;
+    background-color: #aeaeae;
 }

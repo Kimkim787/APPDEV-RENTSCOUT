@@ -85,15 +85,15 @@
 
         <div id="certificate_bar" class="hidden">
             <button id="add_certificate_btn">Add New Certificate</button>
-            <div id="certificatelists">
+            <ul id="certificatelists">
 
-            </div>
+            </ul>
         </div>
         
         <div id="form_container">
             <div id="building_form" class="form_item hidden">
                 <h1>EDIT BUILDING</h1>
-                <form id="building_update_form" action="" method="POST">
+                <form id="building_update_form" action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="hidden" id="building_id_holder" value="">
                     <div class="input_box">
@@ -136,6 +136,25 @@
                         <div class="input_label_div">
                             <label for="details">Details</label>
                             <textarea id="bldg_desc" name="{{ bldg_form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
+                        </div>
+
+                        <div class="input_label_div">
+                            <label for="building_image">Building Image:</label>
+                            <input type="file" name="{{ bldg_form.building_image.name }}"  id="bldg_image_input" class="hidden">
+                            <div id="building_image_box">
+                                <img src="{{ bldg_form.building_image.src }}" alt="building_image" id="bldg_image">
+                                <img src="{% static 'imgs/upload_image.png' %}" alt="upload_icon" class='image_upload_icon' title="Update Building Image" id="bldg_image_upload">
+                            </div>
+                        </div>
+
+                        <div class="input_label_div">
+                            <label for="building_image">Gcash:</label>
+                            <input type="file" name="{{ bldg_form.gcash_qr.name }}" id="gcash_input" class="hidden">
+                            <div id="gcash_box">
+                                <img src="{{ bldg_form.gcash_qr.src }}" alt="gcash_qr" id="gcash_image">
+                                <img src="{% static 'imgs/upload_image.png' %}" alt="upload_icon" class='image_upload_icon' title="Update new GCash QR"  id="bldg_gcash_upload">
+                            </div>
+                            
                         </div>
                     </div>
                     <input type="submit" value="Save">
@@ -269,19 +288,19 @@
                 <div id="room_form">
                     <input type="hidden" id="room_id_holder">
                     <div class="newroominputs">
-                        <div>
+                        <div class="newroom_container">
                             <label for="room_name">Room Name:</label>
                             <input type="text" name="room_name" > 
                         </div>
-                        <div>
+                        <div class="newroom_container">
                             <label for="person_free">Person Available:</label>
                             <input type="text" name="person_free" >
                         </div>
-                        <div>
+                        <div class="newroom_container">
                             <label for="current_male">Male resident:</label>
                             <input type="text" name="current_male" />
                         </div>
-                        <div>
+                        <div class="newroom_container">
                             <label for="current_female">Female resident:</label>
                             <input type="text" name="current_female" />
                         </div>
@@ -289,18 +308,18 @@
                             <label for="price">Price:</label>
                             <input type="text" name="price" />
                         </div> -->
-                        <div>
+                        <div class="newroom_container">
                             <label for="room_size">Room Size:</label>
                             <input type="text" name="room_size" />
                         </div>
                     </div>
                     <p>Additional Info</p>
                     <div class="newroominputs">
-                        <div>
+                        <div class="newroom_container">
                             <label for="bed">Single bed:</label>
                             <input type="text" name="bed" />
                         </div>
-                        <div>
+                        <div class="newroom_container">
                             <label for="double_deck">Double bed:</label>
                             <input type="text" name="double_deck" />
                         </div>
@@ -378,8 +397,26 @@
                 </div>
             </div>
   
-
+            <div id="view_certificate" class="form_item hidden">
+                <div id="certificate_view_container">
+                    <h1 id="certificate_name"></h1>
+                    <div id="cert_box">
+                        <div class="cert_row">
+                            <p>Date Uploaded:</p>
+                            <p id="cert_date"></p>
+                        </div>
+                        <div class="cert_row">
+                            <p>Image:</p>
+                            <img src="" alt="cert_image" id="cert_image">
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
         </div>
+        <div id="fullscreen-overlay" class="fullscreen-overlay">
+            <img id="fullscreen-image">
+        </div>    
     </section>
     <script>
         const deleteIconUrl = "{% static 'imgs/editbuilding/mark.png' %}";

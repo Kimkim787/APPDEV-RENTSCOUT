@@ -53,29 +53,19 @@ def scoutuser_signup(request):
                 form = ScoutUserCreationForm(request.POST)
 
                 if form.is_valid():
-                    user = form.save()
-                    if user.gender == "Female":
-                        user.profile_image = 'girl.png'
-                    else:
-                        user.profile_image = 'boy.png'
-                        
+                    user = form.save()                        
                     backend = get_user_backend(user)
                     login(request, user, backend)
                     return redirect('home')
                 else:
                     print(form.errors)
-                    messages.error(request, 'Please enter a valid email or password')
+                    messages.error(request, 'Please enter a valid email or password') # 
             
             elif role == 'Landlord':
                 form = LandlordUserCreationForm(request.POST)
 
                 if form.is_valid():
                     user = form.save()
-                    if user.gender == "Female":
-                        user.profile_image = 'girl.png'
-                    else:
-                        user.profile_image = 'boy.png'
-
                     backend = get_user_backend(user)
                     login(request, user, backend)
                     return redirect('home')
@@ -228,13 +218,8 @@ def building_edit(request):
     except ObjException as e:
         messages.error(request, f'{e}')
 
-    # try:
-    #     amenity = Highlights.objects.get(buildingid = buildings)
-    # except:
-    #     pass
-    print(buildings)
     context = {'buildings':buildings, 'photoform': photo_form, 'amenities_form':amenities_form,
-               'building_form': building_form, 'certificate_form': certificate_form
+               'bldg_form': building_form, 'certificate_form': certificate_form
             #    'amenity': amenity, 
                }
     return render(request, 'RentScout/edit_building.html', context)
@@ -263,7 +248,8 @@ class building_edit_view(View):
                 building = Building.objects.get(buildingid = bldg_id)
                 form = BuildingForm(instance = building)
                 form_data = {field.name: field.value() for field in form}
-                form_data['building_image'] = building.building_image.url if building.building_image else None
+                form_data['building_image'] = building.building_image.url if building.building_image else '/media/upload/building_imgs/no-image.png'
+                form_data['gcash_qr'] = building.gcash_qr.url if building.gcash_qr else '/media/upload/building_imgs/gcash/no-image.png'
                 print(form_data)    
                 return JsonResponse(form_data, status = 200)
             except Building.DoesNotExist:
@@ -281,11 +267,18 @@ class building_edit_view(View):
         if bldg_id:
             try:
                 building = Building.objects.get(buildingid = bldg_id)
-                bldg_form = BuildingForm(request.POST,instance = building)
-                print(bldg_form)
+                bldg_form = BuildingForm(request.POST, request.FILES, instance = building,)
+                print(request.FILES)
                 if bldg_form.is_valid():
                     print("bldg form is valid")
                     new_bldg = bldg_form.save(commit = False)
+
+                    if 'building_image' in request.FILES:
+                        new_bldg.building_image = request.FILES['building_image']
+
+                    if 'gcash_qr' in request.FILES:
+                        new_bldg.gcash_qr = request.FILES['gcash_qr']
+                        
                     new_bldg.save()
                     return JsonResponse({'success': f'successfully updated {building.building_name} Building'}, status = 200)
                 else:
@@ -459,10 +452,10 @@ def update_user_profile(request):
     if request.method == 'POST':
         if not request.POST.get('userid'):
             messages.error(request, "Form invalid")
-
+            print(request.POST.get('profile_image'))
         if isinstance(request.user, ScoutUser):
             user = ScoutUser.objects.get(userid = request.user.userid)
-            tryForm = ScoutUserProfileForm(request.POST, instance=user)
+            tryForm = ScoutUserProfileForm(request.POST, request.FILES, instance=user)
 
             if tryForm.is_valid():
                 updatedForm = tryForm.save(commit=False)
@@ -475,7 +468,7 @@ def update_user_profile(request):
         
         elif isinstance(request.user, ScoutUser_Landlord):
             user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
-            tryForm = LandlordUserProfileForm(  request.POST, instance=user)
+            tryForm = LandlordUserProfileForm(  request.POST, request.FILES, instance=user)
 
             if tryForm.is_valid():
                 updatedForm = tryForm.save(commit=False)
@@ -983,9 +976,7 @@ class get_certificates_view(View):
             cert_data = [
                 {
                     'certificate_id': certificate.certificationid,
-                    'image': certificate.image,
                     'certificate_name': certificate.certificate_name,
-                    'date': certificate.date_uploaded
                 }
                 for certificate in certificates
             ]
@@ -993,6 +984,30 @@ class get_certificates_view(View):
                 'certificates': cert_data
             }
             return JsonResponse(response_data, status = 200)
+        
+        except Building.DoesNotExist:
+            return JsonResponse({'error': "Building Does Not Exist"}, status = 404)
+        except Certificate.DoesNotExist:
+            return JsonResponse({'error': "Certificate Does Not Exist"}, status = 404)
+        except Exception as e:
+            return JsonResponse({"error": f"{e}"}, status = 500)
+
+class get_certificate_byid(View):
+    def get(self, request):
+        try:
+            certificate_id = request.GET.get('cert_id', None)
+            if not certificate_id or certificate_id is None:
+                return JsonResponse({'error': "Incomplete Request"}, status = 400)
+            
+            certificate = Certificate.objects.get(certificationid = certificate_id)
+            
+            cert_data = {
+                    'image': certificate.image.url if certificate.image else '',
+                    'certificate_name': certificate.certificate_name,
+                    'date': certificate.date_uploaded.strftime("%B %d, %Y")
+                }
+            
+            return JsonResponse(cert_data, status = 200)
         
         except Building.DoesNotExist:
             return JsonResponse({'error': "Building Does Not Exist"}, status = 404)
@@ -1171,23 +1186,27 @@ class create_bookmark(View):
 
 class remove_bookmark(View):
     def post(self, request):
-        buildingid = request.POST.get('building_id')
-        if buildingid is None:
-            return JsonResponse({'error': 'Did not receive Building ID'})
+        try:
+            buildingid = request.POST.get('building_id')
+            print(buildingid)
+            if not buildingid or buildingid is None:
+                return JsonResponse({'error': 'Did not receive Building ID'}, status = 405)
+            
+            if isinstance(request.user, ScoutUser):
+                building = Building.objects.get(buildingid= buildingid)
+                user = ScoutUser.objects.get(userid = request.user.userid)
+                bookmark = ScoutUserBookmark.objects.filter( owner=user, buildingid = building )
+                bookmark.delete()
+                return JsonResponse({'success': 'Bookmark has been removed'}, status = 200)
+            elif isinstance(request.user, ScoutUser_Landlord):
+                building = Building.objects.get(buildingid= buildingid)
+                user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
+                bookmark = LandlordUserBookmark.objects.filter( owner=user, buildingid = building )
+                bookmark.delete()
+                return JsonResponse({'success': 'Bookmark has been removed'}, status = 200)
+        except:
+            return JsonResponse({'error': 'Server Error'}, status = 500)
         
-        if isinstance(request.user, ScoutUser):
-            building = Building.objects.get(buildingid= buildingid)
-            user = ScoutUser.objects.get(userid = request.user.userid)
-            bookmark = ScoutUserBookmark.objects.filter( owner=user, buildingid = building )
-            bookmark.delete()
-            return JsonResponse({'success': 'Bookmark has been removed'}, status = 200)
-        elif isinstance(request.user, ScoutUser_Landlord):
-            building = Building.objects.get(buildingid= buildingid)
-            user = ScoutUser_Landlord.objects.get(userid = request.user.userid)
-            bookmark = LandlordUserBookmark.objects.filter( owner=user, buildingid = building )
-            bookmark.delete()
-            return JsonResponse({'success': 'Bookmark has been removed'}, status = 200)
-
 class create_building_report(View):
     def post(self, request):
         print('posting')

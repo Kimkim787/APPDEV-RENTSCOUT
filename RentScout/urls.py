@@ -11,7 +11,8 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     send_payment, generate_email_data, generate_otp, get_mailjs_keys,
                     create_reservation, get_reservation_instance, delete_reservation,
                     get_reservations_pending, accept_reservation, notify_boarder,
-                    upload_certificate_view, get_certificates_view, decline_reservation,
+                    upload_certificate_view, get_certificate_byid, 
+                    get_certificates_view, decline_reservation,
                     delete_reservation_byid, get_messages, request_userid, request_building_userid,
                     create_message, get_inbox, filter_payment, accept_payment, decline_payment,
                     hide_payment, 
@@ -118,7 +119,8 @@ urlpatterns = [
     # CERTIFICATES
     path('certificate/upload/', upload_certificate_view.as_view()),
     path('certificates/get/', get_certificates_view.as_view()),
-
+    path('certificate/get_byid/', get_certificate_byid.as_view()),
+    
     # MESSAGES
     path('inbox/get_inbox/', get_inbox.as_view()),
     path('messages/building/get_owner_id/', request_building_userid.as_view()),

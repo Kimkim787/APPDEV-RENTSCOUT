@@ -60,6 +60,7 @@ $(document).ready(function(){
 
     // CERTIFICATE BUTTON
     $('#add_certificate_btn').on('click', function(){
+        $('.form_item').addClass('hidden');
         $('#upload_certificate').removeClass('hidden');
     });
 
@@ -194,6 +195,34 @@ $(document).ready(function(){
         $('#large_image_view').addClass('hidden');
     });    
 
+    // Handle file selection and image preview
+    $('#bldg_image_input').on('change', function() {
+        previewImage(this, '#bldg_image');
+    });
+
+    $('#gcash_input').on('change', function() {
+        previewImage(this, '#gcash_image');
+    });
+
+    $('#bldg_image_upload').on('click', function(){
+        $('#bldg_image_input').trigger('click');
+    })
+
+    $('#bldg_gcash_upload').on('click', function(){
+        $('#gcash_input').trigger('click');
+    })
+    
+    $('#certificatelists').on('click', '.certificate_item', function(){
+        request_certificate_data($(this));
+    })
+
+    $('#cert_image').on('click', function(){
+        openFullScreen($(this).attr('src'));
+    });
+
+    $('#fullscreen-overlay').on('click', closeFullScreen);
+
+
     // UPDATE BILDING GET FUNCTION
     function request_bldg_instance(bldg_id){
         $.ajax({
@@ -204,6 +233,7 @@ $(document).ready(function(){
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
             },
             success: function(data){
+                console.log(data)
                 $('#bldg_name').val(data.building_name);
                 $('#bldg_price').val(data.price);
                 $('#bldg_vacant').val(data.rooms_vacant);
@@ -214,6 +244,9 @@ $(document).ready(function(){
                 $('#bldg_country').val(data.country);
                 $('#bldg_desc').val(data.details);
                 $('#bldg_coords').val(data.coordinates);
+
+                $('#bldg_image').attr('src', data.building_image);
+                $('#gcash_image').attr('src', data.gcash_qr);
             },
             error: function(xhr, status, error){
                 console.log(`${status}: ${error}`);
@@ -223,36 +256,103 @@ $(document).ready(function(){
 
     // UPDATE BUILDING POST FUNCTION
     function update_building(){
-        form_data = {
-            'bldg_id': $('#building_id_holder').val(),
-            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-            'building_name': $('#bldg_name').val(),
-            'price': $('#bldg_price').val(),
-            'rooms_vacant': $('#bldg_vacant').val(),
-            'zip_code': $('#bldg_zipcode').val(),
-            'street': $('#bldg_street').val(),
-            'city': $('#bldg_city').val(),
-            'province': $('#bldg_province').val(),
-            'country': $('#bldg_country').val(),
-            'details': $('#bldg_desc').val(),
-            'coordinates': $('#bldg_coords').val(),
+        let formData = new FormData();
+        formData.append('bldg_id', $('#building_id_holder').val());
+        formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+        formData.append('building_name', $('#bldg_name').val());
+        formData.append('price', $('#bldg_price').val());
+        formData.append('rooms_vacant', $('#bldg_vacant').val());
+        formData.append('zip_code', $('#bldg_zipcode').val());
+        formData.append('street', $('#bldg_street').val());
+        formData.append('city', $('#bldg_city').val());
+        formData.append('province', $('#bldg_province').val());
+        formData.append('country', $('#bldg_country').val());
+        formData.append('details', $('#bldg_desc').val());
+        formData.append('coordinates', $('#bldg_coords').val());
+        
+        // File uploads
+        if ($('#bldg_image_input')[0].files.length > 0) {
+            formData.append('building_image', $('#bldg_image_input')[0].files[0]);
         }
-        console.log(form_data);
+        if ($('#gcash_input')[0].files.length > 0) {
+            formData.append('gcash_qr', $('#gcash_input')[0].files[0]);
+        }        
+
+        console.log(formData);
         $.ajax({
             url: "/building/update_view/",
             type: 'POST',
-            data: form_data,
+            processData: false,  // Prevent converting data to a query string, for image
+            contentType: false,
+            data: formData,
             success: function(){
                 SoloMessageFlow("Successfully saved.");
             },
-            error: function(xhr) {
-                console.error("Error:", xhr.responseJSON.error);
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
             }
         })
     }
 
     function create_new_room(btn){
         const buildingid = $(btn).closest('#room_form').find('input[id="room_id_holder"]').val();
+        
+        let valid = true;
+        $('.newroom_container input[type="text"]').each(function() {
+            let input = $(this);
+            let text = $(this).val();
+            let label = input.closest('.newroom_container').find('label'); 
+
+            if (!input_text_validation(text)) {
+               SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be empty`, 'error');
+               $(input).focus();
+               valid = false;
+               return;
+            }
+        });
+
+        if(!input_text_numonly($('input[name="person_free"]').val())){
+            let label = $('input[name="person_free"]').closest('.newroom_container').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="person_free"]').focus();
+            return;
+        }
+
+        if(!input_text_numonly($('input[name="current_male"]').val())){
+            let label = $('input[name="current_male"]').closest('.newroom_container').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="current_male"]').focus();
+            return;
+        }
+
+        if(!input_text_numonly($('input[name="current_female"]').val())){
+            let label = $('input[name="current_female"]').closest('.newroom_container').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="current_female"]').focus();
+            return;
+        }
+
+        if(!input_text_numonly($('input[name="bed"]').val())){
+            let label = $('input[name="bed"]').closest('.newroom_container').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="bed"]').focus();
+            return;
+        }
+
+        if(!input_text_numonly($('input[name="double_deck"]').val())){
+            let label = $('input[name="double_deck"]').closest('.newroom_container').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="double_deck"]').focus();
+            return;
+        }
+
+        if (!valid){
+            return;
+        }
+
+        
+        
         form_data = {
             'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
             'buildingid': buildingid,
@@ -278,12 +378,13 @@ $(document).ready(function(){
             type: 'POST',
             data: form_data,
             success: function(){
-                alert('Successfully created new Room');
+                SoloMessageFlow('Successfully created new Room');
                 console.log(buildingid);
                 request_rooms(null, buildingid);
             },
-            error: function(xhr) {
-                console.error("Error:", xhr.responseJSON.error);
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
             }
         })
     }
@@ -355,8 +456,9 @@ $(document).ready(function(){
                     $('#no_room_message').removeClass('hidden');
                 }
             },
-            error: function(xhr) {
-                console.error("Error:", xhr.responseJSON.error);
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
             }
         });
     }
@@ -431,8 +533,8 @@ $(document).ready(function(){
                 $('#photo_view').removeClass('hidden'); 
             },
             error: function(xhr, status, error) {
-                console.log(xhr.responseText);
-                alert(`${xhr}: ${status}`);
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
             }
 
 
@@ -447,7 +549,7 @@ $(document).ready(function(){
         // Get file input element
         const fileInput = document.getElementById('certificate-upload');
         if (!fileInput.files || fileInput.files.length === 0) {
-          alert('Please select a file');
+          SoloMessageFlow('Please select a file', 'error');
           return;
         }
     
@@ -464,16 +566,16 @@ $(document).ready(function(){
             },
           })
           .then(function (response) {
-            alert('Upload successful!');
+            SoloMessageFlow('Upload successful!');
             resetFileUpload2();
           })
           .catch(function (error) {
             console.error(error);
-            alert(
+            SoloMessageFlow(
               `Error: ${
                 error.response?.data?.error || 'Upload failed!'
               }`
-            );
+            , 'error');
         });
     });
 
@@ -485,7 +587,7 @@ $(document).ready(function(){
         // Get file input element
         const fileInput = document.getElementById('room-photo-upload');
         if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select a file');
+            SoloMessageFlow('Please select a file', 'error');
         return;
         }
 
@@ -500,18 +602,18 @@ $(document).ready(function(){
             },
         })
         .then(function (response) {
-            alert('Room photo upload successful!');
+            SoloMessageFlow('Room photo upload successful!');
             show_room_photos(null, roomId);
             resetFileUploadRoomPhoto();
 
         })
         .catch(function (error) {
             console.error(error);
-            alert(
+            SoloMessageFlow(
             `Error: ${
                 error.response?.data?.error || 'Room photo upload failed!'
             }`
-            );
+            , 'error');
         });
     });
 
@@ -528,11 +630,11 @@ $(document).ready(function(){
             },
             success: function(response, status, message){
                 button.closest('li').remove(); // Remove the <li> from the DOM
-                alert("Successfully deleted image")
+                SoloMessageFlow("Successfully deleted image")
             },
-            error: function(xhr, status, error){
-                console.log(error);
-                alert(`Error: ${xhr.responseText.error || error}`);
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
             }
         })
     }
@@ -628,9 +730,9 @@ $(document).ready(function(){
                             //     <input type="text" name="price" value="${response_data.price}">
                             // </div>                
             },
-            error: function(xhr, status, error){
-                console.log(error);
-                alert(`Error: ${xhr.responseText.error || error}`);
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
             }
         })
 
@@ -639,6 +741,57 @@ $(document).ready(function(){
     function update_room(btn){
         let room_id = $(btn).val();
         let form = $('#edit_room_form_container');
+        let valid = true;
+        $('.lblinptdiv input[type="text"]').each(function() {
+            let input = $(this);
+            let text = $(this).val();
+            let label = input.closest('.lblinptdiv').find('label'); 
+
+            if (!input_text_validation(text)) {
+               SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be empty`, 'error');
+               $(input).focus();
+               valid = false;
+            }
+        });
+
+        if(!input_text_numonly($('input[name="person_free"]').val())){
+            let label = $('input[name="person_free"]').closest('.lblinptdiv').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="person_free"]').focus();
+            return;
+        }
+
+        if(!input_text_numonly($('input[name="current_male"]').val())){
+            let label = $('input[name="current_male"]').closest('.lblinptdiv').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="current_male"]').focus();
+            return;
+        }
+
+        if(!input_text_numonly($('input[name="current_female"]').val())){
+            let label = $('input[name="current_female"]').closest('.lblinptdiv').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="current_female"]').focus();
+            return;
+        }
+
+        if(!input_text_numonly($('input[name="bed"]').val())){
+            let label = $('input[name="bed"]').closest('.lblinptdiv').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="bed"]').focus();
+            return;
+        }
+
+        if(!input_text_numonly($('input[name="double_deck"]').val())){
+            let label = $('input[name="double_deck"]').closest('.lblinptdiv').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a number without spaces and special characters`, 'error');
+            $('input[name="double_deck"]').focus();
+            return;
+        }
+
+        if (!valid){
+            return;
+        }
 
         let form_data = {
             'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
@@ -662,18 +815,20 @@ $(document).ready(function(){
             'free_wifi': $('input[name="free_wifi"]').is(':checked')
         };
 
+        console.log(form_data);
+
         $.ajax({
             url: '/room_update_view/',
             type: 'POST',
             data: form_data,
             success: function(){
-                alert('success');
+                SoloMessageFlow('Successfully saved')
             },
             error: function(xhr, status, error){
                 if (xhr.responseJSON && xhr.responseJSON.error) {
-                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${xhr.responseJSON.error}`, 'error');
                 } else {
-                    alert(`Error ${xhr.status}: ${error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${error}`, 'error');
                 }
             }
         });
@@ -682,6 +837,7 @@ $(document).ready(function(){
 
     function request_certificates(btn){
         const buildingid = $(btn).closest('ul').find('input[class="building_id"]').val();
+        $('#certificatelists').empty(); 
         $.ajax({
             url: '/certificates/get/',
             type: 'GET',
@@ -689,8 +845,48 @@ $(document).ready(function(){
                 'buildingid': buildingid
             }, 
             success: function(response){
-                console.log(response.certificates);
+                $.each(response.certificates, function(index, data){
+                    li = $('<li></li>', {
+                        class: 'certificate_item'
+                    });
+
+                    h3 = $('<h3></h3>', {
+                        class: 'certificate_item_name',
+                        value: data.certificate_id,
+                        text: data.certificate_name
+                    });
+
+                    li.append(h3);
+                    $('#certificatelists').append(li);
+                })
+                
+                
             }, 
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
+            }
+        })
+    }
+
+    function request_certificate_data(element){
+        const id = $(element).find('.certificate_item_name').attr('value');
+
+        $.ajax({
+            url: '/certificate/get_byid/',
+            type: 'GET',
+            data: {
+                'cert_id': id
+            },
+            success: function(response){
+                console.log(response);
+                $('#certificate_name').text(response.certificate_name);
+                $('#cert_date').text(response.date);
+                $('#cert_image').attr('src', response.image);
+
+                $('.form_item').addClass('hidden');
+                $('#view_certificate').removeClass('hidden');
+            },
             error: function(xhr, status, error) {
                 let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
                 SoloMessageFlow(`${errorMessage}`, 'error');
@@ -797,7 +993,7 @@ $(document).ready(function(){
                 });                
             },
             error: function(xhr, status, error) {
-                alert(`Error ${xhr.status}: ${error}`);
+                SoloMessageFlow(`Error ${xhr.status}: ${error}`, 'error');
             }
         });
     }
@@ -806,6 +1002,12 @@ $(document).ready(function(){
     function save_new_policy(btn){
         let bldg_id = $('#add_policy_btn').val()
         let text_element = $(btn).closest('li').find('textarea').val();
+
+        if(!input_text_validation(text_element)){
+            SoloMessageFlow('Policy cannot be empty', 'error');
+            return;
+        }
+
         form_inputs = {
             'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
             'buildingid': bldg_id,
@@ -820,9 +1022,9 @@ $(document).ready(function(){
             },
             error: function(xhr, status, error){
                 if (xhr.responseJSON && xhr.responseJSON.error) {
-                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${xhr.responseJSON.error}`, 'error');
                 } else {
-                    alert(`Error ${xhr.status}: ${error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${error}`, 'error');
                 }
             }
         })
@@ -843,9 +1045,9 @@ $(document).ready(function(){
             },
             error: function(xhr, status, error){
                 if (xhr.responseJSON && xhr.responseJSON.error) {
-                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${xhr.responseJSON.error}`, 'error');
                 } else {
-                    alert(`Error ${xhr.status}: ${error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${error}`, 'error');
                 }
             }
         })
@@ -862,11 +1064,14 @@ $(document).ready(function(){
         let policy_text = li.find('textarea.edit_policy_text').val();
         let policy_id = $(btn).data('policy-id'); // Retrieve policy_id here
     
-        console.log("Policy Text:", policy_text);
-        console.log("Policy ID:", policy_id); // Verify if policy_id is retrieved correctly
-    
+        if (!input_text_validation(policy_text)){
+            SoloMessageFlow('Policy cannot be empty', 'error');
+            return; 
+        }
+
+
         if (!policy_id) {
-            alert("Policy ID not found");
+            SoloMessageFlow("Policy ID not found", 'error');
             return;
         }
     
@@ -879,14 +1084,14 @@ $(document).ready(function(){
                 'policy': policy_text
             },
             success: function() {
-                alert('Success');
+                SoloMessageFlow('Success');
                 refresh_policy_display();
             },
             error: function(xhr, status, error) {
                 if (xhr.responseJSON && xhr.responseJSON.error) {
-                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${xhr.responseJSON.error}`, 'error');
                 } else {
-                    alert(`Error ${xhr.status}: ${error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${error}`, 'error');
                 }
             }
         });
@@ -925,14 +1130,14 @@ $(document).ready(function(){
             type: 'POST',
             data: form_data,
             success: function(){
-                alert('Successfuly created Amenities');
+                SoloMessageFlow('Successfuly created Amenities');
                 request_amenity(null, building_id);
             },
             error: function(xhr, status, error){
                 if (xhr.responseJSON && xhr.responseJSON.error) {
-                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${xhr.responseJSON.error}`,  'error');
                 } else {
-                    alert(`Error ${xhr.status}: ${error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${error}`, 'error');
                 }
             }
         })
@@ -1055,10 +1260,10 @@ $(document).ready(function(){
                     if (status === 404) {
                         console.log("status is 404");
                     } else{
-                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${xhr.responseJSON.error}`, 'error');
                     }
                 } else {
-                    alert('Other errors');
+                    SoloMessageFlow('Server Error', 'error');
                 }
             }
         })
@@ -1094,7 +1299,6 @@ $(document).ready(function(){
             type: 'POST',
             data: form_data,
             success: function(){
-                alert('success');
                 request_amenity(null, building_id);
             },
             error: function(xhr, status, error){
@@ -1102,13 +1306,53 @@ $(document).ready(function(){
                     if (status === 404) {
                         console.log("status is 404");
                     } else{
-                    alert(`Error ${xhr.status}: ${xhr.responseJSON.error}`);
+                    SoloMessageFlow(`Error ${xhr.status}: ${xhr.responseJSON.error}`, 'error');
                     }
                 } else {
-                    alert('Other errors');
+                    SoloMessageFlow('Server Error', 'error');
                 }
             }
         });
+    }
+
+    function previewImage(input, imgElement) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                $(imgElement).attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+      // FULL SCREEN THING
+    function openFullScreen(img) {
+        console.log(img);
+        const fullImage = $('#fullscreen-image');
+        const overlay = $('#fullscreen-overlay');
+        
+        fullImage.attr('src', img);
+        overlay.css('display', 'flex');
+    }
+
+    function closeFullScreen() {
+        console.log("Close Fullscreen");
+        $('#fullscreen-overlay').css('display', 'none');
+    }
+
+    function input_text_validation(txt){
+        if(txt === '' || txt.split(' ').join('').length < 1 || txt.trim().length < 1){
+            return false;
+        }
+
+        return true;
+    }
+
+    function input_text_numonly(txt){
+        let value = txt.trim();
+        return /^\d+$/.test(value);
     }
 }); // ready function
 

@@ -1,5 +1,9 @@
 $(document).ready(function(){
     request_bookmarks();
+    $('#buildings').on('click', '.heart_sign', function(){
+        remove_bookmark($(this));
+    });
+
     function request_bookmarks(){
         const section = $('section');
         $.ajax({
@@ -50,7 +54,7 @@ $(document).ready(function(){
                     box.append(div);
                     
                     
-                    $('.buildings').append(box);
+                    $('#buildings').append(box);
                     
                 })
             }, 
@@ -63,4 +67,28 @@ $(document).ready(function(){
             }
         })
     }
+
+    function remove_bookmark(btn){
+        console.log(btn);
+        building_id = $(btn).attr('value');
+        $.ajax({
+            url: '/user/bookmark/delete/',
+            type: 'POST',
+            data: {
+            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+            'building_id': building_id
+            },
+            success: function (){
+                $(btn).removeClass('heart-active')
+                SoloMessageFlow("Removed from Bookmark", "success");
+
+                $(btn).closest('.buildingbox').remove();
+            },
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
+              }
+        })
+    }
+
 }) // ready function

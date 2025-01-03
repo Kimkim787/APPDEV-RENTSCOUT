@@ -38,7 +38,7 @@ class ScoutUserCreationForm(UserCreationForm):
     class Meta:
         model = ScoutUser
         fields = ('email', 'firstname', 'lastname',
-                  'middlename', 'gender', 'password1', 'password2', )
+                  'middlename', 'birthdate', 'gender', 'password1', 'password2', )
                    #'barangay', 'province', 'city', 'contact' ) # 
 
 class ScoutUserChangeForm(UserChangeForm):
@@ -52,7 +52,7 @@ class ScoutUserProfileForm(UserChangeForm):
         model = ScoutUser
         fields = ('firstname', 'lastname', 'middlename',
                   'birthdate', 'gender', 'barangay', 
-                  'province', 'city', 'contact',)
+                  'province', 'city', 'contact', 'profile_image')
         
     barangay = forms.CharField(required=False)
     province = forms.CharField(required=False)
@@ -76,7 +76,7 @@ class LandlordUserProfileForm(UserChangeForm):
         model = ScoutUser_Landlord
         fields = ('firstname', 'lastname', 'middlename',
                   'birthdate', 'gender', 'barangay', 
-                  'province', 'city', 'contact', 'gcash', )
+                  'province', 'city', 'contact', 'gcash', 'profile_image' )
 
     barangay = forms.CharField(required=False)
     province = forms.CharField(required=False)

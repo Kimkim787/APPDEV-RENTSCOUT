@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
                      Feedback, RoomImage, ScoutUser_Landlord, AdminUser,
                      ScoutUserBookmark, LandlordUserBookmark, BuildingReport,
-                     Verification, Reservation, Message, Payment
+                     Verification, Reservation, Message, Payment, Certificate
                      )   
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
                     RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin,
@@ -91,3 +91,4 @@ admin.site.register(Verification)
 admin.site.register(Reservation)
 admin.site.register(Message)
 admin.site.register(Payment)
+admin.site.register(Certificate)

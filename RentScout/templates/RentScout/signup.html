@@ -33,16 +33,16 @@
         </div> 
         {% endcomment %}
 
-        <form class="inputbox" action="" method = 'POST'>
+        <form class="inputbox" action="" method = 'POST' id="signup_form">
             {% csrf_token %}
             
              <div id="first_form"><!-- ICHI NO KATA! -->
                 <label for="firstname">Firstname:</label>
-                <input type="text" name="{{ form.firstname.name }}" required>
+                <input type="text" name="{{ form.firstname.name }}" for_err="Firstname" required>
                 <label for="lastname">Lastname:</label>
-                <input type="text" name="{{ form.lastname.name }}" required>
+                <input type="text" name="{{ form.lastname.name }}" for_err="Lastname" required>
                 <label for="middlename">Middlename:</label>
-                <input type="text" name="{{ form.middlename.name }}" required>
+                <input type="text" name="{{ form.middlename.name }}" for_err="Middlename" required>
                 <label for="gender">Gender:</label>
                 <select name="{{ form.gender.name }}" id="gender" required>
                     <option value="Male" selected>Male</option>
@@ -51,9 +51,9 @@
                 </select>
 
                 <label for="birthdate">Birthdate:</label>
-                <input type="text" name="{{ form.birthdate.name }}" placeholder="yyyy-mm-dd" required>
+                <input type="text" name="{{ form.birthdate.name }}" placeholder="yyyy-mm-dd" for_err="Birthdate" required>
 
-                <button type="button" id="next_form">Next</button>
+                <!-- <button type="button" id="next_form">Next</button> -->
                 <a id="has_account" href="{% url 'signin' %}"><p>Already have account?</p></a>
             </div>
 
@@ -66,21 +66,21 @@
                 </div>
                 
                 <label for="password1">Enter password:</label>
-                <input type="password" name="{{ form.password1.name }}" tabindex="-1" disabled required>
+                <input type="password" name="{{ form.password1.name }}" tabindex="-1"  required disabled>
                 
                 <label for="password2">Confirm password:</label>
-                <input type="password" name="{{ form.password2.name }}" tabindex="-1" disabled required>
+                <input type="password" name="{{ form.password2.name }}" tabindex="-1"  required disabled>
                 <!-- <input type="submit" value="Create Account" class="button"> -->
 
                 <label for="role">Role:</label>
-                <select name="role" id="role"  tabindex="-1" disabled required>
+                <select name="role" id="role"  tabindex="-1"  required  disabled>
                     <option selected>-------</option>
                     <option value="Boarder">Boarder</option>
                     <option value="Landlord">Landlord</option>
                 </select >
-                <button type="submit" id="create_account_btn" disabled>Create Account</button>
-                <button type="button" id="back_button">Back</button>
-                <a id="has_account" href="{% url 'signin' %}"><p>Already have account?</p></a>
+                <button type="submit" id="create_account_btn" >Create Account</button>
+                <!-- <button type="button" id="back_button">Back</button> -->
+                <!-- <a id="has_account" href="{% url 'signin' %}"><p>Already have account?</p></a> -->
             </div>
         </form>
         <div class="signupdiv">
@@ -88,14 +88,16 @@
             <img src="{% static 'imgs/nav/logo22.png' %}" alt="Website logo" >
         </div>
 
-        {% for message in messages %}
-            {% if 'success' in message.tags %}
-                <p class="message success_message">{{ message }}</p>
-            {% else %}
-                <p class="message error_message">{{ message }}</p>
-            {% endif %}
-        {% endfor %}
-    </section>
+        <div id="messages-container">
+            {% for message in messages %}
+                {% if 'success' in message.tags %}
+                    <p class="message success_message">{{ message }}</p>
+                {% else %}
+                    <p class="message error_message">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+        </section>
 
     <div id="otp_confirmation_form" class="hidden">
         <h2>OTP CONFIRMATION FORM</h2>
@@ -106,9 +108,11 @@
         <button type="button" id="confirm_otp">Confirm code</button>
     </div>
 
+    <script src="{% static 'scripts/index.js' %}"></script>
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
     </script>
+
     <script type="text/javascript" src="{% static 'scripts/jquery.js' %}"></script>
     <script src="{% static 'scripts/genderCssToggle.js' %}"></script>
 </body>

@@ -263,6 +263,11 @@ $(document).ready(function() {
     })
   })
 
+  // CANCEL PAYMENT FORM
+  $('#cancel_payment_btn').on('click', function(){
+    $('#send_payment').addClass('hidden');
+  })
+
   function closereport(){
     const report_modal = $("#report_modal");
     $(report_modal).addClass('hidden');

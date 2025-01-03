@@ -57,14 +57,3 @@ function SoloMessageFlow(message, status = "success"){
     }, 10000);
 }
 
-// setTimeout(() => {
-//     SoloMessageFlow("Hello Nigga");
-// }, 1000);
-
-// setTimeout(() => {
-//     SoloMessageFlow("Hello Nigga");
-// }, 2000);
-
-// setTimeout(() => {
-//     SoloMessageFlow("Hello Nigga");
-// }, 3000);
