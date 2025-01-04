@@ -102,11 +102,11 @@
                             <input type="text" id="bldg_name" name="{{ bldg_form.building_name.name }}" value="{{ form.building_name.value }}" required>
                         </div>
                         <div class="input_label_div">
-                            <label for="price">Price</label>
+                            <label for="price">Price:</label>
                             <input type="number" id="bldg_price" name="{{ bldg_form.price.name }}" value="{{ form.price.value }}" required>
                         </div>
                         <div class="input_label_div">
-                            <label for="vacant">Vacant Rooms</label>
+                            <label for="vacant">Vacant Rooms:</label>
                             <input type="number" id="bldg_vacant" name = "{{ bldg_form.rooms_vacant.name }}" value="{{ form.rooms_vacant.value }}" required>
                         </div>
                         <div class="input_label_div">
@@ -114,27 +114,27 @@
                             <input type="number" id="bldg_zipcode" name="{{ bldg_form.zip_code.name }}" value="{{ form.zip_code.value }}" required>
                         </div>
                         <div class="input_label_div">
-                            <label for="street">Street</label>
+                            <label for="street">Street:</label>
                             <input type="text" id="bldg_street" name = "{{ bldg_form.street.name }}" value="{{ form.street.value }}" required>
                         </div>
                         <div class="input_label_div">
-                            <label for="city">City</label>
+                            <label for="city">City:</label>
                             <input type="text" id="bldg_city" name = "{{ bldg_form.city.name }}" value="{{ form.city.value }}" required>
                         </div>
                         <div class="input_label_div">
-                            <label for="province">Province</label>
+                            <label for="province">Province:</label>
                             <input type="text" id="bldg_province" name = "{{ bldg_form.province.name }}" value="{{ form.province.value }}" required>
                         </div>
                         <div class="input_label_div">
-                            <label for="country">Country</label>
+                            <label for="country">Country:</label>
                             <input type="text" id="bldg_country" name = "{{ bldg_form.country.name }}" value="{{ form.country.value }}" required>
                         </div>
                         <div class="input_label_div">
-                            <label for="coordinates">Coordinates</label>
+                            <label for="coordinates">Coordinates:</label>
                             <input type="text" id="bldg_coords" name="{{ bldg_form.coordinates.name }}" value="{{ form.coordinates.value }}" required>
                         </div>
                         <div class="input_label_div">
-                            <label for="details">Details</label>
+                            <label for="details">Details:</label>
                             <textarea id="bldg_desc" name="{{ bldg_form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
                         </div>
 
@@ -235,50 +235,68 @@
                     {% csrf_token %}
                     <div class="newbuilddiv">
                         <label for="building_name">Building Name:</label>
-                        <input type="text" name="{{ building_form.building_name.name }}" required>
+                        <input type="text" name="{{ bldg_form.building_name.name }}" required>
                     </div>
                     <div class="newbuilddiv">
-                        <label for="vacant">Vacant Rooms</label>
-                        <input type="number" name = "{{ building_form.rooms_vacant.name }}" required>
+                        <label for="vacant">Vacant Rooms:</label>
+                        <input type="number" name = "{{ bldg_form.rooms_vacant.name }}" required>
                     </div>
                     <div class="newbuilddiv">
-                        <label for="price">Price</label>
-                        <input type="number" name="{{ building_form.price.name }}" required>
+                        <label for="price">Price:</label>
+                        <input type="number" name="{{ bldg_form.price.name }}" required>
                     </div>
                     <div class="newbuilddiv">
                         <label for="zip_code">Zip Code:</label>
-                        <input type="number" name="{{ building_form.zip_code.name }}" required>
+                        <input type="number" name="{{ bldg_form.zip_code.name }}" required>
                     </div>
                     <div class="newbuilddiv">
-                        <label for="street">Street</label>
-                        <input type="text" name = "{{ building_form.street.name }}" required>
+                        <label for="street">Street:</label>
+                        <input type="text" name = "{{ bldg_form.street.name }}" required>
                     </div>
                     <div class="newbuilddiv">
-                        <label for="city">City</label>
-                        <input type="text" name = "{{ building_form.city.name }}" required>
+                        <label for="city">City:</label>
+                        <input type="text" name = "{{ bldg_form.city.name }}" required>
                     </div>
                     <div class="newbuilddiv">
-                        <label for="province">Province</label>
-                        <input type="text" name = "{{ building_form.province.name }}" required>
+                        <label for="province">Province:</label>
+                        <input type="text" name = "{{ bldg_form.province.name }}" required>
                     </div>
                     <div class="newbuilddiv">
-                        <label for="country">Country</label>
-                        <input type="text" name = "{{ building_form.country.name }}" required>
+                        <label for="country">Country:</label>
+                        <input type="text" name = "{{ bldg_form.country.name }}" required>
                     </div>
                     <div class="newbuilddiv">
-                        <label for="coordinates">Coordinates</label>
-                        <input type="text" name="{{ building_form.coordinates.name }}" required>
+                        <label for="coordinates">Coordinates:</label>
+                        <input type="text" name="{{ bldg_form.coordinates.name }}" id="new_bldg_coords" required>
                     </div>
                     <div class="newbuilddiv">
-                        <label for="details">Details</label>
-                        <textarea name="{{ building_form.details.name }}" id="" cols="30" rows="10"></textarea>
+                        <label for="details">Details:</label>
+                        <textarea name="{{ bldg_form.details.name }}" id="new_bldg_details" cols="30" rows="10"></textarea>
                     </div>
-                    <div class="newbuilddiv2">
-                        <input class="newbuildsubmit" type="submit" value="Submit">
-                        <div>
-                            {{ building_form.building_image }}
+
+                    <div class="newbuilddiv">
+                        <label for="building_image">Building Image:</label>
+                        <input type="file" name="{{ bldg_form.building_image.name }}"  id="new_bldg_image_input" class="hidden">
+                        <div id="building_image_box">
+                            <img src="/media/upload/building_imgs/no-image.png" alt="building_image" id="new_bldg_image">
+                            <img src="{% static 'imgs/upload_image.png' %}" alt="upload_icon" class='image_upload_icon' title="Update Building Image" id="new_bldg_image_upload">
                         </div>
                     </div>
+
+                    <div class="newbuilddiv">
+                        <label for="building_image">Gcash:</label>
+                        <input type="file" name="{{ bldg_form.gcash_qr.name }}" id="new_gcash_input" class="hidden">
+                        <div id="gcash_box">
+                            <img src="/media/upload/building_imgs/no-image.png" alt="gcash_qr" id="new_gcash_image">
+                            <img src="{% static 'imgs/upload_image.png' %}" alt="upload_icon" class='image_upload_icon' title="Update new GCash QR"  id="new_bldg_gcash_upload">
+                        </div>
+                        
+                    </div>
+
+                    <div class="newbuilddiv">
+                        <input id="newbuildsubmit" type="submit" value="Submit">
+                    </div>
+
                 </form>
         
             </div>

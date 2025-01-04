@@ -349,3 +349,7 @@
     -moz-user-select: none;     /* Firefox */
     -ms-user-select: none;      /* IE/Edge */
 }
+
+#messages-container {
+    pointer-events: none;
+}

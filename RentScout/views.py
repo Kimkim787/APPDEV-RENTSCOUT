@@ -235,6 +235,7 @@ def create_building_edit_page(request):
             newbuilding = form.save(commit = False)
             newbuilding.building_owner = request.user
             newbuilding.save()
+            messages.success(request, f'Building {newbuilding.building_name} has been created')
             return redirect('edit_building')
         else:
             print(form.errors)

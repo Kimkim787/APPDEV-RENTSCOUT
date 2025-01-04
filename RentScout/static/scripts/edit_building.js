@@ -195,7 +195,16 @@ $(document).ready(function(){
         $('#large_image_view').addClass('hidden');
     });    
 
-    // Handle file selection and image preview
+    // Handle file selection and image preview For new Building
+    $('#new_bldg_image_input').on('change', function() {
+        previewImage(this, '#new_bldg_image');
+    });
+
+    $('#new_gcash_input').on('change', function() {
+        previewImage(this, '#new_gcash_image');
+    });
+
+    // Handle file selection and image preview for update building
     $('#bldg_image_input').on('change', function() {
         previewImage(this, '#bldg_image');
     });
@@ -204,10 +213,17 @@ $(document).ready(function(){
         previewImage(this, '#gcash_image');
     });
 
-    $('#bldg_image_upload').on('click', function(){
-        $('#bldg_image_input').trigger('click');
+
+    // TRIGGER BUTTON FOR IMAGE UPLOAD NEW BUILDING
+    $('#new_bldg_image_upload').on('click', function(){
+        $('#new_bldg_image_input').trigger('click');
     })
 
+    $('#new_bldg_gcash_upload').on('click', function(){
+        $('#new_gcash_input').trigger('click');
+    })
+
+    // TRIGGER BUTTON FOR IMAGE UPLOAD UPDATE BUILDING BUILDING
     $('#bldg_gcash_upload').on('click', function(){
         $('#gcash_input').trigger('click');
     })
@@ -221,6 +237,58 @@ $(document).ready(function(){
     });
 
     $('#fullscreen-overlay').on('click', closeFullScreen);
+
+    $('#newbuildsubmit').on('click', function(e){
+        e.preventDefault();
+        let valid = true;
+
+        $('.newbuilddiv input[type="text"]').each(function() {
+            let input = $(this);
+            let text = $(this).val();
+            let label = input.closest('.newbuilddiv').find('label'); 
+
+            if (!input_text_validation(text)) {
+               SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be empty`, 'error');
+               $(input).focus();
+               valid = false;
+               return false;
+            }
+        });
+
+        if (!valid) return;
+
+        $('.newbuilddiv input[type="number"]').each(function() {
+            let input = $(this);
+            let text = $(this).val();
+            let label = input.closest('.newbuilddiv').find('label'); 
+
+            if (!input_text_numonly(text)) {
+               SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be empty`, 'error');
+               $(input).focus();
+               valid = false;
+               return false;
+            }
+        });
+
+        if (!valid) return;
+
+        if(!isGoogleMapsURL($('#new_bldg_coords').val())){
+            let label = $('#new_bldg_coords').closest('.input_label_div').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a link from google maps`, 'error');
+            $('#new_bldg_coords').focus();
+            return;
+        }
+
+        if (!input_text_validation($('#new_bldg_details').val())) {
+            let label = $('#new_bldg_details').closest('.input_label_div').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be blank`, 'error');
+            $('#new_bldg_details').focus();
+            return;
+         }
+
+        if(valid) $(this).closest('form').submit();
+
+    })
 
 
     // UPDATE BILDING GET FUNCTION
@@ -257,6 +325,7 @@ $(document).ready(function(){
     // UPDATE BUILDING POST FUNCTION
     function update_building(){
         let formData = new FormData();
+        let valid = true;
         formData.append('bldg_id', $('#building_id_holder').val());
         formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
         formData.append('building_name', $('#bldg_name').val());
@@ -277,6 +346,50 @@ $(document).ready(function(){
         if ($('#gcash_input')[0].files.length > 0) {
             formData.append('gcash_qr', $('#gcash_input')[0].files[0]);
         }        
+
+        $('.input_label_div input[type="text"]').each(function() {
+            let input = $(this);
+            let text = $(this).val();
+            let label = input.closest('.input_label_div').find('label'); 
+
+            if (!input_text_validation(text)) {
+               SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be empty`, 'error');
+               $(input).focus();
+               valid = false;
+               return false;
+            }
+        });
+
+        if (!valid) return;
+
+        $('.input_label_div input[type="number"]').each(function() {
+            let input = $(this);
+            let text = $(this).val();
+            let label = input.closest('.input_label_div').find('label'); 
+
+            if (!input_text_numonly(text)) {
+               SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be empty`, 'error');
+               $(input).focus();
+               valid = false;
+               return false;
+            }
+        });
+
+        if (!valid) return;
+
+        if(!isGoogleMapsURL($('#bldg_coords').val())){
+            let label = $('#bldg_coords').closest('.input_label_div').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} must be a link from google maps`, 'error');
+            $('#bldg_coords').focus();
+            return;
+        }
+
+        if (!input_text_validation($('#bldg_desc').val())) {
+            let label = $('#bldg_desc').closest('.input_label_div').find('label');
+            SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be blank`, 'error');
+            $('#bldg_desc').focus();
+            return;
+         }
 
         console.log(formData);
         $.ajax({
@@ -308,9 +421,11 @@ $(document).ready(function(){
                SoloMessageFlow(`${$(label).text().slice(0, -1)} cannot be empty`, 'error');
                $(input).focus();
                valid = false;
-               return;
+               return false;
             }
         });
+
+        if (!valid) return;
 
         if(!input_text_numonly($('input[name="person_free"]').val())){
             let label = $('input[name="person_free"]').closest('.newroom_container').find('label');
@@ -347,9 +462,7 @@ $(document).ready(function(){
             return;
         }
 
-        if (!valid){
-            return;
-        }
+
 
         
         
@@ -1352,8 +1465,15 @@ $(document).ready(function(){
 
     function input_text_numonly(txt){
         let value = txt.trim();
-        return /^\d+$/.test(value);
+        return value !== '' && /^\d+$/.test(value);
     }
+
+    function isGoogleMapsURL(text) {
+        const googleMapsPattern = /^(https?:\/\/)?(www\.)?(maps\.google\.com|google\.com\/maps|maps\.app\.goo\.gl)\/.+$/;
+        return googleMapsPattern.test(text);
+    }
+    
+
 }); // ready function
 
 

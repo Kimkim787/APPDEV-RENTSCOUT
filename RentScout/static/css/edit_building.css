@@ -1019,8 +1019,7 @@ img[src*="down.png"] {
     height: 150px;
 }
 
-#bldg_image{
-
+#bldg_image, #new_bldg_image{
     width: 100%;
     height: 100%
 }
@@ -1031,7 +1030,7 @@ img[src*="down.png"] {
     height: 150px;
 }
 
-#gcash_image{
+#gcash_image, #new_gcash_image{
     
     width: 100%;
     height: 100%;
