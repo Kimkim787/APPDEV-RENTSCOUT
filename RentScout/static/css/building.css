@@ -7,6 +7,7 @@
 .buildingbody{
   display: flex;
   justify-content: space-between;
+  align-items: start;
   padding: 25px 35px 0 35px;
   height: 81.9vh;
   width: 100%;
@@ -20,7 +21,6 @@
   height: 453px;
   width: 70%;
   gap: 25px;
-  padding: 10px;
   /* background-color: white;
   border: 1px solid rgb(223, 223, 225); */
 }
@@ -206,7 +206,7 @@
 .fixedpage{
   display: flex;
   flex-direction: column;
-  height: fit-content;
+  height: 470px;
   gap: 10px;
   width: 32%;
   border: 1px solid rgb(223, 223, 225);
@@ -218,6 +218,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.bhouseicons{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: fit-content;
+  gap: 10px;
 }
 .fixedpage div img{
   height: 25px;
@@ -244,13 +251,17 @@
 .verifyRequestbox{
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: left;
   width: 100%;
+  gap: 10px;
 }
 #qr_container{
   display: flex;
   justify-content: space-between;
   width: 190px;
+}
+#verify_btn{
+  padding: 5px 10px;
 }
 #online_transaction_container div button{
   padding: 5px 10px;
@@ -276,7 +287,7 @@ p span{
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 170px;
+  height: 100%;
   width: 100%;
   padding: 10px;
   gap: 10px;
@@ -353,8 +364,8 @@ p span{
 }
 
 #heart_sign {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   background-image: url('../imgs/svgs/black_heart.svg');
   background-size: contain;
   background-repeat: no-repeat;

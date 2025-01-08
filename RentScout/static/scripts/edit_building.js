@@ -229,6 +229,9 @@ $(document).ready(function(){
     $('#bldg_gcash_upload').on('click', function(){
         $('#gcash_input').trigger('click');
     })
+    $('#bldg_image_upload').on('click', function(){
+        $('#bldg_image_input').trigger('click');
+    })
     
     $('#certificatelists').on('click', '.certificate_item', function(){
         request_certificate_data($(this));
