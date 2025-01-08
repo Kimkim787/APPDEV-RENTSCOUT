@@ -84,7 +84,9 @@
         </div>
 
         <div id="certificate_bar" class="hidden">
+            <h2>Certificates</h2>
             <button id="add_certificate_btn">Add New Certificate</button>
+            
             <ul id="certificatelists">
 
             </ul>
@@ -137,25 +139,27 @@
                             <label for="details">Details:</label>
                             <textarea id="bldg_desc" name="{{ bldg_form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
                         </div>
-
-                        <div class="input_label_div">
+                    </div>
+                    <div class="mainimgbox">
+                        <div class="imgbox">
                             <label for="building_image">Building Image:</label>
                             <input type="file" name="{{ bldg_form.building_image.name }}"  id="bldg_image_input" class="hidden">
                             <div id="building_image_box">
                                 <img src="{{ bldg_form.building_image.src }}" alt="building_image" id="bldg_image">
-                                <img src="{% static 'imgs/upload_image.png' %}" alt="upload_icon" class='image_upload_icon' title="Update Building Image" id="bldg_image_upload">
+                                <img src="{% static 'imgs/plus.png' %}" alt="upload_icon" class='image_upload_icon' title="Update Building Image" id="bldg_image_upload">
                             </div>
                         </div>
 
-                        <div class="input_label_div">
+                        <div class="imgbox">
                             <label for="building_image">Gcash:</label>
                             <input type="file" name="{{ bldg_form.gcash_qr.name }}" id="gcash_input" class="hidden">
                             <div id="gcash_box">
                                 <img src="{{ bldg_form.gcash_qr.src }}" alt="gcash_qr" id="gcash_image">
-                                <img src="{% static 'imgs/upload_image.png' %}" alt="upload_icon" class='image_upload_icon' title="Update new GCash QR"  id="bldg_gcash_upload">
+                                <img src="{% static 'imgs/plus.png' %}" alt="upload_icon" class='image_upload_icon' title="Update new GCash QR"  id="bldg_gcash_upload">
                             </div>
                             
                         </div>
+                        <input type="submit" value="Save">
                     </div>
                     <div class="btn_container">
                         <button type="button" id="del_bldg_id" value="">Delete</button>
@@ -236,69 +240,73 @@
                 <h1>NEW BUILDING FORM</h1>
                 <form class="newbuildingform" action="{% url 'add_building' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="newbuilddiv">
-                        <label for="building_name">Building Name:</label>
-                        <input type="text" name="{{ bldg_form.building_name.name }}" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="vacant">Vacant Rooms:</label>
-                        <input type="number" name = "{{ bldg_form.rooms_vacant.name }}" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="price">Price:</label>
-                        <input type="number" name="{{ bldg_form.price.name }}" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="zip_code">Zip Code:</label>
-                        <input type="number" name="{{ bldg_form.zip_code.name }}" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="street">Street:</label>
-                        <input type="text" name = "{{ bldg_form.street.name }}" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="city">City:</label>
-                        <input type="text" name = "{{ bldg_form.city.name }}" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="province">Province:</label>
-                        <input type="text" name = "{{ bldg_form.province.name }}" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="country">Country:</label>
-                        <input type="text" name = "{{ bldg_form.country.name }}" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="coordinates">Coordinates:</label>
-                        <input type="text" name="{{ bldg_form.coordinates.name }}" id="new_bldg_coords" required>
-                    </div>
-                    <div class="newbuilddiv">
-                        <label for="details">Details:</label>
-                        <textarea name="{{ bldg_form.details.name }}" id="new_bldg_details" cols="30" rows="10"></textarea>
-                    </div>
-
-                    <div class="newbuilddiv">
-                        <label for="building_image">Building Image:</label>
-                        <input type="file" name="{{ bldg_form.building_image.name }}"  id="new_bldg_image_input" class="hidden">
-                        <div id="building_image_box">
-                            <img src="/media/upload/building_imgs/no-image.png" alt="building_image" id="new_bldg_image">
-                            <img src="{% static 'imgs/upload_image.png' %}" alt="upload_icon" class='image_upload_icon' title="Update Building Image" id="new_bldg_image_upload">
+                    <div class="newbuildinginputmainbox">
+                        <div class="newbuilddiv">
+                            <label for="building_name">Building Name:</label>
+                            <input type="text" name="{{ bldg_form.building_name.name }}" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="vacant">Vacant Rooms:</label>
+                            <input type="number" name = "{{ bldg_form.rooms_vacant.name }}" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="price">Price:</label>
+                            <input type="number" name="{{ bldg_form.price.name }}" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="zip_code">Zip Code:</label>
+                            <input type="number" name="{{ bldg_form.zip_code.name }}" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="street">Street:</label>
+                            <input type="text" name = "{{ bldg_form.street.name }}" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="city">City:</label>
+                            <input type="text" name = "{{ bldg_form.city.name }}" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="province">Province:</label>
+                            <input type="text" name = "{{ bldg_form.province.name }}" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="country">Country:</label>
+                            <input type="text" name = "{{ bldg_form.country.name }}" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="coordinates">Coordinates:</label>
+                            <input type="text" name="{{ bldg_form.coordinates.name }}" id="new_bldg_coords" required>
+                        </div>
+                        <div class="newbuilddiv">
+                            <label for="details">Details:</label>
+                            <textarea name="{{ bldg_form.details.name }}" id="new_bldg_details" cols="30" rows="10"></textarea>
                         </div>
                     </div>
-
-                    <div class="newbuilddiv">
-                        <label for="building_image">Gcash:</label>
-                        <input type="file" name="{{ bldg_form.gcash_qr.name }}" id="new_gcash_input" class="hidden">
-                        <div id="gcash_box">
-                            <img src="/media/upload/building_imgs/no-image.png" alt="gcash_qr" id="new_gcash_image">
-                            <img src="{% static 'imgs/upload_image.png' %}" alt="upload_icon" class='image_upload_icon' title="Update new GCash QR"  id="new_bldg_gcash_upload">
+                    <div class="newbuildinginputmainbox2">
+                        <div class="newbuilddiv2">
+                            <label for="building_image">Building Image:</label>
+                            <input type="file" name="{{ bldg_form.building_image.name }}"  id="new_bldg_image_input" class="hidden">
+                            <div id="building_image_box">
+                                <img src="/media/upload/building_imgs/no-image.png" alt="building_image" id="new_bldg_image">
+                                <img src="{% static 'imgs/plus.png' %}" alt="upload_icon" class='image_upload_icon' title="Update Building Image" id="new_bldg_image_upload">
+                            </div>
                         </div>
-                        
-                    </div>
-
-                    <div class="newbuilddiv">
+    
+                        <div class="newbuilddiv2">
+                            <label for="building_image">Gcash:</label>
+                            <input type="file" name="{{ bldg_form.gcash_qr.name }}" id="new_gcash_input" class="hidden">
+                            <div id="gcash_box">
+                                <img src="/media/upload/building_imgs/no-image.png" alt="gcash_qr" id="new_gcash_image">
+                                <img src="{% static 'imgs/plus.png' %}" alt="upload_icon" class='image_upload_icon' title="Update new GCash QR"  id="new_bldg_gcash_upload">
+                            </div>
+                            
+                        </div>
                         <input id="newbuildsubmit" type="submit" value="Submit">
                     </div>
+
+                    
+
+                    
 
                 </form>
         
@@ -422,14 +430,12 @@
                 <div id="certificate_view_container">
                     <h1 id="certificate_name"></h1>
                     <div id="cert_box">
+                        <img src="" alt="cert_image" id="cert_image">
                         <div class="cert_row">
                             <p>Date Uploaded:</p>
                             <p id="cert_date"></p>
                         </div>
-                        <div class="cert_row">
-                            <p>Image:</p>
-                            <img src="" alt="cert_image" id="cert_image">
-                        </div>
+                        
                     </div>
                 </div>
                 

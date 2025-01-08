@@ -6,7 +6,7 @@ function showNotification() {
         return;
     }
     notifications.forEach(notification => {
-        notification.style.animation = 'slideInOut 10s';
+        notification.style.animation = 'slideInOut 5s';
     });
 }
 
@@ -50,7 +50,7 @@ function SoloMessageFlow(message, status = "success"){
 
     message_container.append(message_text);
 
-    $(message_text).css("animation", 'slideInOut 10s');
+    $(message_text).css("animation", 'slideInOut 3s');
 
     setTimeout(() => {
         $(message_text).remove();

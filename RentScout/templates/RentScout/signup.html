@@ -88,6 +88,10 @@
             <img src="{% static 'imgs/nav/logo22.png' %}" alt="Website logo" >
         </div>
 
+        
+        </section>
+
+    <div id="otp_confirmation_form" class="hidden">
         <div id="messages-container">
             {% for message in messages %}
                 {% if 'success' in message.tags %}
@@ -97,15 +101,17 @@
                 {% endif %}
             {% endfor %}
         </div>
-        </section>
-
-    <div id="otp_confirmation_form" class="hidden">
-        <h2>OTP CONFIRMATION FORM</h2>
-        <p>We've sent an OTP to your email "<span id="user_email"></span>". Please check your email,
-        and enter the code below. OTP will expire in 10 minutes.</p>
-        <input type="text" name="OTP" id="OTP">
-        <button type="button" id="resend_otp">Resend Code</button>
-        <button type="button" id="confirm_otp">Confirm code</button>
+        <div class="otpdiv">
+            <section>
+                <h2>OTP CONFIRMATION FORM</h2>
+                <hr>
+            </section>
+            <p>We've sent an OTP to your email "<span id="user_email"></span>".<br>Please check your email,
+            and enter the code below.<br>OTP will expire in 10 minutes.</p>
+            <input type="text" name="OTP" id="OTP" placeholder="Enter OTP code here">
+            <button type="button" id="resend_otp">Resend Code</button>
+            <button type="button" id="confirm_otp">Confirm code</button>
+        </div>
     </div>
 
     <script src="{% static 'scripts/index.js' %}"></script>

@@ -1,8 +1,9 @@
 $(document).ready(function(){
     $('#add_building_btn').on('click', function(){
         $('.form_item').addClass("hidden");
+        $('#room_bar').addClass('hidden');
         $('#new_building_form').removeClass('hidden');
-        $('.bar_room').addClass('hidden');
+        
     })
 
     // "SEE PHOTOS" BUTTON CLICKED
@@ -234,6 +235,18 @@ $(document).ready(function(){
     })
 
     $('#cert_image').on('click', function(){
+        openFullScreen($(this).attr('src'));
+    });
+    $('#bldg_image').on('click', function(){
+        openFullScreen($(this).attr('src'));
+    });
+    $('#gcash_image').on('click', function(){
+        openFullScreen($(this).attr('src'));
+    });
+    $('#new_bldg_image').on('click', function(){
+        openFullScreen($(this).attr('src'));
+    });
+    $('#new_gcash_image').on('click', function(){
         openFullScreen($(this).attr('src'));
     });
 
@@ -967,7 +980,7 @@ $(document).ready(function(){
                         class: 'certificate_item'
                     });
 
-                    h3 = $('<h3></h3>', {
+                    h3 = $('<h4></h4>', {
                         class: 'certificate_item_name',
                         value: data.certificate_id,
                         text: data.certificate_name
