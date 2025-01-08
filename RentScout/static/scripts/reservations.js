@@ -540,6 +540,12 @@ $(document).ready(function(){
         'buildingid': buildingid
       },
       success: function(response){
+        console.log((response.success));
+        if(response.success == 'No Reservations' || response.success == 'No Buildings'){
+          $('#empty_notice').removeClass('hidden');
+          return;
+        }
+
         if(response.reservation_list.length === 0){
           $('#empty_notice').removeClass('hidden');
           return;

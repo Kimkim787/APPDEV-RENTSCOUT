@@ -304,7 +304,23 @@ class building_edit_view(View):
         else:
             return JsonResponse({'error': "Did not get building id"}, status =405)
 
-class delete_building_view(View):
+class delete_building(View):
+    def post(self, request):
+        try:
+            buildingid = request.POST.get('buildingid')
+
+            if not buildingid:
+                return JsonResponse({'error': 'Building Not Found'}, status=400)
+            
+            building = Building.objects.get(buildingid = buildingid)
+            building.delete()
+            messages.success(request, f"Building {building.building_name} successfully deleted")
+            return JsonResponse({'success': f"Building {building.building_name} successfully deleted"}, status = 200)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'error': 'Internal Server Error'}, status = 500)
+
+class delete_building_view(View): # DELETE A BUILDING THROUGH REPORT
     def post(self, request):
         try:
             buildingid = request.POST.get('buildingid')
@@ -1614,11 +1630,15 @@ class get_reservations_all(View):
             buildingid = request.GET.get('buildingid')
 
             if not buildingid or buildingid is None:
-                return JsonResponse({'error': 'Building Not Found'}, status = 404)
+                return JsonResponse({'success': 'No Buildings'}, status = 200)
             
             building = Building.objects.get(buildingid = buildingid)
             room = Room.objects.filter(building_id = building)
             reservations = Reservation.objects.filter( roomid__in = room)
+
+            if not reservations:
+                return JsonResponse({'success': 'No Reservations'}, status = 200)
+
             res_list = [
                 {
                     'res_id': res.reservationid,

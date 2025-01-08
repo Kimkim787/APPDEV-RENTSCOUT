@@ -1517,7 +1517,7 @@ $(document).ready(function(){
 
     $('#confirm_delete_bldg').click(function() {
         $.ajax({
-            url: '/building/delete_view/', 
+            url: '/building/delete/', 
             type: 'POST',
             data: {
                 'buildingid': $('#del_bldg_id').attr('value'),

@@ -68,7 +68,7 @@
         </div>
         <div class="profilepicturebox">
             <div id="profile_img_container">
-                <input type="file" name="profile_image" class="hidden">
+                <input type="file" name="profile_image" id="profile_pic_input" class="hidden">
                 <img src="{{ user_data.profile_image.url }}" alt="profile_img" id="profile_img">
             
                 <img src="{% static 'imgs/plus.png' %}" alt="upload-image" id="upload_btn" title="Upload New Profile">

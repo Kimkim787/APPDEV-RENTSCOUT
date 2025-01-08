@@ -172,9 +172,9 @@ class Building(models.Model):
     details = models.TextField(blank=True, null=True)
     rooms_vacant = models.IntegerField(validators = [MinValueValidator(0)])
     coordinates = models.CharField(max_length = 255, blank = False, null = False, default = "")
-    building_image = models.FileField(upload_to = 'upload/building_imgs', blank = True, null = True)
+    building_image = models.FileField(upload_to = 'upload/building_imgs', default='upload/building_imgs/no-image.png', blank = True, null = True)
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, null=True, blank=True)
-    gcash_qr = models.FileField(upload_to = 'upload/building_imgs/gcash', blank = True, null = True)
+    gcash_qr = models.FileField(upload_to = 'upload/building_imgs/gcash', default='upload/building_imgs/gcash/no-image.png', blank = True, null = True)
     
     
     def complete_address(self):
