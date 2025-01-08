@@ -40,7 +40,10 @@ $(document).ready(function(){
   // PAYMENT FILTER BUTTONS
   $('#pay_pending').on('click', function(){
     $('#pay_filter').attr('value', 'Pending');
+    $('.colbox').addClass('hidden');
+    $('.paymentbox').removeClass('hidden');
     payment_filter($(this).val(), 'Pending');
+    
   });
 
   $('#pay_accepted').on('click', function(){
@@ -158,9 +161,33 @@ $(document).ready(function(){
               class: 'reservation_item',
             });
 
-            let name = $('<h3></h3>', {
+            let div1 = $('<div></div>', {
+              class: 'div1',
+            });
+
+            let div2 = $('<div></div>', {
+              class: 'div2',
+            });
+
+            let div3 = $('<div></div>', {
+              class: 'div3',
+            });
+
+            let div4 = $('<div></div>', {
+              class: 'div4',
+            });
+
+            let div5 = $('<div></div>', {
+              class: 'div5',
+            });
+
+            let name = $('<h5></h5>', {
               class: 'name',
-              text: `${item.boarder_name} (${item.boarder_email})`
+              text: `${item.boarder_name}`
+            })
+            let email = $('<h5></h5>', {
+              class: 'email',
+              text: `${item.boarder_email}`
             })
 
             let dateObj = new Date(item.created);
@@ -199,14 +226,20 @@ $(document).ready(function(){
               })
             }
 
-            li.append(name);
-            li.append(date_requested);
-            li.append(room);
+            div1.append(name);
+            div2.append(email);
+            div3.append(room);
+            div4.append(date_requested);
             // statusQ == 'Accepted' && li.append(accept_btn);
             if(statusQ == 'Pending' || statusQ == 'Declined'){
-              li.append(left_btn);
+              div5.append(left_btn);
             }
-            li.append(right_btn);
+            div5.append(right_btn);
+            li.append(div1);
+            li.append(div2);
+            li.append(div3);
+            li.append(div4);
+            li.append(div5);
             
             $('#reservation_lists').append(li);
 
@@ -374,6 +407,26 @@ $(document).ready(function(){
             class: 'reservation_item'
           })
 
+          let paydiv1 = $('<div></div>', {
+            class: 'paydiv1',
+          });
+
+          let paydiv2 = $('<div></div>', {
+            class: 'paydiv2',
+          });
+
+          let paydiv3 = $('<div></div>', {
+            class: 'paydiv3',
+          });
+
+          let paydiv4 = $('<div></div>', {
+            class: 'paydiv4',
+          });
+
+          let paydiv5 = $('<div></div>', {
+            class: 'paydiv5',
+          });
+
           user_name = $('<p></p>', {
             class: 'boarder_name',
             text: data.boarder
@@ -392,7 +445,7 @@ $(document).ready(function(){
 
           referal_code = $('<p></p>', {
             class: 'referal_code',
-            text: `Referal Code: ${data.referal_code}`
+            text: `${data.referal_code}`
           })
 
             left_btn = $('<button></button>', {
@@ -446,14 +499,21 @@ $(document).ready(function(){
             })
           }
 
-          li.append(user_name);
-          li.append(date);
-          li.append(image);
-          li.append(referal_code);
-          li.append(left_btn);
+          paydiv1.append(user_name);
+          paydiv2.append(date);
+          
+          paydiv3.append(referal_code);
+          paydiv4.append(left_btn);
           if(Q == 'Pending' || Q == 'Declined'){
-            li.append(right_btn);
+            paydiv4.append(right_btn);
           }
+          paydiv5.append(image);
+
+          li.append(paydiv1);
+          li.append(paydiv2);
+          li.append(paydiv3);
+          li.append(paydiv4);
+          li.append(paydiv5);
           reserve_div.append(li);
           $('#empty_notice').addClass('hidden');
           $('#select_notice').addClass('hidden');

@@ -1,15 +1,13 @@
 #messages-container {
     width: 100%;
-    /* max-height: 200px; */
     position: fixed;
     bottom: 20px;
-    /* left: calc(100% + 1px); */
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px; /* Add space between messages */
-    /* overflow-x: visible;
-    overflow-y: hidden; */
+    gap: 10px;
+    /* top: 80px;
+    right: -120px; */
 }
 
 .message {
@@ -48,8 +46,8 @@
     background-color: rgb(255, 104, 104);
 }
 .success_message{
-    color: #000;
-    background-color: #0f0;
+    color: #fff;
+    background-color: rgb(0, 158, 0);
 }
 
 @keyframes slideInOut{
@@ -101,11 +99,10 @@
 }
 
 #bubble{
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     padding: 10px;
     border-radius: 50%;
-    border: 1px solid black;
 
     /* make unselectable */
     user-select: none; 

@@ -240,6 +240,21 @@
   background-color: rgba(0, 0, 0, 0.8);
   cursor: pointer;
 }
+
+.verifyRequestbox{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+#qr_container{
+  display: flex;
+  justify-content: space-between;
+  width: 190px;
+}
+#online_transaction_container div button{
+  padding: 5px 10px;
+}
 #add_new_room_btn{
   cursor: pointer;
 }
@@ -458,11 +473,80 @@ p span{
 }
 
 #payment_form{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
   height: 80%;
-  width: auto;
+  padding: 30px;
+  width: 38.4%;
+  background-color: #fff;
+  border-radius: 20px;
+  gap: 20px;
 }
 
 #receipt_preview, #receipt_preview img{
-  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  width: 300px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+.inputfields{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   width: 100%;
+}
+.choosefilediv{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  gap: 10px;
+  width: 100%;
+}
+.choosefilediv input{
+  background-color: #d4d3d3;
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.referalNumber{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  width: 100%;
+}
+.referalNumber input{
+  background-color: #d4d3d3;
+  border-radius: 5px;
+  padding: 3px;
+  border: none;
+  width: 60%;
+}
+
+#payment_btn_box{
+  display: flex;
+  justify-content: space-between;
+  width: 60%;
+}
+#send_payment_btn{
+  width: 30%;
+  padding: 8px 0;
+  background-color: green;
+  border: none;
+  border-radius: 3px;
+  color: white;
+}
+#cancel_payment_btn{
+  width: 30%;
+  padding: 8px 0;
+  background-color: red;
+  border: none;
+  border-radius: 3px;
+  color: white;
 }

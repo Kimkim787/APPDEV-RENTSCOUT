@@ -12,68 +12,72 @@
     <form id="user_profile_form" action="{% url 'update_user_profile' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" name="userid" value="{{ request.user.userid }}">
-        
-        <div id="profile_img_container">
-            <input type="file" name="profile_image" class="hidden">
-            <img src="{{ user_data.profile_image.url }}" alt="profile_img" id="profile_img">
-        
-            <img src="{% static 'imgs/upload_image.png' %}" alt="upload-image" id="upload_btn" title="Upload New Profile">
-        </div>
-            
-        <div class="input_container">
-            <label for="firstname">Firstname:</label>
-            <input type="text" name="firstname" value="{{ user_data.firstname }}" required>
-        </div>
-        <div class="input_container">
-            <label for="lastname">Lastname:</label>
-            <input type="text" name="lastname" value="{{ user_data.lastname }}" required>
-        </div>
-        <div class="input_container">
-            <label for="middlename">Middle Name:</label>
-            <input type="text" name="middlename" value="{{ user_data.middlename }}" required>
-        </div>
-        <div class="input_container">
-            <label for="birthdate">Birthdate (yyyy-mm-dd):</label>
-            <input type="text" name="birthdate" value="{{ user_data.birthdate|date:'Y-m-d' }}" placeholder="yyyy-mm-dd" required>
-        </div>
-        <div class="input_container">
-            <label for="gender">Gender:</label>
-            <select name="gender" id="">
-                <option value="Male" 
-                    {% if user_data.gender == "Male" %}
+        <div class="profileinputs">
+            <div class="input_container">
+                <label for="firstname">Firstname:</label>
+                <input type="text" name="firstname" value="{{ user_data.firstname }}" required>
+            </div>
+            <div class="input_container">
+                <label for="lastname">Lastname:</label>
+                <input type="text" name="lastname" value="{{ user_data.lastname }}" required>
+            </div>
+            <div class="input_container">
+                <label for="middlename">Middle Name:</label>
+                <input type="text" name="middlename" value="{{ user_data.middlename }}" required>
+            </div>
+            <div class="input_container">
+                <label for="birthdate">Birthdate (yyyy-mm-dd):</label>
+                <input type="text" name="birthdate" value="{{ user_data.birthdate|date:'Y-m-d' }}" placeholder="yyyy-mm-dd" required>
+            </div>
+            <div class="input_container">
+                <label for="gender">Gender:</label>
+                <select name="gender" id="">
+                    <option value="Male" 
+                        {% if user_data.gender == "Male" %}
+                        selected
+                        {% endif %}>Male</option>
+                    <option value="Female"
+                    {% if user_data.gender == "Female" %}
                     selected
-                    {% endif %}>Male</option>
-                <option value="Female"
-                {% if user_data.gender == "Female" %}
-                selected
-                {% endif %}>Female</option>
-            </select>
+                    {% endif %}>Female</option>
+                </select>
+            </div>
+            <div class="input_container">
+                <label for="barangay">Barangay:</label>
+                <input type="text" name="barangay" value="{{ user_data.barangay }}" >
+            </div>
+            <div class="input_container">
+                <label for="province">Province:</label>
+                <input type="text" name="province" value="{{ user_data.province }}" >
+            </div>
+            <div class="input_container">
+                <label for="city">City:</label>
+                <input type="text" name="city" value="{{ user_data.city }}" >
+            </div>
+            <div class="input_container">
+                <label for="contact">Contact:</label>
+                <input type="text" name="contact" value="{{ user_data.contact }}" >
+            </div>
+            
+            {% if request.user.usertype == 'Landlord' %}
+            <div class="input_container">
+                <label for="gcash">Gcash Number:</label>
+                <input type="text" name="gcash" value="{{ user_data.gcash }}" >
+            </div>
+            {% endif %}
         </div>
-        <div class="input_container">
-            <label for="barangay">Barangay:</label>
-            <input type="text" name="barangay" value="{{ user_data.barangay }}" >
-        </div>
-        <div class="input_container">
-            <label for="province">Province:</label>
-            <input type="text" name="province" value="{{ user_data.province }}" >
-        </div>
-        <div class="input_container">
-            <label for="city">City:</label>
-            <input type="text" name="city" value="{{ user_data.city }}" >
-        </div>
-        <div class="input_container">
-            <label for="contact">Contact:</label>
-            <input type="text" name="contact" value="{{ user_data.contact }}" >
+        <div class="profilepicturebox">
+            <div id="profile_img_container">
+                <input type="file" name="profile_image" class="hidden">
+                <img src="{{ user_data.profile_image.url }}" alt="profile_img" id="profile_img">
+            
+                <img src="{% static 'imgs/plus.png' %}" alt="upload-image" id="upload_btn" title="Upload New Profile">
+                
+            </div>
+            <input type="submit" value="Save">
         </div>
         
-        {% if request.user.usertype == 'Landlord' %}
-        <div class="input_container">
-            <label for="gcash">Gcash Number:</label>
-            <input type="text" name="gcash" value="{{ user_data.gcash }}" >
-        </div>
-        {% endif %}
 
-        <input type="submit" value="Save">
     </form>
 
     <script src="{% static 'scripts/user_profile.js' %}"></script>

@@ -12,30 +12,48 @@
     <ul id="buildings_container">
         {% for building in buildings %}
             <li class="building_items" value="{{ building.buildingid }}">
-                {{ building.building_name }} ({{ building.reservation_count }})
+                <p>{{ building.building_name }}</p> <p>({{ building.reservation_count }})</p> 
             </li>
         {% endfor %}
     </ul>
     
     <div id="display_container">
-        <div id="filter_container">
-            <p id="res_filter">Reservation Filter:</p>
-            <button id="res_pending">Pending</button>
-            <button id="res_accepted">Accepted</button>
-            <button id="res_declined">Declined</button>
-            <!-- <button id="res_declined">Declined</button> -->
+        <div class="filterMainBox">
+            <div id="filter_container">
+                <p id="res_filter">Reservation Filter:</p>
+                <button id="res_pending">Pending</button>
+                <button id="res_accepted">Accepted</button>
+                <button id="res_declined">Declined</button>
+                <!-- <button id="res_declined">Declined</button> -->
+            </div>
+            <div id="filter_container2">
+                <p id="pay_filter">Payment Filter:</p>
+                <button id="pay_pending">Pending</button>
+                <button id="pay_accepted">Accepted</button>
+                <button id="pay_declined">Declined</button>
+            </div>
         </div>
-        <div id="filter_container2">
-            <p id="pay_filter">Payment Filter:</p>
-            <button id="pay_pending">Pending</button>
-            <button id="pay_accepted">Accepted</button>
-            <button id="pay_declined">Declined</button>
+        
+        <div class="table">
+            <div class="colbox">
+                <div class="col1"><h3>Name</h3></div>
+                <div class="col2"><h3>Email</h3></div>
+                <div class="col3"><h3>Room</h3></div>
+                <div class="col4"><h3>Date requested</h3></div>
+                <div class="col5"><h3>Action</h3></div>
+            </div>
+            <div class="paymentbox hidden">
+                <div class="pay1"><h3>Name</h3></div>
+                <div class="pay2"><h3>Date</h3></div>
+                <div class="pay3"><h3>Referal code</h3></div>
+                <div class="pay4"><h3>Action</h3></div>
+                <div class="pay5"><h3>Img</h3></div>
+            </div>
+            <ul id="reservation_lists" class="hidden">
+            </ul>
         </div>
-        <ul id="reservation_lists" class="hidden">
-            
-        </ul>
-        <h3 id="select_notice" class="hidden">Please Select a Building</h3>
-        <h3 id="empty_notice" class="hidden">No Pending Reservations</h3>
+        <h2 id="select_notice" class="hidden">Please Select a Building</h2>
+        <h2 id="empty_notice" class="hidden">No Pending Reservations</h2>
     </div>
 
     <div id="fullscreen-overlay" class="fullscreen-overlay">

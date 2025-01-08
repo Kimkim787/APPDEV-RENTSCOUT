@@ -348,9 +348,7 @@
         
         <div class="fixedpage">
             <div class="bhousenamebox">
-                <div id="verification_status_box" value="{{ building.buildingid }}">
-                    
-                </div>
+                
 
                 <h3>{{ building.building_name }}</h3>
 
@@ -367,7 +365,31 @@
             <div class="infobox">   
                 <p>{{ building.complete_address }}</p>
                 <p class="owner"><span>{{ building.building_owner }}</span> (Owner's email)</p>
-                <p><span>vacant room: </span>{{ building.rooms_vacant }}</p>
+                
+                <div class="verifyRequestbox">
+                    <p><span>vacant room: </span>{{ building.rooms_vacant }}</p>
+                    <div id="verification_status_box" value="{{ building.buildingid }}">
+                    
+                    </div>
+                    {% if request.user.usertype == 'Boarder' %}
+                        <div id="online_transaction_container" class="hidden">
+                            <input type="hidden" name="roomid" id="roomidholder">
+                            
+                            <div id="qr_container" class="hidden">
+                                <button id="generate_qr">QR Code</button>
+                                <button id="send_payment_receipt">Send Receipt</button>
+                            </div>
+    
+                            <div id="reservation_container">
+                                <p id="waiting" class="hidden">Please Wait...</p>
+                                <button id="request_reservation"  class="hidden">Request Reservation</button>
+                                <button id="cancel_request_reservation" class="hidden">Cancel Reservation</button>
+                            </div>
+                            
+                        </div>
+                    {% endif %}
+                </div>
+                
                 <a href="{{ building.coordinates }}" target="_blank">View in Map</a>
 
                 {% if request.user.usertype == 'Boarder' %}
@@ -383,23 +405,7 @@
                     <a href="{% url 'update_building' building.buildingid %}">Update</a>
                 {% endif %}
 
-                {% if request.user.usertype == 'Boarder' %}
-                    <div id="online_transaction_container" class="hidden">
-                        <input type="hidden" name="roomid" id="roomidholder">
-                        
-                        <div id="qr_container" class="hidden">
-                            <button id="generate_qr">Generate QR Code</button>
-                            <button id="send_payment_receipt">Send Receipt</button>
-                        </div>
-
-                        <div id="reservation_container">
-                            <p id="waiting" class="hidden">Please Wait...</p>
-                            <button id="request_reservation"  class="hidden">Request Reservation</button>
-                            <button id="cancel_request_reservation" class="hidden">Cancel Reservation</button>
-                        </div>
-                        
-                    </div>
-                {% endif %}
+                
 
             </div>
             <div class="roomsbox">
@@ -422,11 +428,17 @@
                 <div id="receipt_preview">
                     <span>Select an Image</span>
                 </div>
-                <label for="qr_gcash">Receipt Image</label>
-                <input type="file" name="payment_img" id="payment_img" accept = 'image/*' required>
-                <br>
-                <label for="referal">Referal Number:</label>
-                <input type="text" name="referralid" id="referralid" placeholder="Referel Number" required>
+                <div class="inputfields">
+                    <div class="choosefilediv">
+                        <label for="qr_gcash">Receipt Image</label>
+                        <input type="file" name="payment_img" id="payment_img" accept = 'image/*' required>
+                    </div>
+                    <div class="referalNumber">
+                        <label for="referal">Referal Number:</label>
+                        <input type="text" name="referralid" id="referralid" placeholder="Referel Number" required>
+                    </div>
+                </div>
+                
                 <div id="payment_btn_box">
                     <button id="send_payment_btn">Send</button>
                     <button id="cancel_payment_btn">Cancel</button>
