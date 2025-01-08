@@ -1,0 +1,11 @@
+﻿building_name,zip_code,street,city,province,country,details,rooms_vacant,coordinates,average_rating,building_image
+Sunrise Apartments,12345,Sunset Blvd,Los Angeles,California,USA,"Enjoy the convenience of being close to the city's vibrant downtown, filled with shops, restaurants, and entertainment options within a short walk or drive.",10,34.0522Â° N,4.5,Screenshot_2024-10-31_012222_nV73Em3.png
+Ocean View Condos,54321,Seaside Ave,Miami,Florida,USA,"Situated directly on the beach, this property offers sandy shores and stunning ocean views just steps away. Wake up to breathtaking views of the nearby mountains, creating a scenic backdrop right outside your windows.",15,25.7617Â° N,4.2,Screenshot_2024-10-31_012222_nV73Em3.png
+Mountain Retreat,67890,Pine St,Denver,Colorado,USA,"Wake up to breathtaking views of the nearby mountains, creating a scenic backdrop right outside your windows.",5,39.7392Â° N,3.8,Screenshot_2024-10-31_012222_nV73Em3.png
+Riverside Complex,11223,Bridge Rd,Portland,Oregon,USA,"Located near a peaceful river, perfect for scenic walks, picnics, or outdoor activities like fishing and kayaking.",20,45.5051Â° N,4,Screenshot_2024-10-31_012222_nV73Em3.png
+City Center Plaza,33445,Main St,New York,New York,USA,"This property is at the center of it all, with prime access to bustling streets, major landmarks, and cultural attractions.",25,40.7128Â° N,4.7,Screenshot_2024-10-31_012222_nV73Em3.png
+Green Valley Estates,55678,Valley Dr,San Francisco,California,USA,Close to parks,18,37.7749Â° N,4.3,Screenshot_2024-10-31_012222_nV73Em3.png
+Lakeview Tower,22334,Lake Ave,Chicago,Illinois,USA,Lake view,12,41.8781Â° N,4.6,Screenshot_2024-10-31_012222_nV73Em3.png
+Parkside Residences,99012,Maple St,Seattle,Washington,USA,Next to park,16,47.6062Â° N,4.1,Screenshot_2024-10-31_012222_nV73Em3.png
+Sunnyvale Apartments,33456,Elm St,Austin,Texas,USA,Quiet neighborhood,20,30.2672Â° N,3.9,Screenshot_2024-10-31_012222_nV73Em3.png
+Horizon Towers,22445,Hill Rd,Las Vegas,Nevada,USA,City skyline view,30,36.1699Â° N,4.8,Screenshot_2024-10-31_012222_nV73Em3.png

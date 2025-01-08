@@ -157,7 +157,10 @@
                             
                         </div>
                     </div>
-                    <input type="submit" value="Save">
+                    <div class="btn_container">
+                        <button type="button" id="del_bldg_id" value="">Delete</button>
+                        <input type="submit" value="Save">
+                    </div>
                 </form>
             </div>
 
@@ -435,6 +438,19 @@
         <div id="fullscreen-overlay" class="fullscreen-overlay">
             <img id="fullscreen-image">
         </div>    
+
+        <div class="confirmation_container" id="deleteModal">
+            <div class="del_confirmation">
+                <h2>Confirm Delete</h2>
+                <p>Are you sure you want to delete <span id="obj_name"></span>?</p>
+
+                <div class="confirm_btn_container">
+                    <button id="confirm_cancel">Cancel</button>
+                    <button id="confirm_delete_bldg" class="hidden">Delete</button>
+                    <button id="confirm_delete_room" class="hidden">Delete</button>
+                </div>
+            </div>
+        </div>
     </section>
     <script>
         const deleteIconUrl = "{% static 'imgs/editbuilding/mark.png' %}";

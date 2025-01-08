@@ -12,22 +12,25 @@ $(document).ready(function(){
 
     reports_container.on("click", '.ban_btn', function(){
         const buildingid = $(this).val();
-        console.log($(this).val());
+        console.log("report id is:");
+        console.log($(this).closest('.buttons_container').find('.deny_btn').attr('value'));
         $.ajax({
             url: '/building/delete_view/',
             type: 'POST',
             data: {
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-                'buildingid': buildingid
+                'buildingid': buildingid,
+                'reportid': $(this).closest('.buttons_container').find('.deny_btn').attr('value')
             },
             success: function(response){
-                alert(response.success);
+                SoloMessageFlow(response.success);
                 get_all_reports();
             },
-            error: function(xhr) {
-                console.error("Error:", xhr.responseJSON.error);
-            }
-
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
+              }
+        
         })
     })
 
@@ -41,11 +44,12 @@ $(document).ready(function(){
                 'reportid': report_id
             },
             success: function(response){
-                alert(response.success);
+                SoloMessageFlow(response.success);
                 get_all_reports();
             }, 
-            error: function(xhr) {
-                console.error("Error:", xhr.responseJSON.error);
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
             }
         })
     })
@@ -136,9 +140,9 @@ $(document).ready(function(){
                     $('#reports_container').append(report_item);
                 });
             }, 
-            error: function(xhr, status, error){
-                console.log(error);
-                alert(`Error: ${xhr.responseText.error || error}`);
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
             }
         });
     }

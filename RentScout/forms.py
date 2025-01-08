@@ -62,7 +62,7 @@ class ScoutUserProfileForm(UserChangeForm):
 class LandlordUserCreationForm(UserCreationForm):
     class Meta:
         model = ScoutUser_Landlord
-        fields = ('email', 'firstname', 'lastname',
+        fields = ('email', 'firstname', 'lastname', 'birthdate',
                   'middlename', 'gender', 'password1', 'password2' ) # 
 
 class LandlordUserChangeForm(UserChangeForm):

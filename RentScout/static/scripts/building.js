@@ -509,7 +509,7 @@ $(document).ready(function() {
   }
 
   function get_reservation_status(){
-    console.log($('#roomid').attr('value'));
+    console.log($('#roomid').val());
 
     // PREVENT RESERVATION STATUS IF NO ROOMS
     if($('#roombox_item_container').children().length === 0){

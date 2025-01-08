@@ -143,6 +143,7 @@ $(document).ready(function(){
             $('#building_form').removeClass('hidden');
             // set building id to form
             $('#building_id_holder').val(buildingId);
+            $('#del_bldg_id').val(buildingId);
             console.log(buildingId)
             request_bldg_instance(buildingId);
 
@@ -773,19 +774,19 @@ $(document).ready(function(){
                         <div class="editroombox2">
                             <div class="lblinptdiv">
                                 <label for="room_name">Room Name:</label>
-                                <input type="text" name="room_name" value="${response_data.room_name}">
+                                <input type="text" id="room_name" name="room_name" value="${response_data.room_name}">
                             </div>
                             <div class="lblinptdiv">
                                 <label for="person_free">Person Available:</label>
-                                <input type="text" name="person_free" value="${response_data.person_free}">
+                                <input type="number" name="person_free" value="${response_data.person_free}">
                             </div>
                             <div class="lblinptdiv">
                                 <label for="current_male">Male resident:</label>
-                                <input type="text" name="current_male" value="${response_data.current_male}">
+                                <input type="number" name="current_male" value="${response_data.current_male}">
                             </div>
                             <div class="lblinptdiv">
                                 <label for="current_female">Female resident:</label>
-                                <input type="text" name="current_female" value="${response_data.current_female}">
+                                <input type="number" name="current_female" value="${response_data.current_female}">
                             </div>
                             
                             <div class="lblinptdiv">
@@ -798,11 +799,11 @@ $(document).ready(function(){
                     
                         <div class="lblinptdiv">
                             <label for="bed">Single bed:</label>
-                            <input type="text" name="bed" value="${response_data.bed}">
+                            <input type="number" name="bed" value="${response_data.bed}">
                         </div>
                         <div class="lblinptdiv">
                             <label for="double_deck">Double bed:</label>
-                            <input type="text" name="double_deck" value="${response_data.double_deck}">
+                            <input type="number" name="double_deck" value="${response_data.double_deck}">
                         </div>
                         
                         <div class="additionalinfobox">
@@ -836,7 +837,10 @@ $(document).ready(function(){
                             </div>
                         </div>
                     </div>
-                    <button id="edit_room_save" value="${response_data.roomid}">Save</button>
+                    <div class='btn_container'>
+                        <button id="del_room_id" value="${response_data.roomid}">Delete</button>
+                        <button id="edit_room_save" value="${response_data.roomid}">Save</button>
+                    </div>
                 `);
                 // <div class="lblinptdiv">
                             //     <label for="price">Price:</label>
@@ -1473,7 +1477,77 @@ $(document).ready(function(){
         return googleMapsPattern.test(text);
     }
     
+    function bldgDeleteModal() {
+        let bldg_name = $('#bldg_name').val();
+        console.log(bldg_name);
+        $('#obj_name').text(`Building "${bldg_name}"`); 
+        $('#confirm_delete_bldg').removeClass('hidden');
+        $('.confirmation_container').css('display', 'flex');
+    }
 
+    function roomDeleteModal() {
+        let room_name = $('#edit_room_form_container #room_name').val();
+        console.log(room_name);
+        $('#obj_name').text(`Room "${room_name}"`); 
+        $('#confirm_delete_room').removeClass('hidden');
+        $('.confirmation_container').css('display', 'flex');
+    }
+
+    $('#confirm_cancel').click(function() {
+        $('.confirmation_container').css('display','none');
+        $('#confirm_delete_bldg').addClass('hidden');
+        $('#confirm_delete_room').addClass('hidden');
+    });
+
+    $('#confirm_delete_bldg').click(function() {
+        $.ajax({
+            url: '/building/delete_view/', 
+            type: 'POST',
+            data: {
+                'buildingid': $('#del_bldg_id').attr('value'),
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            success: function() {
+                bldg_name = $('#bldg_name').val();
+                SoloMessageFlow(`Building ${bldg_name} successfully deleted`);
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
+            }
+        });
+
+        $('.confirmation_container').fadeOut();
+    });
+
+    $('#confirm_delete_room').on('click', function(){
+        $.ajax({
+            url: '/room/delete/', 
+            type: 'POST',
+            data: {
+                'roomid': $('#del_room_id').attr('value'),
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            success: function(response) {
+                SoloMessageFlow(`${response.success}`);
+                $('button[value="Rooms"]').trigger('click');
+            },
+            error: function(xhr, status, error) {
+                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+                SoloMessageFlow(`${errorMessage}`, 'error');
+            }
+        });
+        $('.confirmation_container').css('display','none');
+    });
+
+    $('#del_bldg_id').click(function() {
+        bldgDeleteModal(); 
+    });
+
+    $('#edit_room_form_container').on('click', '#del_room_id', function() {
+        roomDeleteModal(); 
+    });
 }); // ready function
 
 

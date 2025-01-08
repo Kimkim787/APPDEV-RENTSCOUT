@@ -1,0 +1,444 @@
+{% extends 'index.html' %}
+
+{% block stylecontent %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/dbms.css' %}">
+{% endblock stylecontent %}
+
+
+{% block bodycontent %}
+    <section>
+        <div id="side_bar">
+            <div class="selector_div">
+                <p class="record_name">Boarder</p>
+
+                <ul class="action_status hidden">
+                    <a href="{% url 'boarderq' 'NEW' %}">NEW</a>
+                    <a href="{% url 'boarderq' 'UPDATED' %}">UPDATED</a>
+                </ul>
+            </div>
+
+            <div class="selector_div">
+                <p class="record_name">Landlord</p>
+
+                <ul class="action_status hidden">
+                    <a href="{% url 'landlordq' 'NEW' %}">NEW</a>
+                    <a href="{% url 'landlordq' 'UPDATED' %}">UPDATED</a>
+                </ul>
+            </div>
+
+            <div class="selector_div">
+                <p class="record_name">Building</p>
+
+                <ul class="action_status hidden">
+                    <a href="{% url 'buildingq' 'NEW' %}">NEW</a>
+                    <a href="{% url 'buildingq' 'UPDATED' %}">UPDATED</a>
+                    <a href="{% url 'buildingq' 'DELETED' %}">DELETED</a>
+                </ul>
+            </div>
+
+            <div class="selector_div">
+                <p class="record_name">Room</p>
+
+                <ul class="action_status hidden">
+                    <a href="{% url 'roomq' 'NEW' %}">NEW</a>
+                    <a href="{% url 'roomq' 'UPDATED' %}">UPDATED</a>
+                    <a href="{% url 'roomq' 'DELETED' %}">DELETED</a>
+                </ul>
+            </div>
+
+            <div class="selector_div">
+                <p class="record_name">Payment</p>
+
+                <ul class="action_status hidden">
+                    <a href="{% url 'paymentq' 'NEW' %}">NEW</a>
+                    <a href="{% url 'paymentq' 'ACCEPTED' %}">ACCEPTED</a>
+                    <a href="{% url 'paymentq' 'DENIED' %}">DENIED</a>
+                </ul>
+            </div>
+
+
+            <div class="selector_div">
+                <p class="record_name">Report</p>
+
+                <ul class="action_status hidden">
+                    <a href="{% url 'reportq' 'NEW' %}">NEW</a>
+                    <a href="{% url 'reportq' 'ACCEPTED' %}">ACCEPTED</a>
+                    <a href="{% url 'reportq' 'DENIED' %}">DENIED</a>
+                </ul>
+            </div>
+
+            <div class="selector_div">
+                <p class="record_name">Verification</p>
+
+                <ul class="action_status hidden">
+                    <a href="{% url 'verificationq' 'NEW' %}">NEW</a>
+                    <a href="{% url 'verificationq' 'ACCEPTED' %}">ACCEPTED</a>
+                    <a href="{% url 'verificationq' 'DENIED' %}">DENIED</a>
+                    <a href="{% url 'verificationq' 'DELETED' %}">DELETED</a>
+                </ul>
+            </div>
+        </div>
+
+        <div id="table_container">
+            {% if page == 'boarder' %}
+            <table>
+                <thead>
+                    <tr>
+                        <td>USER ID</td>
+                        <td>STATUS</td>
+                        <td>EMAIL</td>
+                        <td>FIRSTNAME</td>
+                        <td>LASTNAME</td>
+                        <td>MIDDLENAME</td>
+                        <td>GENDER</td>
+                        <td>BIRTHDATE</td>
+                        <td>ADDRESS</td>
+                        <td>CONTACT</td>
+                        <td>DATE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if record %}
+                        {% for boarder in record %}
+                            <tr>
+                                <td>{{ boarder.userid }}</td>
+                                <td>{{ record_status }}</td>
+                                <td>{{ boarder.email }}</td>
+                                <td>{{ boarder.firstname }}</td>
+                                <td>{{ boarder.lastname }}</td>
+                                <td>{{ boarder.middlename }}</td>
+                                <td>{{ boarder.gender }}</td>
+                                <td>{{ boarder.birthdate }}</td>
+                                <td>{{ boarder.get_address }}</td>
+                                <td>{{ boarder.contact }}</td>
+                                <td>{{ boarder.date_created }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td> 
+                            <td>No Record</td>
+                            <td>No Record</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if page == 'landlord' %}
+            <table>
+                <thead>
+                    <tr>
+                        <td>USER ID</td>
+                        <td>STATUS</td>
+                        <td>EMAIL</td>
+                        <td>FIRSTNAME</td>
+                        <td>LASTNAME</td>
+                        <td>MIDDLENAME</td>
+                        <td>GENDER</td>
+                        <td>BIRTHDATE</td>
+                        <td>ADDRESS</td>
+                        <td>CONTACT</td>
+                        <td>DATE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if record %}
+                        {% for landlord in record %}
+                            <tr>
+                                <td>{{ landlord.userid }}</td>
+                                <td>{{ record_status }}</td>
+                                <td>{{ landlord.email }}</td>
+                                <td>{{ landlord.firstname }}</td>
+                                <td>{{ landlord.lastname }}</td>
+                                <td>{{ landlord.middlename }}</td>
+                                <td>{{ landlord.gender }}</td>
+                                <td>{{ landlord.birthdate }}</td>
+                                <td>{{ landlord.get_address }}</td>
+                                <td>{{ landlord.contact }}</td>
+                                <td>{{ landlord.date_created }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td> 
+                            <td>No Record</td>
+                            <td>No Record</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if page == 'building' %}
+            <table>
+                <thead>
+                    <tr>
+                        <td>BLDG ID</td>
+                        <td>STATUS</td>
+                        <td>OWNER</td>
+                        <td>NAME</td>
+                        <td>PRICE</td>
+
+                        <td>ADDRESS</td>
+                        <td>DETAILS</td>
+                        <td>MAP</td>
+                        <td>RATING</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if record %}
+                        {% for bldg in record %}
+                            <tr>
+                                <td>{{ bldg.buildingid }}</td>
+                                <td>{{ record_status }}</td>
+                                <td>{{ bldg.building_owner }}</td>
+                                <td>{{ bldg.building_name }}</td>
+                                <td>{{ bldg.price }}</td>
+                                <td>
+                                    {{ bldg.zip_code }}, {{ bldg.street }},
+                                    {{ bldg.building.city }}, {{ bldg.province }}, {{ bldg.country }}
+                                </td>
+                                <td>{{ bldg.details }}</td>
+                                <td>{{ bldg.coordinates }}</td>
+                                <td>{{ bldg.average_rating }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if page == 'room' %}
+            <table>
+                <thead>
+                    <tr>
+                        <td>ROOM ID</td>
+                        <td>STATUS</td>
+                        <td>OWNER</td>
+                        <td>BUILDING</td>
+                        <td>ROOM_NAME</td>
+                        <td>DATE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if record %}
+                        {% for room in record %}
+                            <tr>
+                                <td>{{ room.roomid }}</td>
+                                <td>{{ record_status }}</td>
+                                <td>{{ room.owner }}</td>
+                                <td>{{ room.building_name }}</td>
+                                <td>{{ room.room_name }}</td>
+                                <td>{{ room.date_created }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if page == 'payment' %}
+            <table>
+                <thead>
+                    <tr>
+                        <td>PAYMENT ID</td>
+                        <td>STATUS</td>
+                        <td>REFERRAL CODE</td>
+                        <td>BUILDING</td>
+                        <td>BOARDER</td>
+                        <td>DATE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if record %}
+                        {% for payment in record %}
+                            <tr>
+                                <td>{{ payment.paymentid }}</td>
+                                <td>{{ record_status }}</td>
+                                <td>{{ payment.referralid }}</td>
+                                <td>{{ payment.building_name }}</td>
+                                <td>{{ payment.boarder_name }}</td>
+                                <td>{{ payment.date_created }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if page == 'report' %}
+            <table>
+                <thead>
+                    <tr>
+                        <td>REPORT ID</td>
+                        <td>STATUS</td>
+                        <td>BUILDING</td>
+                        <td>REASON</td>
+                        <td>REPORTER</td>
+                        <td>DATE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if record %}
+                        {% for report in record %}
+                            <tr>
+                                <td>{{ report.reportid }}</td>
+                                <td>{{ record_status }}</td>
+                                <td>{{ report.building }}</td>
+                                <td>{{ report.reason }}</td>
+                                <td>{{ report.reporter }}</td>
+                                <td>{{ report.date_created }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if page == 'verification' %}
+            <table>
+                <thead>
+                    <tr>
+                        <td>VERIFICATION ID</td>
+                        <td>STATUS</td>
+                        <td>BUILDING</td>
+                        <td>DATE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if record %}
+                        {% for verif in record %}
+                            <tr>
+                                <td>{{ verif.verificationid }}</td>
+                                <td>{{ record_status }}</td>
+                                <td>{{ verif.building }}</td>
+                                <td>{{ verif.date_created }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if page == 'verification_denied' %}
+            <table>
+                <thead>
+                    <tr>
+                        <td>VERIFICATION ID</td>
+                        <td>STATUS</td>
+                        <td>BUILDING</td>
+                        <td>REASON</td>
+                        <td>DATE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if record %}
+                        {% for verif in record %}
+                            <tr>
+                                <td>{{ verif.verificationid }}</td>
+                                <td>{{ record_status }}</td>
+                                <td>{{ verif.building }}</td>
+                                <td>{{ verif.reason }}</td>
+                                <td>{{ verif.date_created }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+                            <td>No Record</td>
+
+                            <td>No Record</td>
+
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </section>
+    
+{% endblock %}
+
+
+
+{% block last_scripts %}
+    <script src="{% static 'scripts/dbms.js' %}"></script>
+{% endblock last_scripts %}

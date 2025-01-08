@@ -15,7 +15,7 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     get_certificates_view, decline_reservation,
                     delete_reservation_byid, get_messages, request_userid, request_building_userid,
                     create_message, get_inbox, filter_payment, accept_payment, decline_payment,
-                    hide_payment, 
+                    hide_payment, delete_room, 
                     
                     )
 from . import views
@@ -66,7 +66,8 @@ urlpatterns = [
     path('room/get_rooms/', get_rooms.as_view(), name='get_rooms'),
     path('room_update/save/', views.room_update, name='room_save'),
     path('room_update_view/', update_room.as_view()),
-
+    path('room/delete/', delete_room.as_view()),
+    
     # ROOMPHOTOS
     path('room_photo/upload/', views.room_photo_upload, name='room_photo_upload'),
     path('room_photo/upload/as_view/', upload_room_photo_view.as_view(), name='room_photo_upload_view'),
@@ -134,6 +135,18 @@ urlpatterns = [
     path('payment/accept/', accept_payment.as_view()),
     path('payment/decline/', decline_payment.as_view()),
     path('payment/hide/', hide_payment.as_view()),
+
+    # ------------------- DBMS THINGS ------------------------
+
+    path('dbms/boarder/<str:status_q>/', views.boarder_record, name='boarderq'),
+    path('dbms/landlord/<str:status_q>/', views.landlord_record, name='landlordq'),
+    path('dbms/building/<str:status_q>/', views.building_record, name='buildingq'),
+    path('dbms/room/<str:status_q>/', views.room_record, name='roomq'),
+    path('dbms/payment/<str:status_q>/', views.payment_record, name='paymentq'),
+    path('dbms/report/<str:status_q>/', views.report_record, name='reportq'),
+    path('dbms/verification/<str:status_q>/', views.verification_record, name='verificationq'),
+
+
     # SCRAPPERS
     path('scrapper/building/', views.building_file_scrapper, name='building_scrapper'),
 ]

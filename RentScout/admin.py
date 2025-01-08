@@ -2,7 +2,9 @@ from django.contrib import admin
 from .models import (ScoutUser, Building, Policies, Highlights, Room,
                      Feedback, RoomImage, ScoutUser_Landlord, AdminUser,
                      ScoutUserBookmark, LandlordUserBookmark, BuildingReport,
-                     Verification, Reservation, Message, Payment, Certificate
+                     Verification, Reservation, Message, Payment, Certificate,
+                     CreatedBoarder, CreatedBuilding, UpdatedBuilding, DeletedBuilding,
+                     CreatedRoom, UpdatedRoom, DeletedRoom, 
                      )   
 from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, BuildingForm,
                     RoomForm, RoomImageForm, LandlordUserCreationForm, BuildingFormAdmin,
@@ -75,6 +77,21 @@ class LandlordBookmarkAdmin(admin.ModelAdmin):
 class BuildingReportAdmin(admin.ModelAdmin):
     list_display = ['reportid', 'date_reported', 'reason']
 
+class ReservationAdmin(admin.ModelAdmin):
+    list_display = ['reservationid', 'room_name', 'user_fullname', 'status', 'created', 'last_updated']
+    
+    def room_name(self, obj):
+            return obj.roomid.room_name if obj.roomid else '-'
+        
+    def user_fullname(self, obj):
+        return obj.userid.get_fullname if obj.userid else '-'
+    
+    room_name.admin_order_field = 'roomid__room_name'
+    user_fullname.admin_order_field = 'userid__first_name'
+    
+    room_name.short_description = 'Room'
+    user_fullname.short_description = 'User'
+    
 admin.site.register(ScoutUser, ScoutUserAdmin)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(Policies, PoliciesAdmin)
@@ -88,7 +105,16 @@ admin.site.register(LandlordUserBookmark, LandlordBookmarkAdmin)
 admin.site.register(AdminUser, AdminUserAdmin)
 admin.site.register(BuildingReport, BuildingReportAdmin)
 admin.site.register(Verification)
-admin.site.register(Reservation)
+admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Message)
 admin.site.register(Payment)
 admin.site.register(Certificate)
+
+# DBMS
+admin.site.register(CreatedBoarder)
+admin.site.register(CreatedBuilding)
+admin.site.register(UpdatedBuilding)
+admin.site.register(DeletedBuilding)
+admin.site.register(CreatedRoom)
+admin.site.register(UpdatedRoom)
+admin.site.register(DeletedRoom)

@@ -378,3 +378,225 @@ class Payment(models.Model):
 
     class Meta:
         ordering = ['date_sent']
+
+
+class CreatedBoarder(models.Model):
+    userid = models.PositiveIntegerField()
+    email = models.CharField(max_length = 225)
+    firstname = models.CharField(max_length = 20)
+    lastname = models.CharField(max_length = 20)
+    middlename = models.CharField(max_length = 20)
+    birthdate = models.DateField(default = timezone.now)
+    gender = models.CharField(max_length = 8)
+    barangay = models.CharField(max_length = 50, default = "", null=True)
+    province = models.CharField(max_length = 50, default = "", null=True)
+    city = models.CharField(max_length = 50, default = "", null=True)
+    contact = models.CharField(max_length = 15, default="", null=True)
+    date_created = models.DateTimeField(auto_now = True)
+
+    @property
+    def get_fullname(self):
+        return f"{self.firstname} {self.lastname}"
+    
+    @property
+    def get_address(self):
+        return f'{self.barangay}, {self.province}, {self.city}'
+
+class UpdatedBoarder(models.Model):
+    userid = models.PositiveIntegerField()
+    email = models.CharField(max_length = 225)
+    firstname = models.CharField(max_length = 20)
+    lastname = models.CharField(max_length = 20)
+    middlename = models.CharField(max_length = 20)
+    birthdate = models.DateField(default = timezone.now)
+    gender = models.CharField(max_length = 8)
+    barangay = models.CharField(max_length = 50, default = "", null=True)
+    province = models.CharField(max_length = 50, default = "", null=True)
+    city = models.CharField(max_length = 50, default = "", null=True)
+    contact = models.CharField(max_length = 15, default="", null=True)
+    date_created = models.DateTimeField(auto_now = True)
+
+    @property
+    def get_fullname(self):
+        return f"{self.firstname} {self.lastname}"
+    
+    @property
+    def get_address(self):
+        return f'{self.barangay}, {self.province}, {self.city}'
+
+class CreatedLandlord(models.Model):
+    userid = models.PositiveIntegerField()
+    email = models.CharField(max_length = 225)
+    firstname = models.CharField(max_length = 20)
+    lastname = models.CharField(max_length = 20)
+    middlename = models.CharField(max_length = 20)
+    birthdate = models.DateField(default = timezone.now)
+    gender = models.CharField(max_length = 8)
+    barangay = models.CharField(max_length = 50, default = "", null=True)
+    province = models.CharField(max_length = 50, default = "", null=True)
+    city = models.CharField(max_length = 50, default = "", null=True)
+    contact = models.CharField(max_length = 15, default="", null=True)
+    date_created = models.DateTimeField(auto_now = True)
+
+    @property
+    def get_fullname(self):
+        return f"{self.firstname} {self.lastname}"
+    
+    @property
+    def get_address(self):
+        return f'{self.barangay}, {self.province}, {self.city}'
+
+class UpdatedLandlord(models.Model):
+    userid = models.PositiveIntegerField()
+    email = models.CharField(max_length = 225)
+    firstname = models.CharField(max_length = 20)
+    lastname = models.CharField(max_length = 20)
+    middlename = models.CharField(max_length = 20)
+    birthdate = models.DateField(default = timezone.now, null=True, blank=True)
+    gender = models.CharField(max_length = 8)
+    barangay = models.CharField(max_length = 50, default = "", null=True)
+    province = models.CharField(max_length = 50, default = "", null=True)
+    city = models.CharField(max_length = 50, default = "", null=True)
+    contact = models.CharField(max_length = 15, default="", null=True)
+    date_created = models.DateTimeField(auto_now = True)
+
+    @property
+    def get_fullname(self):
+        return f"{self.firstname} {self.lastname}"
+    
+    @property
+    def get_address(self):
+        return f'{self.barangay}, {self.province}, {self.city}'
+
+class CreatedBuilding(models.Model):
+    buildingid = models.PositiveIntegerField()
+    building_owner = models.CharField(max_length = 255, default="")
+    building_name = models.CharField(max_length = 250, default="")
+    price = models.PositiveIntegerField(default=100)
+    zip_code = models.PositiveIntegerField(default=0, null=True, blank=True)
+    street = models.CharField(max_length=75, blank=True, null=True)
+    city = models.CharField(max_length=75, default="None")
+    province = models.CharField(max_length=75, default="None")
+    country = models.CharField(max_length=75, default="None")
+    details = models.TextField(blank=True, null=True)
+    coordinates = models.CharField(max_length = 255, blank = False, null = False, default = "")
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, null=True, blank=True)
+    deleted_at = models.DateTimeField(auto_now_add=True)
+
+class UpdatedBuilding(models.Model):
+    buildingid = models.PositiveIntegerField()
+    building_owner = models.CharField(max_length = 255, default="")
+    building_name = models.CharField(max_length = 250, default="")
+    price = models.PositiveIntegerField(default=100)
+    zip_code = models.PositiveIntegerField(default=0, null=True, blank=True)
+    street = models.CharField(max_length=75, blank=True, null=True)
+    city = models.CharField(max_length=75, default="None")
+    province = models.CharField(max_length=75, default="None")
+    country = models.CharField(max_length=75, default="None")
+    details = models.TextField(blank=True, null=True)
+    coordinates = models.CharField(max_length = 255, blank = False, null = False, default = "")
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, null=True, blank=True)
+    deleted_at = models.DateTimeField(auto_now_add=True)
+
+class DeletedBuilding(models.Model):
+    buildingid = models.PositiveIntegerField()
+    building_owner = models.CharField(max_length = 255, default="")
+    building_name = models.CharField(max_length = 250, default="")
+    price = models.PositiveIntegerField(default=100)
+    zip_code = models.PositiveIntegerField(default=0, null=True, blank=True)
+    street = models.CharField(max_length=75, blank=True, null=True)
+    city = models.CharField(max_length=75, default="None")
+    province = models.CharField(max_length=75, default="None")
+    country = models.CharField(max_length=75, default="None")
+    details = models.TextField(blank=True, null=True)
+    coordinates = models.CharField(max_length = 255, blank = False, null = False, default = "")
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, null=True, blank=True)
+    deleted_at = models.DateTimeField(auto_now_add=True)
+
+class CreatedRoom(models.Model):
+    roomid = models.PositiveIntegerField(default=1)
+    owner = models.CharField(max_length = 250, default="")
+    building_name = models.CharField(max_length = 250, default="")
+    room_name = models.CharField(max_length=250)
+    date_created = models.DateTimeField(auto_now=True)
+
+class UpdatedRoom(models.Model):
+    roomid = models.PositiveIntegerField(default=1)
+    owner = models.CharField(max_length = 250, default="")
+    building_name = models.CharField(max_length = 250, default="")
+    room_name = models.CharField(max_length=250)
+    date_created = models.DateTimeField(auto_now=True)
+
+class DeletedRoom(models.Model):
+    roomid = models.PositiveIntegerField(default=1)
+    owner = models.CharField(max_length = 250, default="")
+    building_name = models.CharField(max_length = 250, default="")
+    room_name = models.CharField(max_length=250)
+    date_created = models.DateTimeField(auto_now=True)
+
+
+class CreatedPayment(models.Model):
+    paymentid = models.PositiveIntegerField()
+    referralid = models.CharField(max_length = 60, default="")
+    building_name = models.CharField(max_length = 250, default="")
+    boarder_name = models.CharField(max_length = 250, default="")
+    date_created = models.DateTimeField(auto_now=True)
+
+class AcceptedPayment(models.Model):
+    paymentid = models.PositiveIntegerField()
+    referralid = models.CharField(max_length = 60, default="")
+    building_name = models.CharField(max_length = 250, default="")
+    boarder_name = models.CharField(max_length = 250, default="")
+    date_created = models.DateTimeField(auto_now=True)
+
+class DeniedPayment(models.Model):
+    paymentid = models.PositiveIntegerField()
+    referralid = models.CharField(max_length = 60, default="")
+    building_name = models.CharField(max_length = 50, default="")
+    boarder_name = models.CharField(max_length = 50, default="")
+    date_created = models.DateTimeField(auto_now=True)
+
+class CreatedReport(models.Model):
+    reportid = models.PositiveIntegerField()
+    building = models.CharField(max_length = 60, default="")
+    reporter = models.CharField(max_length = 50, default="")
+    reason = models.CharField(max_length = 255, default="")
+    date_created = models.DateTimeField(auto_now=True)
+
+class AcceptedReport(models.Model):
+    reportid = models.PositiveIntegerField()
+    building = models.CharField(max_length = 60, default="")
+    reporter = models.CharField(max_length = 50, default="")
+    reason = models.CharField(max_length = 255, default="")
+    date_created = models.DateTimeField(auto_now=True)
+
+class DeniedReport(models.Model):
+    reportid = models.PositiveIntegerField()
+    building = models.CharField(max_length = 60, default="")
+    reporter = models.CharField(max_length = 50, default="")
+    reason = models.CharField(max_length = 255, default="")
+    date_created = models.DateTimeField(auto_now=True)
+
+
+
+class CreatedVerification(models.Model):
+    verificationid = models.PositiveIntegerField()
+    building = models.CharField(max_length = 60, default="")
+    date_created = models.DateTimeField(auto_now=True)
+
+class AcceptedVerification(models.Model):
+    verificationid = models.PositiveIntegerField()
+    building = models.CharField(max_length = 60, default="")
+    date_created = models.DateTimeField(auto_now=True)
+
+class DeniedVerification(models.Model):
+    verificationid = models.PositiveIntegerField()
+    building = models.CharField(max_length = 60, default="")
+    date_created = models.DateTimeField(auto_now=True)
+    reason = models.CharField(max_length = 255, default="")
+
+class DeletedVerification(models.Model):
+    verificationid = models.PositiveIntegerField()
+    building = models.CharField(max_length = 60, default="")
+    date_created = models.DateTimeField(auto_now=True)
+

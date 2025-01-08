@@ -3,6 +3,13 @@ from .models import (ScoutUser, Building, Highlights, Room,
                      RoomImage, Policies, Feedback, ScoutUser_Landlord,
                      ScoutUserBookmark, LandlordUserBookmark, AdminUser, BuildingReport,
                      Verification, Reservation, Certificate, Message, Payment, 
+                     CreatedBoarder, UpdatedBoarder, CreatedLandlord, UpdatedLandlord,
+                     DeletedBuilding, CreatedBuilding, UpdatedBuilding,
+                     CreatedRoom, UpdatedRoom, DeletedRoom,
+                     CreatedPayment, AcceptedPayment, DeniedPayment, CreatedReport,
+                     CreatedVerification, AcceptedVerification, DeniedVerification,
+                     DeletedVerification, AcceptedReport, DeniedReport
+
                     )
 
 from .forms import (EmailAuthenticationForm, BuildingForm, UserLoginForm, 
@@ -30,6 +37,10 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from PIL import Image
 
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+
+
 logger = logging.getLogger(__name__)
 
 def get_user_backend(user):
@@ -56,6 +67,8 @@ def scoutuser_signup(request):
                     user = form.save()                        
                     backend = get_user_backend(user)
                     login(request, user, backend)
+
+                
                     return redirect('home')
                 else:
                     print(form.errors)
@@ -73,7 +86,8 @@ def scoutuser_signup(request):
                     messages.error(request, 'Please enter a valid email or password')
             else:
                 messages.error(request, "Please select user type")
-    except:
+    except Exception as e:
+        print(e)
         messages.error(request, "Server side error")
 
     context = {'form': form, }
@@ -279,7 +293,7 @@ class building_edit_view(View):
 
                     if 'gcash_qr' in request.FILES:
                         new_bldg.gcash_qr = request.FILES['gcash_qr']
-                        
+
                     new_bldg.save()
                     return JsonResponse({'success': f'successfully updated {building.building_name} Building'}, status = 200)
                 else:
@@ -293,14 +307,24 @@ class delete_building_view(View):
     def post(self, request):
         try:
             buildingid = request.POST.get('buildingid')
+            reportid = request.POST.get('reportid')
             print('Received building id:', buildingid)  # Debugging line
             
             if not buildingid:
                 return JsonResponse({'error': 'Building ID not provided'}, status=400)
 
             building = Building.objects.get(buildingid=buildingid)
+            report = BuildingReport.objects.get(reportid = reportid)
+
+            AcceptedReport.objects.create(
+                reportid=report.reportid,
+                building=building.building_name,
+                reporter=report.reporter.get_fullname,
+                reason=report.reason
+            )
+            
             building.delete()
-            #success(request, 'Building successfully deleted')
+
             return JsonResponse({'success': 'Building successfully deleted'}, status=200)
         
         except Building.DoesNotExist:
@@ -727,6 +751,23 @@ class update_room(View):
         else:
             return JsonResponse({'error': 'Did not receive Room ID'}, status = 400)
 
+class delete_room(View):
+    def post(selt, request):
+        try: 
+            roomid = request.POST.get('roomid')
+
+            if not roomid or roomid is None:
+                return JsonResponse({'error': 'Room not Found'}, status = 404)
+            
+            room = Room.objects.get(roomid = roomid)
+            room_name = room.room_name
+            room.delete()
+            return JsonResponse({'success': f'Room "{room_name}" successfully DELETED'}, status = 200)
+        
+        except Exception as e:
+            print(f'{e}')
+            return JsonResponse({'error': 'Server Error'}, status = 500)
+    
 class get_room_images(View):   
     def get(self, request):
         query = request.GET.get('roomid', '')
@@ -1239,6 +1280,7 @@ class create_building_report(View):
         except Exception as e:
             return JsonResponse({'error': "Form Not Allowed"}, status = 500)
 
+
 class delete_building_report(View):
     def post(self, request):
         reportid = request.POST.get('reportid')
@@ -1248,6 +1290,14 @@ class delete_building_report(View):
         
         try:
             report = BuildingReport.objects.get(reportid = reportid)
+
+            DeniedReport.objects.create(
+                reportid=report.reportid,
+                building=report.buildingid.building_name,
+                reporter=report.reporter.get_fullname,
+                reason=report.reason
+            )
+
             report.delete()
             #success(request, 'Report successfully Denied')
             return JsonResponse({'success': 'Report successfully Denied'}, status = 200)
@@ -1972,7 +2022,7 @@ class send_payment(View):
             )
             newmessage.save()
 
-            form = PaymentForm(request.POST)
+            form = PaymentForm(request.POST, request.FILES)
             if form.is_valid():
                 payment = form.save(commit = False)
                 payment.roomid = room
@@ -2155,3 +2205,319 @@ def building_file_scrapper(request):
                 return redirect('building_scrapper')
     form = ScrapperFile()
     return render(request, 'RentScout/building_scrapper.html', {"form":form})
+
+@receiver(post_save, sender=ScoutUser)
+def log_boarder(sender, instance, created, **kwargs):
+    print(f'log boarder: {created}')
+    if created:
+        CreatedBoarder.objects.create(
+            userid = instance.userid,
+            email=instance.email,
+            firstname=instance.firstname,
+            lastname=instance.lastname,
+            middlename=instance.middlename,
+            birthdate=instance.birthdate,
+            gender=instance.gender,
+            barangay=instance.barangay,
+            province=instance.province,
+            city=instance.city,
+            contact=instance.contact,
+        )
+    else:
+        UpdatedBoarder.objects.create(
+            userid = instance.userid,
+            email=instance.email,
+            firstname=instance.firstname,
+            lastname=instance.lastname,
+            middlename=instance.middlename,
+            birthdate=instance.birthdate,
+            gender=instance.gender,
+            barangay=instance.barangay,
+            province=instance.province,
+            city=instance.city,
+            contact=instance.contact,
+        )
+
+@receiver(post_save, sender=ScoutUser_Landlord)
+def log_landlord(sender, instance, created, **kwargs):
+    if created:
+        CreatedLandlord.objects.create(
+            userid = instance.userid,
+            email=instance.email,
+            firstname=instance.firstname,
+            lastname=instance.lastname,
+            middlename=instance.middlename,
+            birthdate=instance.birthdate,
+            gender=instance.gender,
+            barangay=instance.barangay,
+            province=instance.province,
+            city=instance.city,
+            contact=instance.contact,
+        )
+    else:
+        UpdatedLandlord.objects.create(
+            userid = instance.userid,
+            email=instance.email,
+            firstname=instance.firstname,
+            lastname=instance.lastname,
+            middlename=instance.middlename,
+            birthdate=instance.birthdate,
+            gender=instance.gender,
+            barangay=instance.barangay,
+            province=instance.province,
+            city=instance.city,
+            contact=instance.contact,
+        )
+
+@receiver(post_save, sender=Building)
+def building_saved(sender, instance, created, **kwargs):
+    if created:
+        CreatedBuilding.objects.create(
+            buildingid=instance.buildingid,
+            building_owner=instance.building_owner.get_fullname,
+            building_name=instance.building_name,
+            price=instance.price,
+            zip_code=instance.zip_code,
+            street=instance.street,
+            city=instance.city,
+            province=instance.province,
+            country=instance.country,
+            details=instance.details,
+            coordinates=instance.coordinates,
+            average_rating=instance.average_rating
+        )        
+    else:        
+        UpdatedBuilding.objects.create(
+            buildingid=instance.buildingid,
+            building_owner=instance.building_owner.get_fullname,
+            building_name=instance.building_name,
+            price=instance.price,
+            zip_code=instance.zip_code,
+            street=instance.street,
+            city=instance.city,
+            province=instance.province,
+            country=instance.country,
+            details=instance.details,
+            coordinates=instance.coordinates,
+            average_rating=instance.average_rating
+        )
+
+@receiver(pre_delete, sender=Building)
+def building_deleted(sender, instance, **kwargs):
+    DeletedBuilding.objects.create(
+        buildingid=instance.buildingid,
+        building_owner=instance.building_owner.get_fullname,
+        building_name=instance.building_name,
+        price=instance.price,
+        zip_code=instance.zip_code,
+        street=instance.street,
+        city=instance.city,
+        province=instance.province,
+        country=instance.country,
+        details=instance.details,
+        coordinates=instance.coordinates,
+        average_rating=instance.average_rating,
+        deleted_at=timezone.now() 
+    )
+
+@receiver(post_save, sender=Room)
+def room_saved(sender, instance, created, **kwargs):
+    if created:
+        CreatedRoom.objects.create(
+            roomid=instance.roomid,
+            owner = instance.building_id.building_owner.get_fullname,
+            building_name=instance.building_id.building_name,
+            room_name=instance.room_name
+        )
+    else:
+        UpdatedRoom.objects.create(
+            roomid=instance.roomid,
+            owner = instance.building_id.building_owner.get_fullname,
+            building_name=instance.building_id.building_owner.get_fullname,
+            room_name=instance.room_name
+        )
+
+@receiver(pre_delete, sender=Room)
+def room_deleted(sender, instance, **kwargs):
+    DeletedRoom.objects.create(
+        roomid=instance.roomid,
+        owner = instance.building_id.building_owner.get_fullname,
+        building_name=instance.building_id.building_owner.get_fullname,
+        room_name=instance.room_name
+    )
+
+# Payment Receivers
+@receiver(post_save, sender=Payment)
+def create_payment_record(sender, instance, created, **kwargs):
+    if created:
+        CreatedPayment.objects.create(
+            paymentid=instance.paymentid,
+            referralid=instance.referralid,
+            building_name=instance.roomid.building_id.building_name,
+            boarder_name=instance.boarder.get_fullname
+        )
+    else:
+        if instance.status == Payment.ACCEPTED:
+            AcceptedPayment.objects.create(
+                paymentid=instance.paymentid,
+                referralid=instance.referralid,
+                building_name=instance.roomid.building_id.building_name,
+                boarder_name=instance.boarder.get_fullname
+            )
+        elif instance.status == Payment.DECLINED:
+            DeniedPayment.objects.create(
+                paymentid=instance.paymentid,
+                referralid=instance.referralid,
+                building_name=instance.roomid.building_id.building_name,
+                boarder_name=instance.boarder.get_fullname
+            )
+
+# Building Report Receivers
+@receiver(post_save, sender=BuildingReport)
+def create_report_record(sender, instance, created, **kwargs):
+    if created:
+        CreatedReport.objects.create(
+            reportid=instance.reportid,
+            building=instance.buildingid.building_name,
+            reporter=instance.reporter.get_fullname,
+            reason=instance.reason
+        )
+    else:
+        AcceptedReport.objects.create(
+            reportid=instance.reportid,
+            building=instance.buildingid.building_name,
+            reporter=instance.reporter.get_fullname,
+            reason=instance.reason
+        )
+
+# Verification Receivers
+@receiver(post_save, sender=Verification)
+def create_verification_record(sender, instance, created, **kwargs):
+    if created:
+        CreatedVerification.objects.create(
+            verificationid=instance.verificationid,
+            building=instance.buildingid.building_name
+        )
+    else:
+        if instance.status == Verification.VERIFIED:
+            AcceptedVerification.objects.create(
+                verificationid=instance.verificationid,
+                building=instance.buildingid.building_name
+            )
+        elif instance.status == Verification.NOT_VERIFIED:
+            DeniedVerification.objects.create(
+                verificationid=instance.verificationid,
+                building=instance.buildingid.building_name,
+                reason=instance.deny_reason
+            )
+
+@receiver(pre_delete, sender=Verification)
+def delete_verification_record(sender, instance, **kwargs):
+    DeletedVerification.objects.create(
+        verificationid=instance.verificationid,
+        building=instance.buildingid.building_name,
+    )
+
+
+
+
+
+@login_required(login_url = 'signin')
+def boarder_record(request, status_q):
+    page = 'boarder'
+    record_status = status_q
+    if status_q == 'NEW':
+        record = CreatedBoarder.objects.all()
+    elif status_q == 'UPDATED':
+        record = UpdatedBoarder.objects.all()
+
+    context = {'page': page, 'record': record, 'record_status':record_status}
+    return render(request, 'RentScout/admin/dbms_report.html', context)
+
+@login_required(login_url = 'signin')
+def landlord_record(request, status_q):
+    page = 'landlord'
+    record_status = status_q
+
+    if status_q == 'NEW':
+        record = CreatedLandlord.objects.all()
+    elif status_q == 'UPDATED':
+        record = UpdatedLandlord.objects.all()
+        
+
+    context = {'page': page, 'record': record, 'record_status':record_status}
+    return render(request, 'RentScout/admin/dbms_report.html', context)
+
+@login_required(login_url = 'signin')
+def building_record(request, status_q):
+    page = 'building'
+
+    if status_q == 'NEW':
+        record = CreatedBuilding.objects.all()
+    elif status_q == 'UPDATED':
+        record = UpdatedBuilding.objects.all()
+    elif status_q == 'DELETED':
+        record = DeletedBuilding.objects.all()
+
+    context = {'page': page, 'record': record, 'record_status': status_q}
+    return render(request, 'RentScout/admin/dbms_report.html', context)
+
+@login_required(login_url = 'signin')
+def room_record(request, status_q):
+    page = 'room'
+
+    if status_q == 'NEW':
+        record = CreatedRoom.objects.all()
+    elif status_q == 'UPDATED':
+        record = UpdatedRoom.objects.all()
+    elif status_q == 'DELETED':
+        record = DeletedRoom.objects.all()
+
+    context = {'page': page, 'record': record, 'record_status': status_q}
+    return render(request, 'RentScout/admin/dbms_report.html', context)
+
+
+@login_required(login_url = 'signin')
+def payment_record(request, status_q):
+    page = 'payment'
+
+    if status_q == 'NEW':
+        record = CreatedPayment.objects.all()
+    elif status_q == 'ACCEPTED':
+        record = AcceptedPayment.objects.all()
+    elif status_q == 'DENIED':
+        record = DeniedPayment.objects.all()
+
+    context = {'page': page, 'record': record, 'record_status': status_q}
+    return render(request, 'RentScout/admin/dbms_report.html', context)
+
+@login_required(login_url = 'signin')
+def report_record(request, status_q):
+    page = 'report'
+
+    if status_q == 'NEW':
+        record = CreatedReport.objects.all()
+    elif status_q == 'ACCEPTED':
+        record = AcceptedReport.objects.all()
+    elif status_q == 'DENIED':
+        record = DeniedReport.objects.all()
+
+    context = {'page': page, 'record': record, 'record_status': status_q}
+    return render(request, 'RentScout/admin/dbms_report.html', context)
+
+@login_required(login_url = 'signin')
+def verification_record(request, status_q):
+    page = 'verification'
+
+    if status_q == 'NEW':
+        record = CreatedVerification.objects.all()
+    elif status_q == 'ACCEPTED':
+        record = AcceptedVerification.objects.all()
+    elif status_q == 'DENIED':
+        page = 'verification_denied'
+        record = DeniedVerification.objects.all()
+    elif status_q == 'DELETED':
+        record = DeletedVerification.objects.all()
+
+    context = {'page': page, 'record': record, 'record_status': status_q}
+    return render(request, 'RentScout/admin/dbms_report.html', context)
