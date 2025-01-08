@@ -35,7 +35,7 @@
         </div>
         
         <div class="table">
-            <div class="colbox">
+            <div class="colbox hidden">
                 <div class="col1"><h3>Name</h3></div>
                 <div class="col2"><h3>Email</h3></div>
                 <div class="col3"><h3>Room</h3></div>
@@ -49,11 +49,26 @@
                 <div class="pay4"><h3>Action</h3></div>
                 <div class="pay5"><h3>Img</h3></div>
             </div>
+
+            <table id="all_res">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Room</th>
+                        <th>Date Requested</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
             <ul id="reservation_lists" class="hidden">
             </ul>
         </div>
         <h2 id="select_notice" class="hidden">Please Select a Building</h2>
-        <h2 id="empty_notice" class="hidden">No Pending Reservations</h2>
+        <h2 id="empty_notice" class="hidden">No Record</h2>
     </div>
 
     <div id="fullscreen-overlay" class="fullscreen-overlay">

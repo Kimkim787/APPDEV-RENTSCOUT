@@ -55,9 +55,6 @@
                     <article>
                         <p>{{ room.room_name }}</p>
                     </article>
-                    {% if building.building_owner == request.user %}
-                    <a href="{% url 'edit_photo' room.roomid %}">Edit photos</a>
-                    {% endif %}
                 </div>
                 <div>
                     <h3>Status</h3>
@@ -67,9 +64,6 @@
                         <p>{{ room.current_female }} - Female</p>
                         <p>Available Space: {{ room.person_free }}</p>
                     </article>
-                    {% if building.building_owner == request.user %}
-                        <button id="update_room" class="room_update_button" id="{{ room.roomid }}">Update Room</button>
-                    {% endif %}
                 </div>
                 <div>
                     <h3>Additional Info</h3>
@@ -400,9 +394,8 @@
                 {% endif %}
                 
                 {% if building.building_owner == request.user %}
-                    <button id="add_new_room_btn">Add New Room</button>
-                    
-                    <a href="{% url 'update_building' building.buildingid %}">Update</a>
+                    <a href="{% url 'edit_building' %}" id="update_building_link">Update Building</a>
+                    <a href="{% url 'edit_building' %}" id="add_new_room_btn">Add New Room</a>
                 {% endif %}
 
                 

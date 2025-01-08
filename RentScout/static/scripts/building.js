@@ -268,6 +268,24 @@ $(document).ready(function() {
     $('#send_payment').addClass('hidden');
   })
 
+  // UPDATE BUILDING ANCHOR TAG
+  $('#update_building_link').on('click', function(e){
+    e.preventDefault();
+    console.log($('#buildingid').val());
+    sessionStorage.setItem('fn_name', 'request_bldg_instance');
+    sessionStorage.setItem('buildingid', $('#buildingid').val());
+    window.location.href = $(this).attr('href');
+  })
+
+  $('#add_new_room_btn').on('click', function(e){
+    e.preventDefault();
+    console.log('new room clicked');
+    sessionStorage.setItem('fn_name', 'add_new_room');
+    sessionStorage.setItem('buildingid', $('#buildingid').val());
+
+    window.location.href = $(this).attr('href');
+  })
+
   function closereport(){
     const report_modal = $("#report_modal");
     $(report_modal).addClass('hidden');

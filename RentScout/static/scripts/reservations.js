@@ -1,7 +1,7 @@
 emailjs.init("Q_A-eXEwrvvQsFMYs");
 $(document).ready(function(){
-  request_reservations();
-  
+  // request_reservations();
+    
   $('.building_items').on('click', function(){
     console.log("b_item clicked");  
 
@@ -19,23 +19,49 @@ $(document).ready(function(){
   $('#res_pending').on('click', function(){
     $('#res_filter').attr('value', "Pending");
     request_reservations(buildingid = $(this).attr('value'), statusQ = 'Pending');
+    show_res_table();
   });
 
   $('#res_accepted').on('click', function(){
     $('#res_filter').attr('value', "Accepted");
     request_reservations(buildingid = $(this).attr('value'), statusQ = 'Accepted');
+    show_res_table();
   })
 
   $('#res_declined').on('click', function(){
     $('#res_filter').attr('value', "Declined");
     request_reservations(buildingid = $(this).attr('value'), statusQ = 'Declined')
+    show_res_table();
   })
 
-  $('#reservation_lists').on('click', '.accept_btns', accept_reservation);
+  $('#reservation_lists').on('click', '.accept_btns', function(){
+    accept_reservation($(this).attr('value'));
+    $(this).closest('.reservation_item').remove();
+  });
 
-  $('#reservation_lists').on('click', '.decline_btns', decline_reservation);
+  $('#reservation_lists').on('click', '.decline_btns',  function(){
+    decline_reservation($(this).attr('value'));
+    $(this).closest('.reservation_item').remove();
+  });
 
-  $('#reservation_lists').on('click', '.delete_btns', delete_reservation_byid);
+  $('#reservation_lists').on('click', '.delete_btns', function(){
+    $(this).closest('.reservation_item').remove();
+  });
+
+  $('#all_res').on('click', '.accept_btns', function(){
+    accept_reservation($(this).attr('value'));
+    setTimeout(get_all_res, 100);
+  })
+
+  $('#all_res').on('click', '.decline_btns', function(){
+    decline_reservation($(this).attr('value'));
+    setTimeout(get_all_res, 100);
+  })
+
+  $('#all_res').on('click', '.delete_btns', function(){
+    delete_reservation($(this).attr('value'));
+    setTimeout(get_all_res, 100);
+  })
 
   // PAYMENT FILTER BUTTONS
   $('#pay_pending').on('click', function(){
@@ -43,17 +69,19 @@ $(document).ready(function(){
     $('.colbox').addClass('hidden');
     $('.paymentbox').removeClass('hidden');
     payment_filter($(this).val(), 'Pending');
-    
+    show_payment_table();
   });
 
   $('#pay_accepted').on('click', function(){
     $('#pay_filter').attr('value', 'Accepted');
     payment_filter($(this).val(), 'Accepted');
+    show_payment_table();
   });
 
   $('#pay_declined').on('click', function(){
     $('#pay_filter').attr('value', 'Declined');
     payment_filter($(this).val(), 'Declined');
+    show_payment_table();
   });
 
   $('#reservation_lists').on('click', '.accept_payment', function(){
@@ -135,7 +163,8 @@ $(document).ready(function(){
     } else {
       let value = $('#buildings_container .building_items').first().attr('value');
 
-      console.log(value);
+      console.log('sdflkj');
+
       $('#pay_pending').attr('value', value);
       $('#pay_accepted').attr('value', value);
       $('#pay_declined').attr('value', value);
@@ -303,26 +332,16 @@ $(document).ready(function(){
 
   }
 
-  function  accept_reservation(){
-    let reservationid = $(this).attr('value');
-    // if (!(id == null)){
-    //   reservationid = id;
-    // } else {
-    // reservationid = $(this).attr('value');
-    // }
-    // console.log(id);
-    console.log(reservationid);
-
+  function  accept_reservation(id){
     $.ajax({
       url: '/reservations/accept/',
       type: 'POST',
       data: {
         'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-        'reservationid': reservationid
+        'reservationid': id
       },
       success: function(response){
         SoloMessageFlow(`${response.success}`);
-        $('#res_pending').trigger('click');
         send_accept_message(reservationid);
       },
       error: function(xhr, status, error) {
@@ -332,34 +351,15 @@ $(document).ready(function(){
     })
   }
 
-  // function decline_reservation(){
-  //   $.ajax({
-  //     url: '/reservations/decline/',
-  //     type: 'POST',
-  //     data: {
-  //       'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-  //       'reservationid': $(this).attr('value')
-  //     },
-  //     success: function(response){
-  //       SoloMessageFlow(response.success);
-  //     },
-  //     error: function(xhr, status, error) {
-  //       let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
-  //       SoloMessageFlow(`${errorMessage}`, 'error');
-  //     }
-  //   })
-  // }
-
-  function decline_reservation(){
+  function decline_reservation(id){
     $.ajax({
       url: '/reservations/decline/',
       type: 'POST',
       data: {
         'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-        'reservationid': $(this).attr('value')
+        'reservationid': id
       },
       success: function(response){
-        $('#res_pending').trigger('click');
         SoloMessageFlow(response.success);
       },
       error: function(xhr, status, error) {
@@ -369,13 +369,13 @@ $(document).ready(function(){
     })
   }
 
-  function delete_reservation_byid(){
+  function delete_reservation(id){
     $.ajax({
       url: '/reservations/delete_byid/',
       type: 'POST',
       data: {
         'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-        'reservationid': $(this).attr('value')
+        'reservationid': id
       },
       success: function(response){
         SoloMessageFlow(response.success);
@@ -528,6 +528,104 @@ $(document).ready(function(){
     })
   }
   
+  function get_all_res(){
+    const buildingid = $('#buildings_container').children().first().attr('value');
+    const tbody = $('#all_res').find('tbody');
+    tbody.empty();
+
+    $.ajax({
+      url: '/reservations/get/reservations/all/',
+      type: 'GET',
+      data: {
+        'buildingid': buildingid
+      },
+      success: function(response){
+        if(response.reservation_list.length === 0){
+          $('#empty_notice').removeClass('hidden');
+          return;
+        }
+        $.each(response.reservation_list, function(index, data){
+          tr = $('<tr></tr>');
+          bname = $('<td></td>', {
+            text: data.name
+          })
+
+          email = $('<td></td>', {
+            text: data.email
+          })
+
+          room = $('<td></td>', {
+            text: data.room
+          })
+
+          date = $('<td></td>', {
+            text: data.date
+          })
+
+          rstatus = $('<td></td>', {
+            text: data.status
+          })
+
+          if(data.status == 'Pending' || data.status == 'Declined'){
+            left_btn = $('<button></button>', {
+              class: 'accept_btns',
+              value: `${data.res_id}`,
+              text: 'Accept'
+            })
+          }
+          
+          if(data.status == 'Accepted' || data.status == 'Pending'){
+            right_btn = $('<button></button>', {
+              class: 'decline_btns',
+              value: `${data.res_id}`,
+              text: 'Decline'
+            })
+          } else if(data.status == 'Declined') {
+            right_btn = $('<button></button>', {
+              class: 'delete_btns',
+              value: `${data.res_id}`,
+              text: 'Delete'
+            })
+          }
+
+          tr.append(bname);
+          tr.append(email);
+          tr.append(room);
+          tr.append(date);
+          tr.append(rstatus);
+          if(data.status == 'Pending' || data.status == 'Declined'){
+            tr.append(left_btn);
+          }
+          tr.append(right_btn);
+          tbody.append(tr);
+
+          $('.colbox').addClass('hidden');
+          $('.paymentbox').addClass('hidden');
+          $('#all_res').removeClass('hidden');
+        })
+      },
+      error: function(xhr, status, error) {
+        let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
+        SoloMessageFlow(`${errorMessage}`, 'error');
+      }
+    })
+  }
+
+  function show_res_table(){ // show reservation table
+    $('.colbox').removeClass('hidden');
+    $('#all_res').addClass('hidden');
+    $('.paymentbox').addClass('hidden');
+    
+  }
+
+  function show_payment_table(){
+    $('.colbox').addClass('hidden');
+    $('#all_res').addClass('hidden');
+    $('.paymentbox').removeClass('hidden');
+
+  }
+  
+
   // FULL SCREEN THING
   function openFullScreen(img) {
     console.log(img);
@@ -536,11 +634,12 @@ $(document).ready(function(){
     
     fullImage.attr('src', img);
     overlay.css('display', 'flex');
-}
+  }
 
   function closeFullScreen() {
     console.log("Close Fullscreen");
       $('#fullscreen-overlay').css('display', 'none');
   }
 
+  get_all_res();  
 })

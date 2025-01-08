@@ -34,6 +34,7 @@ from django.template.loader import render_to_string
 import logging, math, csv, qrcode, random, string
 from django.core.paginator import Paginator
 from django.utils import timezone
+from django.utils.dateformat import format as datetimeformat
 from datetime import datetime, timedelta
 from PIL import Image
 
@@ -1605,6 +1606,40 @@ class get_reservations_pending(View):
             return JsonResponse(response_data, status = 200)
         except Exception as e:
             return JsonResponse({'error': f"{e}"}, status = 500)
+
+
+class get_reservations_all(View):
+    def get(self, request):
+        try:
+            buildingid = request.GET.get('buildingid')
+
+            if not buildingid or buildingid is None:
+                return JsonResponse({'error': 'Building Not Found'}, status = 404)
+            
+            building = Building.objects.get(buildingid = buildingid)
+            room = Room.objects.filter(building_id = building)
+            reservations = Reservation.objects.filter( roomid__in = room)
+            res_list = [
+                {
+                    'res_id': res.reservationid,
+                    'name': res.userid.get_fullname,
+                    'email': res.userid.email,
+                    'room': res.roomid.room_name,
+                    'date': datetimeformat(res.created, "M. j, Y"),
+                    'status': res.status
+                }
+                for res in reservations
+            ]
+            
+            response_data = {
+                'reservation_list': res_list,
+                'success': 'Success'
+            }
+
+            return JsonResponse(response_data, status = 200)
+        
+        except Exception as e:
+            return JsonResponse({'error': "Server Error"}, status = 500)
 
 class accept_reservation(View):
     def post(self, request):

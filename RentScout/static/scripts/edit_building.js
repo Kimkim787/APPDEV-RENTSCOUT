@@ -1561,6 +1561,24 @@ $(document).ready(function(){
     $('#edit_room_form_container').on('click', '#del_room_id', function() {
         roomDeleteModal(); 
     });
+
+    if(sessionStorage.getItem('buildingid') && sessionStorage.getItem('fn_name') === 'request_bldg_instance'){
+        const buildingid = sessionStorage.getItem('buildingid');
+        $(`input[value="${buildingid}"]`).closest('.edit_btn_list')
+            .find('button[value="Edit Building"]')
+            .trigger('click');
+        sessionStorage.clear();
+    }
+
+    if(sessionStorage.getItem('buildingid') && sessionStorage.getItem('fn_name') === 'add_new_room'){
+        const buildingid = sessionStorage.getItem('buildingid');
+        $(`input[value="${buildingid}"]`).closest('.edit_btn_list')
+            .find('button[value="Rooms"]')
+            .trigger('click');
+        $('#add_room_btn').trigger('click');
+        sessionStorage.clear();
+    }
+
 }); // ready function
 
 

@@ -15,7 +15,7 @@ from .views import (get_room_data, get_room_images, get_rooms,
                     get_certificates_view, decline_reservation,
                     delete_reservation_byid, get_messages, request_userid, request_building_userid,
                     create_message, get_inbox, filter_payment, accept_payment, decline_payment,
-                    hide_payment, delete_room, 
+                    hide_payment, delete_room, get_reservations_all,
                     
                     )
 from . import views
@@ -54,7 +54,8 @@ urlpatterns = [
     path('reservations/get/mailjs_keys/', notify_boarder.as_view()),
     path('reservations/decline/', decline_reservation.as_view()),
     path('reservations/delete_byid/', delete_reservation_byid.as_view()),
-
+    path('reservations/get/reservations/all/', get_reservations_all.as_view()),
+    
     # FEEDBACK
     path('building/feedback/', views.create_feedback, name='newfeedback'),
     path('buildling/feedback/update/<str:pk>/', views.update_feedback, name='update_feedback'),

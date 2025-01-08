@@ -99,8 +99,6 @@ section{
     user-select: none;
 }
 
-#reservation_lists{
-}
 
 .reservation_item{
     display: flex;
@@ -254,4 +252,12 @@ section{
 
 .hidden{
     display: none;
+}
+
+#all_res{
+    width: 100%;
+}
+
+#all_res tr{
+    text-align: center;
 }
