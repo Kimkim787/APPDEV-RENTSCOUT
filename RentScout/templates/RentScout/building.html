@@ -345,16 +345,19 @@
                 
 
                 <h3>{{ building.building_name }}</h3>
+                <div class="bhouseicons">
+                    
+                    {% if not request.user.usertype == 'Landlord' %}
+                    <img src="{% static 'imgs/svgs/report.svg' %}" alt="report_image">
+                    {% endif %}
+                    <!-- <input type="submit" value="🤍"> -->
+                    <div id="heart_container" value="{{ building.buildingid }}">
+                        <!-- <div id="heart_sign" class="heart" value="{{ building.buildingid }}"></div> -->
+                    </div>
 
-                {% if not request.user.usertype == 'Landlord' %}
-                <img src="{% static 'imgs/svgs/report.svg' %}" alt="report_image">
-                {% endif %}
-                <!-- <input type="submit" value="🤍"> -->
-                <div id="heart_container" value="{{ building.buildingid }}">
-                    <!-- <div id="heart_sign" class="heart" value="{{ building.buildingid }}"></div> -->
+                    <a href="{% url 'home' %}"><img src="{% static 'imgs/building/back-button.png' %}" alt="back" ></a>
                 </div>
-
-                <a href="{% url 'home' %}"><img src="{% static 'imgs/building/back-button.png' %}" alt="back" ></a>
+                
             </div>
             <div class="infobox">   
                 <p>{{ building.complete_address }}</p>
@@ -363,7 +366,6 @@
                 <div class="verifyRequestbox">
                     <p><span>vacant room: </span>{{ building.rooms_vacant }}</p>
                     <div id="verification_status_box" value="{{ building.buildingid }}">
-                    
                     </div>
                     {% if request.user.usertype == 'Boarder' %}
                         <div id="online_transaction_container" class="hidden">

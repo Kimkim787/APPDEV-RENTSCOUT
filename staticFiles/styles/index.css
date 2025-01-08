@@ -91,7 +91,6 @@
     position: fixed;
     bottom: 20px;     
     right: 20px;      
-
     display: flex;
     flex-direction: row;
     align-items: flex-end;
@@ -116,7 +115,9 @@
     height: 100%;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;    
+    background-repeat: no-repeat;  
+    background-color: #fff;  
+    border-radius: 50%;
 }
 
 #messaging_container #inbox, #message_convo{
@@ -132,82 +133,111 @@
     flex-direction: column;
 }
 
-#convo_head, #convo_body, #convo_footer{
-    width: 100%;
-}
-
-#inbox_head, #convo_head{
-    position:relative;
+#inbox_head{
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
-    background-color: rgb(134, 134, 255);
+    background-color: #000;
+    gap: 100px;
+    padding: 0px 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+#convo_head{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #000;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 10%;
+}
+#convo_head h4{
+    color: white;
+}
+#inbox_head h4{
+    color: white;
 }
 #inbox_head {
     height: 10%;
 }
 
-#convo_head {
-    height: 10%;
-}
 
 #convo_body{
     height: 80%;
+    background-color: #f5f5f5;
 }
 
-/* REASIGNED ON CONVO FOOTER DESIGnN */
-/* #convo_footer{
-    height: 10%;
-} */
-
+#inbox{
+    border-radius: 10px;
+    border: 1px solid #000;
+}
 #message_close_btn{
-    position: absolute;
-    right: 0px;
-    margin-right: 10px;
-
-    padding: 0 5px;
-    border-radius: 5px;
-    background-color: red;
-    font-size: large;
+    height: 25px;
+    width: 25px;
+    filter: invert(24%) sepia(100%) saturate(7500%) hue-rotate(0deg);
 }
 
 #user_image{
-    position: absolute;
-    left: 0px;
-    margin-left: 10px;
-
-    height: 90%;
+    height: 30px;
+    width: 30px;
     border: 1px solid black;
     border-radius: 50%;
     background-color: #dadada;
 }
 
 #message_back_btn{
-    position: absolute;
-    right: 0;
     margin-right: 10px;
-
-    height: 80%;
+    filter: invert(1) brightness(2);
+    height: 25px;
+    width: 25px;
 }
 
 #convo_footer{
-    position: absolute;
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
-    bottom: 0px;
+    align-items: center;
     height: 10%;
+    background-color: #000;
+    width: 100%;
+    padding: 0px 10px;
 }
-
-#convo_footer textarea{
+#convo_footer img{
+    height: 33px;
+    width: 33px;
+}
+/* #convo_footer textarea{
     height: 40px;
-}
+} */
 
 #label_holder{
     width: auto;
 }
-
+#send_convo_form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+#send_convo_form textarea{
+    height: 25px;
+    text-align: left;
+    padding: 4px 5px;
+    border-radius: 3px;
+    resize: none;
+    overflow: auto;
+}
+#send_convo_form textarea::-webkit-scrollbar {
+    display: none; /* For WebKit browsers (Chrome, Safari) */
+}
+#send_convo_form button{
+    padding: 5px 10px;
+    background-color: #f3ede5;
+    border: none;
+    border-radius: 3px;
+}
 #attach_photo{
     width: 100%;
     height: 100%;
@@ -245,6 +275,7 @@
 /* CONVO BODY */
 #convo_list{
     height: 100%;
+    padding: 10px 0px;
     overflow-y: scroll;
 }
 
@@ -260,6 +291,7 @@
 
 .convo_time{
     text-align: center;
+    font-size: 10px;
 }
 
 .boarder_message_text{
@@ -269,6 +301,7 @@
     height: fit-content;
     padding: 5px;
     margin-left: 3%;
+    border-radius: 8px;
 }
 
 .landlord_message_text{
@@ -278,6 +311,7 @@
     height: fit-content;
     padding: 5px;
     margin-right: 3%;
+    border-radius: 8px;
 }
 
 .convo_image{
@@ -288,16 +322,16 @@
 .boarder_profile_icon{
     background-color: grey;
     border-radius: 50%;
-    width: 10%;
-    height: 10%;
+    width: 30px;
+    height: 30px;
     margin-left: 10px;
 }
 
 .landlord_profile_icon{
     background-color: grey;
     border-radius: 50%;
-    width: 10%;
-    height: 10%;
+    width: 30px;
+    height: 30px;
     margin-right: 10px;
 }
 
@@ -311,25 +345,39 @@
     list-style-type: none;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    background-color: #a0a0a0;
+    align-items: center;
+    justify-content: start;
+    background-color: #f5f5f5;
     width: 100%;
     height: 90%;
+    padding: 0px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 
 .inbox_item{
     display: flex;
     flex-direction: row;
-    height: 10%;
     width: 100%;
-    margin: 10px;
     user-select: none;
+    padding: 5px;
     -webkit-user-select: none;  /* Safari */
     -moz-user-select: none;     /* Firefox */
     -ms-user-select: none;      /* IE/Edge */
-
 }
-
+.inbox_item:hover{
+    background-color: rgba(0, 0, 0, 0.1)    ;
+}
+.profile_icon{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.inbox_design_control{
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
 .inbox_item img{
     height: 100%;
     margin: 0 10px;

@@ -139,6 +139,7 @@
                             <label for="details">Details:</label>
                             <textarea id="bldg_desc" name="{{ bldg_form.details.name }}" id="" cols="30" rows="10">{{ form.details.value }}</textarea>
                         </div>
+                        
                     </div>
                     <div class="mainimgbox">
                         <div class="imgbox">
@@ -146,7 +147,7 @@
                             <input type="file" name="{{ bldg_form.building_image.name }}"  id="bldg_image_input" class="hidden">
                             <div id="building_image_box">
                                 <img src="{{ bldg_form.building_image.src }}" alt="building_image" id="bldg_image">
-                                <img src="{% static 'imgs/plus.png' %}" alt="upload_icon" class='image_upload_icon' title="Update Building Image" id="bldg_image_upload">
+                                <img src="{% static 'imgs/plus.png' %}" alt="upload_icon" class='image_upload_icon' title="Update Building Image"  id="bldg_image_upload">
                             </div>
                         </div>
 
@@ -159,12 +160,14 @@
                             </div>
                             
                         </div>
-                        <input type="submit" value="Save">
+                        <div class="btn_container">
+                            <input type="submit" value="Save">
+                            <button type="button" id="del_bldg_id" value="">Delete</button>
+                            
+                        </div>
+                        {% comment %} <input type="submit" value="Save"> {% endcomment %}
                     </div>
-                    <div class="btn_container">
-                        <button type="button" id="del_bldg_id" value="">Delete</button>
-                        <input type="submit" value="Save">
-                    </div>
+                    
                 </form>
             </div>
 

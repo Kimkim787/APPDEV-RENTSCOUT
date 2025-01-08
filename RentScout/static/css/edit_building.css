@@ -327,20 +327,32 @@ img[src*="down.png"] {
     border-bottom-left-radius: 20px;
 }
 
-#del_bldg_id{
-   display: inline;
-    padding: 10px 60px;
-    border-radius: 10px;
-    border: none;
-    background-color: #db0000;
-    color: #fff;
-}
-
 .btn_container{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-evenly;
+    align-items: center;
     width: 100%;
+    gap: 5px;
+}
+#del_bldg_id{
+    display: flex;
+     padding: 5px 0px;
+     border-radius: 5px;
+     border: none;
+     background-color: #db0000;
+     color: #fff;
+     width: 60%;
+     justify-content: center;
+ }
+.btn_container input{
+    display: flex;
+     padding: 5px 0px;
+     border-radius: 5px;
+     border: none;
+     background-color: green;
+     color: #fff;
+     width: 60%;
 }
 
 .no-border {
@@ -395,12 +407,12 @@ img[src*="down.png"] {
 #building_update_form{
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: center;
     height: 90%;
     width: 85%;
     background-color: #f3ede5;
     border-radius: 10px;
-    padding: 20px;
+    padding: 10px 20px;
 }
 #building_update_form .mainimgbox{
     display: flex;
@@ -408,20 +420,21 @@ img[src*="down.png"] {
     justify-content: space-between;
     align-items: center;
     width: 25%;
-    padding: 10px;
-    gap: 8px;
+    padding: 5px;
+    height: fit-content;
+    gap: 10px;
     background-color: #000;
     border-radius: 10px;
 }
 
-#building_update_form .mainimgbox input[type="submit"]{
+/* #building_update_form .mainimgbox input[type="submit"]{
     padding: 5px;
     background-color: #fff;
     color: #000;
     width: 72%;
     border: none;
     border-radius: 5px;
-}
+} */
 #building_update_form section div{
     display: flex;
     flex-direction: column;
@@ -438,6 +451,7 @@ img[src*="down.png"] {
     width: 70%;
     gap: 5px;
 }
+
 .input_label_div{
     display: flex;
     justify-content: space-between;
@@ -456,6 +470,7 @@ img[src*="down.png"] {
     width: 50%;
     background-color: #f5f5f5;
     border: none;
+    resize: none;
 }
 
 
@@ -1126,8 +1141,8 @@ img[src*="down.png"] {
 }
 
 #bldg_image, #new_bldg_image{
-    width: 100%;
-    height: 100%
+    width: 140px;
+    height: 125px;
 }
 
 #gcash_box {
@@ -1140,9 +1155,8 @@ img[src*="down.png"] {
 }
 
 #gcash_image, #new_gcash_image{
-    
-    width: 100%;
-    height: 100%;
+    width: 140px;
+    height: 125px;
 }
 
 .image_upload_icon{
