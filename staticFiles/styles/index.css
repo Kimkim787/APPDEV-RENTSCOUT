@@ -21,10 +21,8 @@
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     font-size: 14px;
-    z-index: 1000; /* Ensure it overlays other elements */
-    /* animation: slideInOut 5s ease-in-out; */
+    z-index: 1000; 
 }
-
 .newmessage {
     width: fit-content;
     max-width: 100%;
@@ -37,8 +35,7 @@
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     font-size: 14px;
-    z-index: 1000; /* Ensure it overlays other elements */
-    /* animation: slideInOut 5s ease-in-out; */
+    z-index: 1000; 
 }
 
 .error_message{
@@ -50,40 +47,18 @@
     background-color: rgb(0, 158, 0);
 }
 
-@keyframes slideInOut{
-    0%{
-        opacity: 100%;
-        display: block;
+@keyframes slideInOut {
+    0% {
+        opacity: 0; /* Start invisible */
     }
-    1%{
-        opacity: 100%;
-        /* right: 0; */
+    10% {
+        opacity: 1; /* Fully visible */
     }
-    /* 10%{
-        opacity: 80%;
-        right: 102%;
-    } */
-    20%{
-        opacity: 100%;
+    90% {
+        opacity: 1; /* Stay visible */
     }
-    /* 85%{
-        opacity: 100%
-    } */
-    90%{
-        opacity: 100%;
-        /* right: 102%; */
-    } 
-    95%{
-        opacity: 30%;
-        /* right:100% */
-    }
-    99%{
-        opacity: 0%;
-        /* right: 0%; */
-    }
-    100%{
-        opacity: 0%;
-        display: none;
+    100% {
+        opacity: 0; /* Fade out */
     }
 }
 

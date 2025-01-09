@@ -2202,6 +2202,14 @@ class generate_otp(View):
 
         except Exception as e:
             return JsonResponse({'error': f"{e}"}, status = 500)
+    def post(self, request):
+        try:
+            user = request.user
+            user.verified = True
+            user.save()
+            return JsonResponse({'success': 'Successfully verified'}, status = 200)
+        except:
+            return JsonResponse({'error': 'Server Error'}, status = 500)
         
 # KEYS FOR TEMPLATES USING MAILJS
 class get_mailjs_keys(View):

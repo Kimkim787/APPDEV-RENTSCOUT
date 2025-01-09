@@ -30,12 +30,13 @@ $(document).ready(function(){
             if(validate_text_input($('input[name="lastname"]'))){
                 if(validate_text_input($('input[name="middlename"]'))){
                     if(validate_date_input($('input[name="birthdate"]'))){
-                        console.log('valid bday');
-                        if(validate_password_input($('input[name="password1"]'))){
-                            console.log('password 1 and 2 valid')
-                            if( validate_role_input() ){
-                                console.log('valid input');
-                                $('#signup_form').submit();
+                        if(validate_email_input($('input[name="email"]'))){
+                            if(validate_password_input($('input[name="password1"]'))){
+                                console.log('password 1 and 2 valid')
+                                if( validate_role_input() ){
+                                    console.log('valid input');
+                                    $('#signup_form').submit();
+                                }
                             }
                         }
                     }
@@ -50,93 +51,6 @@ $(document).ready(function(){
         
     })
 
-    // CONFIRM EMAIL BUTTON
-    $('#get_otp').on('click', function(){
-        const email = $(this).closest('div').find('input[name="email"]').val();
-        send_otp(email);
-    })
-
-    // RESEND CODE BUTTON
-    $('#resend_otp').on('click', function(){
-        const email = $(this).closest('div').find('input[name="email"]').val();
-        send_otp(email);
-    })
-
-    // CONFIRM CODE BUTTON
-    $('#confirm_otp').on('click', function(){
-        validate_otp($(this));
-    })
-
-    function send_otp(email){
-        console.log(email);
-        $.ajax({
-            url: '/signup/get_otp/',
-            type: 'GET',
-            success: function(response){
-                const public_key = response.mail_keys.public_key;
-                const template_key = response.mail_keys.template_key;
-                localStorage.setItem('otp', response.otp);
-
-                setTimeout(function() {
-                    localStorage.removeItem('otp');
-                }, 600000);  // 10 minutes
-
-                // SEND OTP TO EMAIL
-                emailjs.send(public_key, template_key, {
-                    to_email: email,
-                    otp: response.otp,
-                  }).then(
-                    function(response) {
-                        $('#user_email').text(email);
-                        $('#otp_confirmation_form').removeClass('hidden');
-                    //   SoloMessageFlow(`OTP was sent to ${email}`, 'success')
-                    },
-                    function(error) {
-                      console.error("Failed to send email.", error);
-                    //   SoloMessageFlow('Failed to send email. Something\'s wrong with the server.', 'error')
-                    }
-                    ); 
-            }, 
-            error: function(xhr, status, error) {
-                let errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : error;
-                SoloMessageFlow(`${errorMessage}`, 'error');
-            }
-
-        })
-    }
-
-    function validate_otp(btn){
-        console.log("validating otp");
-        const saved_otp = localStorage.getItem('otp');
-        const inputted_otp = $(btn).closest('#otp_confirmation_form').find('input[name="OTP"]').val();
-        console.log(saved_otp);
-        console.log(inputted_otp);
-        if(!(saved_otp === inputted_otp)){
-            console.log('otp did not match');
-            SoloMessageFlow('OTP did not match', 'error');
-            return;
-        } else { 
-            console.log('otp valid');
-            const password1 = $('input[name="password1"]');
-            const password2 = $('input[name="password2"]');
-            const role = $('select[name="role"]');
-            const create_btn = $('#create_account_btn');
-
-            $(password1).removeAttr('disabled');
-            $(password2).removeAttr('disabled');
-            $(role).removeAttr('disabled');
-            $(create_btn).removeAttr('disabled');
-
-            $(password1).removeAttr('tabindex');
-            $(password2).removeAttr('tabindex');
-            $(role).removeAttr('tabindex');
-
-            $('#otp_confirmation_form').addClass('hidden');
-
-            $('#get_otp').addClass('hidden');
-            $('#verified_email').removeClass('hidden');
-        }
-    }
 
     function validate_text_input(element){
         const inputField = $(element).val(); 
@@ -145,7 +59,7 @@ $(document).ready(function(){
         const numbers = /[\d]/; // REGEX FOR NUMBERS
         
         // Check for empty input
-        if ($.trim(inputField) === '') {
+        if (inputField.trim() === '') {
             SoloMessageFlow(`Please input ${for_err}`, 'error');
             $(element).focus();
             return false;
@@ -172,7 +86,7 @@ $(document).ready(function(){
         const datePattern = /^\d{4}\-\d{2}\-\d{2}$/; // REGEX FOR DATE FORMAT yyyy/mm/
         const alphabetPattern = /[a-zA-Z]/;
         
-        if ($.trim(dateInput) === '') {
+        if (dateInput.trim() === '') {
             SoloMessageFlow('Date of Birth cannot be empty', 'error');
             $(element).focus();
             return false;
@@ -206,7 +120,7 @@ $(document).ready(function(){
         const password2 = $('input[name="password2"]').val();
         console.log(password);
         console.log(password2);
-        if ($(password).trim(password) === '') {
+        if (password.trim() === '') {
             SoloMessageFlow('Password cannot be empty', 'error');
             $(element).focus();
             $(password).val("");
@@ -245,6 +159,23 @@ $(document).ready(function(){
         return true;
     }
 
+    function validate_email_input(email) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const email_txt = $(email).val();
+        if (email_txt.trim() === '') {
+            SoloMessageFlow('Email cannot be empty', 'error');
+            $(email).focus();
+            return false;
+        }
+
+        if (!emailPattern.test(email_txt)) {
+            SoloMessageFlow('Invalid email address', 'error');
+            $(email).focus();
+            return false;
+        }
+        return true;
+    }
+    
 })// ready function
 
 const selectElement = document.getElementById('gender');

@@ -14,6 +14,10 @@
         <input type="hidden" name="userid" value="{{ request.user.userid }}">
         <div class="profileinputs">
             <div class="input_container">
+                <label for="email">Email:</label>
+                <input type="email" name="email" value="{{ user_data.email }}" required disabled>
+            </div>
+            <div class="input_container">
                 <label for="firstname">Firstname:</label>
                 <input type="text" name="firstname" value="{{ user_data.firstname }}" required>
             </div>
@@ -74,12 +78,36 @@
                 <img src="{% static 'imgs/plus.png' %}" alt="upload-image" id="upload_btn" title="Upload New Profile">
                 
             </div>
+            {% if request.user.verified %}
+            <p>Verified</p>
+            {% else %}
+            <button type="button" id="get_otp">Verify Email</button>
+            {% endif %}
             <input type="submit" value="Save">
         </div>
         
 
     </form>
 
+    <div id="modal_body" class="hidden">
+        <div class="otpdiv">
+            <img src="{% static 'imgs/remove.png' %}" alt="close_btn" id="close_otp_modal">
+            <div>
+                <h2>OTP CONFIRMATION FORM</h2>
+                <hr>
+            </div>
+            <p>We've sent an OTP to your email "<span id="user_email"></span>".<br>Please check your email,
+            and enter the code below.<br>OTP will expire in 10 minutes.</p>
+            <input type="text" name="OTP" id="OTP" placeholder="Enter OTP code here">
+            <button type="button" id="resend_otp">Resend Code</button>
+            <button type="button" id="confirm_otp">Confirm code</button>
+        </div>
+    </div>
+
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
     <script src="{% static 'scripts/user_profile.js' %}"></script>
+
 </section>
 {% endblock %}

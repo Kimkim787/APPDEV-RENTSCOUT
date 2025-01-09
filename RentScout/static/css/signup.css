@@ -206,10 +206,6 @@ select{
     }
 }
 
-
-
-
-
 .hidden{
     display: none !important;
 }
@@ -235,6 +231,7 @@ select{
     top: 0;
     width: fit-content;
 }
+
 #otp_confirmation_form .otpdiv{
     background-color: #fff;
     display: flex;

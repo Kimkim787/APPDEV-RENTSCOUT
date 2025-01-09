@@ -1,13 +1,13 @@
-
+emailjs.init("Q_A-eXEwrvvQsFMYs");
 function showNotification() {
     console.log("show called");
     const notifications = document.querySelectorAll('.message'); // Selects all elements with the 'message' class
     if (notifications.length < 1){
         return;
     }
-    notifications.forEach(notification => {
-        notification.style.animation = 'slideInOut 5s';
-    });
+    // notifications.forEach(notification => {
+    //     notification.style.animation = 'slideInOut 1s';
+    // });
 }
 
 function removeNotificationAnimation() {
@@ -30,7 +30,7 @@ function MessageAnimationFlow(){
     showNotification();
     setTimeout(() => {
         removeNotificationAnimation();
-    }, 10000);
+    }, 6000);
     
 }
 MessageAnimationFlow();
@@ -50,10 +50,10 @@ function SoloMessageFlow(message, status = "success"){
 
     message_container.append(message_text);
 
-    $(message_text).css("animation", 'slideInOut 3s');
+    // $(message_text).css("animation", 'slideInOut 3s');
 
-    setTimeout(() => {
-        $(message_text).remove();
-    }, 10000);
+    // setTimeout(() => {
+    //     $(message_text).remove();
+    // }, 3000);
 }
 

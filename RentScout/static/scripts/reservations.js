@@ -388,10 +388,13 @@ $(document).ready(function(){
   }
 
   // FILTER BY RESERVATION STATUS
-  function payment_filter(buildingid, Q){
+  function payment_filter(paramid, Q){
     console.log('payment filter')
     const reserve_div = $('#reservation_lists');
-
+    let buildingid = paramid;
+    if(!buildingid){
+      buildingid = $('#buildings_container .building_items').first().attr('value');
+    }
     reserve_div.empty();
     $.ajax({
       url: '/payment/filter/',

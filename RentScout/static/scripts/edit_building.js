@@ -747,6 +747,16 @@ $(document).ready(function(){
         });
     });
 
+    $('#bldg_coords').on('focus', function () {
+        const coords = $(this).val().trim();
+        window.open('https://www.google.com/maps', '_blank');
+    });
+
+    $('#bldg_coords').on('focus', function () {
+        const coords = $(this).val().trim();
+        window.open('https://www.google.com/maps', '_blank');
+    });
+
     // DELETE PHOTO_VIEW
     function fn_delete_room_photo(button){
         let query = $(button).siblings('input[name="img_id"]').val();

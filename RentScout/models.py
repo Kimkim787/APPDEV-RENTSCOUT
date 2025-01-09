@@ -64,6 +64,7 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
     city = models.CharField(max_length = 50, default = "", null=True)
     contact = models.CharField(max_length = 15, default="", null=True)
     profile_image = models.FileField(upload_to='upload/user_profiles', default = 'upload/user_profiles/user.png', null=True, blank=True)
+    verified = models.BooleanField(default = False)
 
     def fullname(self):
         return f'{self.firstname} {self.lastname}'
@@ -122,6 +123,7 @@ class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
 
     usertype = models.CharField(max_length = 10, default="Landlord", null=False, blank=False)
     gcash = models.CharField(max_length = 15, default="", null=True, blank = True)
+    verified = models.BooleanField(default = False)
     
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
