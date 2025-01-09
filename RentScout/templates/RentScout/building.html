@@ -167,7 +167,7 @@
                                 {% endif %}
                             </p>
                             
-                            <p>{{ feedback.message}}</p>
+                            <p class="feedbackmsg">{{ feedback.message}}</p>
                             
                             {% if feedback.userid == request.user %}
                             <button class="feedback_edit_btn">Edit</button>
@@ -324,19 +324,7 @@
             </div>
 
             <!-- REPORT MODAL -->
-            <div id="report_modal" class="hidden">
-                <button id="close_report">X</button>
-                <h4>Reporting {{ building.building_name }}</h4>
-                <label for="reason">Please state your reason for the report:</label>
-                <div class="textarea_button_box">
-                    <textarea name="{{ building_report_form.reason.name }}" id="" cols="30" rows="10" placeholder="Limit of 250 characters"></textarea>
-                    <div>
-                        <input type="hidden" name="{{ building_report_form.buildingid.name }}" value="{{ building.buildingid }}">
-                        <button id="report_button">Report</button>
-                        <button id="cancel_report_button">Cancel</button>
-                    </div>
-                </div>
-            </div>  
+              
 
         </div>
         
@@ -413,6 +401,26 @@
             </div>
         </div>
 
+        <div id="report_modal" class="hidden">
+            <div class="modal_boxreport">
+                <div class="exitdivbutton">
+                    <h4>Reporting {{ building.building_name }}</h4>
+                    <button id="close_report"><img src="{% static "imgs/building/remove.png" %}" alt=""></button>
+                </div>
+                
+                
+                <label for="reason">Please state your reason for the report:</label>
+                <div class="textarea_button_box">
+                    <textarea name="{{ building_report_form.reason.name }}" id="" cols="30" rows="10" placeholder="Limit of 250 characters"></textarea>
+                    <div>
+                        <input type="hidden" name="{{ building_report_form.buildingid.name }}" value="{{ building.buildingid }}">
+                        <button id="report_button">Report</button>
+                        <button id="cancel_report_button">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="modal hidden" id="qr_modal">
             <img src="{{ qr_code }}" alt="qr_modal" id="qr_img">
             <img src="{% static 'imgs/remove.png' %}" alt="close_btn" id="qr_close_btn">
@@ -440,7 +448,8 @@
                 </div>
             </div>
         </div>
-    </section>    
+    </section>   
+     
     <script src="{% static 'scripts/modal.js' %}?100"></script>
     
     <script type="text/javascript"
