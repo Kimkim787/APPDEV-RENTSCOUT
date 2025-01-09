@@ -364,7 +364,8 @@ def create_feedback(request):
             messages.success(request, "Successfully sent your feedback")
             return redirect('building_info', newfeedback.boardingid.buildingid)
         else:
-            messages.error(request, "Unable to save feedback")
+            messages.error(request, "Feedback is invalid")
+            return redirect('building_info', request.POST.get('boardingid'))
 
 @login_required(login_url = "signin")   
 def update_feedback(request, pk):

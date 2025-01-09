@@ -30,8 +30,11 @@ $(document).ready(function(){
             if(validate_text_input($('input[name="lastname"]'))){
                 if(validate_text_input($('input[name="middlename"]'))){
                     if(validate_date_input($('input[name="birthdate"]'))){
+                        console.log('valid bday');
                         if(validate_password_input($('input[name="password1"]'))){
+                            console.log('password 1 and 2 valid')
                             if( validate_role_input() ){
+                                console.log('valid input');
                                 $('#signup_form').submit();
                             }
                         }
@@ -201,8 +204,9 @@ $(document).ready(function(){
     function validate_password_input(element){
         const password = $(element).val();
         const password2 = $('input[name="password2"]').val();
-
-        if ($.trim(password) === '') {
+        console.log(password);
+        console.log(password2);
+        if ($(password).trim(password) === '') {
             SoloMessageFlow('Password cannot be empty', 'error');
             $(element).focus();
             $(password).val("");
