@@ -568,6 +568,10 @@ $(document).ready(function(){
             text: data.date
           })
 
+          let tdaction = $('<td></td>', {
+            class: 'tdaction',
+          });
+
           rstatus = $('<td></td>', {
             text: data.status
           })
@@ -600,9 +604,10 @@ $(document).ready(function(){
           tr.append(date);
           tr.append(rstatus);
           if(data.status == 'Pending' || data.status == 'Declined'){
-            tr.append(left_btn);
+            tdaction.append(left_btn);
           }
-          tr.append(right_btn);
+          tdaction.append(right_btn);
+          tr.append(tdaction);
           tbody.append(tr);
 
           $('.colbox').addClass('hidden');
@@ -630,7 +635,6 @@ $(document).ready(function(){
     $('.paymentbox').removeClass('hidden');
 
   }
-  
 
   // FULL SCREEN THING
   function openFullScreen(img) {

@@ -175,13 +175,12 @@ section{
     object-fit: contain;
 }
 
-
-
 .reservation_item{
-    border-bottom: 1px solid black;
+    display: flex;
+    gap: 2px;
 }
 .receipt_img{
-    height: 100px;
+    height: 30px;
 }
 .paymentbox{
     display: flex;
@@ -194,18 +193,27 @@ section{
     align-items: center;
 }
 .pay4{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 75px;
-    border: 1px solid black;
+    background-color: #746154;
+    border: 0.5px solid white;
+    color: white;
 }
 .pay5{
+    color: white;
+    background-color: #746154;
     width: 6.7%;
-    border: 1px solid black;
+    border: 0.5px solid white;
 }
 .pay1,
 .pay2,
 .pay3{
+    color: white;
+    background-color: #746154;
     width: 27.7666667%;
-    border: 1px solid black;
+    border: 0.5px solid white;
 }
 .paydiv1,
 .paydiv2,
@@ -213,24 +221,27 @@ section{
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    border: 1px solid black;
+    width: 27.6%;
+    border-bottom: 0.5px solid black;
 }
 
 .paydiv4{
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
-    padding: 10px;
-    border: 1px solid black;
+    padding: 3px 0px;
+    gap: 3px;
+    border-bottom: 0.5px solid black;
+    width: 75px;
 }
 .paydiv5{
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid black;
+    border-bottom: 0.5px solid black;
     width: 6.7%;
+    padding: 3px 0px;
 }
 
 
@@ -239,15 +250,17 @@ section{
     border: none;
     background-color: green;
     color: white;
-    padding: 3px 10px;
+    width: 60px;
+    padding: 3px 0px;
 }
 
-.decline_payment{
+.decline_payment, .hide_payment{
     border-radius: 3px;
     border: none;
     background-color: red;
     color: white;
-    padding: 3px 10px;
+    width: 60px;
+    padding: 3px 0px;
 }
 
 .hidden{
@@ -260,4 +273,20 @@ section{
 
 #all_res tr{
     text-align: center;
+}
+
+th{
+    height: 40px;
+    background-color: #746154;
+    color: white;
+}
+tr td{
+    height: 40px;
+    border-bottom: 1px solid black;
+}
+.tdaction{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }

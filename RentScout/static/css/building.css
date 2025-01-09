@@ -501,7 +501,7 @@ p span{
   justify-content: center;
   align-items: center;
   height: 300px;
-  width: 300px;
+  width: 200px;
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
