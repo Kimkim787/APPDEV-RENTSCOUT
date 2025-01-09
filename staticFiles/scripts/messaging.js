@@ -14,6 +14,7 @@ $(document).ready(function(){
     $('#message_back_btn').on('click', function(){
         $('#message_convo').toggleClass('hidden');
         $('#inbox').toggleClass('hidden');
+        $('#convo_list').empty();
         get_inbox_data();
     })
 
