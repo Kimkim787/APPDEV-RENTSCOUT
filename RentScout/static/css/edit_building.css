@@ -799,8 +799,14 @@ img[src*="down.png"] {
 .checkboxsdiv label{
     width: 200px;
 }
+.editroombuttonbox{
+    display: flex;
+    width: 40%;
+    height: 100%;
+    justify-content: space-between;
+}
 #edit_room_save{
-    width: 30%;
+    width: 40%;
     background-color: #000;
     color: white;
     border: none;
@@ -809,7 +815,7 @@ img[src*="down.png"] {
 }
 
 #del_room_id{
-    width: 30%;
+    width: 40%;
     background-color: #db0000;
     color: white;
     border: none;
@@ -1256,11 +1262,13 @@ button {
 
 button#confirm_cancel {
     background-color: #ccc;
+    border-radius: 5px;
 }
 
 button#confirm_delete_bldg, #confirm_delete_room {
     background-color: red;
     color: white;
+    border-radius: 5px;
 }
 
 button:hover {

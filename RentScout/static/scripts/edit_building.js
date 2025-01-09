@@ -853,7 +853,7 @@ $(document).ready(function(){
                             </div>
                         </div>
                     </div>
-                    <div class='btn_container'>
+                    <div class='editroombuttonbox'>
                         <button id="del_room_id" value="${response_data.roomid}">Delete</button>
                         <button id="edit_room_save" value="${response_data.roomid}">Save</button>
                     </div>
