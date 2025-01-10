@@ -14,8 +14,13 @@
         <input type="hidden" name="userid" value="{{ request.user.userid }}">
         <div class="profileinputs">
             <div class="input_container">
-                <label for="email">Email:</label>
-                <input type="email" name="email" value="{{ user_data.email }}" required disabled>
+                {% if  user_data.verified %}
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" value="{{ user_data.email }}" required disabled>
+                {% else %}
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" value="{{ user_data.email }}" required>
+                {% endif %}
             </div>
             <div class="input_container">
                 <label for="firstname">Firstname:</label>

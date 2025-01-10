@@ -32,6 +32,7 @@ from django.template.loader import render_to_string
 
 
 import logging, math, csv, qrcode, random, string
+from itertools import cycle
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.utils.dateformat import format as datetimeformat
@@ -2236,12 +2237,18 @@ def building_file_scrapper(request):
             csv_file = request.FILES['file']
             decoded_file = csv_file.read().decode('utf-8').splitlines()
             reader = csv.DictReader(decoded_file)
-            user = ScoutUser_Landlord.objects.get(userid = 1)
+            user = ScoutUser_Landlord.objects.all()
+            
+            landlord_cycle = cycle(user)
+
+            images = ['building1.jpeg', 'building2.png']
+            images_cycle = cycle(images)
             try:
                 for row in reader:
                 # Prepare the building data
                     form = BuildingForm({
                         'building_name': row.get('building_name', ''),
+                        'price': 1100,
                         'zip_code': row.get('zip_code', 0),
                         'street': row.get('street', ''),
                         'city': row.get('city', 'None'),
@@ -2251,12 +2258,13 @@ def building_file_scrapper(request):
                         'rooms_vacant': row.get('rooms_vacant', 0),
                         'coordinates': row.get('coordinates', ''),
                         'average_rating': row.get('average_rating', 0.0),
+                        'gcash_qr': f'/upload/building_imgs/gcash/default.png'
                     })
 
                     if form.is_valid():
                         newBuilding = form.save(commit=False)
-                        newBuilding.building_owner = user
-                        newBuilding.building_image = f"/upload/building_imgs/{row.get('building_image')}"
+                        newBuilding.building_owner = next(landlord_cycle)
+                        newBuilding.building_image = f"/upload/building_imgs/{next(images_cycle)}"
                         newBuilding.save()
                     
             except Exception as e:
