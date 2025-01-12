@@ -13,10 +13,10 @@ from .forms import (UserCreationForm, UserChangeForm, ScoutUserCreationForm, Bui
 # Register your models here.
 
 class AdminUserAdmin(admin.ModelAdmin):
-    list_display = ['userid', 'email', 'username']
+    list_display = ['adminid', 'email', 'username']
     
 class ScoutUserAdmin(admin.ModelAdmin):
-    list_display = ['userid', 'email', 'firstname', 'lastname',
+    list_display = ['scoutuserid', 'email', 'firstname', 'lastname',
                     'middlename', 'gender', 'birthdate', 
                     'barangay', 'province', 'city', 'contact', 'profile_image', 'verified', 'date_joined']
     form = ScoutUserCreationForm
@@ -25,7 +25,7 @@ class ScoutUserAdmin(admin.ModelAdmin):
     readonly_fields = ('password',)
     
 class ScoutUser_LandlordAdmin(admin.ModelAdmin):
-    list_display = ['userid', 'email', 'firstname', 'lastname',
+    list_display = ['landlordid', 'email', 'firstname', 'lastname',
                     'middlename', 'gender', 'birthdate',
                     'barangay', 'province', 'city', 'contact', 'profile_image', 'verified', 'date_joined']
 
@@ -58,7 +58,7 @@ class RoomAdmin(admin.ModelAdmin):
         return obj.building_id.building_name
 
 class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ['feedbackid', 'boardingid', 'userid', 'rating', 'message']
+    list_display = ['feedbackid', 'boardingid', 'scoutuserid', 'rating', 'message']
 
 class RoomImageAdmin(admin.ModelAdmin):
     list_display = ['room_imgID', 'roomid', 'get_room_name', 'room_img']
@@ -79,7 +79,7 @@ class BuildingReportAdmin(admin.ModelAdmin):
     list_display = ['reportid', 'buildingid', 'reporter', 'date_reported', 'reason']
 
 class ReservationAdmin(admin.ModelAdmin):
-    list_display = ['reservationid', 'roomid', 'userid', 'status', 'created', 'last_updated']
+    list_display = ['reservationid', 'roomid', 'scoutuserid', 'status', 'created', 'last_updated']
     
     def room_name(self, obj):
             return obj.roomid.room_name if obj.roomid else '-'
@@ -118,7 +118,7 @@ admin.site.register(ScoutUserBookmark, ScoutBookmarkAdmin)
 admin.site.register(LandlordUserBookmark, LandlordBookmarkAdmin)
 admin.site.register(AdminUser, AdminUserAdmin)
 admin.site.register(BuildingReport, BuildingReportAdmin)
-admin.site.register(Verification)
+admin.site.register(Verification, VerificationAdmin)
 admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Message, MessageAdmin)
 admin.site.register(Payment, PaymentAdmin)

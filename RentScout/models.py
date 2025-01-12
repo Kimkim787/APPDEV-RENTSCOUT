@@ -15,7 +15,7 @@ from django.core.validators import MinValueValidator
 
 
 class AdminUser(AbstractBaseUser, PermissionsMixin):
-    userid = models.AutoField(primary_key=True)
+    adminid = models.AutoField(primary_key=True)
     username = models.CharField(max_length = 50, null=False, blank=False)
     email = models.EmailField(_("email address"), unique=True)
         
@@ -52,7 +52,7 @@ class ScoutUser(AbstractBaseUser, PermissionsMixin):
         (FEMALE, 'Female')
     ]
 
-    userid = models.AutoField(primary_key=True)
+    scoutuserid = models.AutoField(primary_key=True)
     email = models.EmailField(_("email address"), unique=True)
     firstname = models.CharField(max_length = 20)
     lastname = models.CharField(max_length = 20)
@@ -108,7 +108,7 @@ class ScoutUser_Landlord(AbstractBaseUser, PermissionsMixin):
         (FEMALE, 'Female')
     ]
 
-    userid = models.AutoField(primary_key=True)
+    landlordid = models.AutoField(primary_key=True)
     email = models.EmailField(_("email address"), unique=True)
     firstname = models.CharField(max_length = 20)
     lastname = models.CharField(max_length = 20)
@@ -242,7 +242,7 @@ class Feedback(models.Model):
     ]
     feedbackid = models.AutoField(primary_key = True)
     boardingid = models.ForeignKey(Building, related_name = 'building_rating', on_delete = models.CASCADE)
-    userid = models.ForeignKey(ScoutUser, related_name="reviewer", on_delete = models.CASCADE, default="", null=False, blank=False)
+    scoutuserid = models.ForeignKey(ScoutUser, related_name="reviewer", on_delete = models.CASCADE, default="", null=False, blank=False)
     rating = models.CharField(max_length = 10, choices = RATING_CHOICES, default = ZERO)
     message = models.TextField(default="")
 
@@ -311,7 +311,7 @@ class Reservation(models.Model):
 
     reservationid = models.AutoField(primary_key = True)
     roomid = models.ForeignKey(Room, related_name = 'reserved_room', on_delete = models.CASCADE) #, null = False, default=1
-    userid = models.ForeignKey(ScoutUser, related_name = 'reservation_customer', on_delete=models.CASCADE, null = False)
+    scoutuserid = models.ForeignKey(ScoutUser, related_name = 'reservation_customer', on_delete=models.CASCADE, null = False)
     status = models.CharField(max_length = 10, choices = status_choices, default = PENDING, null = False, blank = False)
     created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now = True)
